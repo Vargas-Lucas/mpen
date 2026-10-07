@@ -49,9 +49,7 @@ export function Hero({ slides }: { slides: Development[] }) {
                       ? "hero-logo"
                       : slide.slug === "carpe-diem"
                         ? "hero-logo mid"
-                        : slide.slug === "island"
-                          ? "hero-logo badge"
-                          : "hero-logo wide"
+                        : "hero-logo wide"
                   }
                   src={logo}
                   alt=""

@@ -3,7 +3,7 @@ import { ContactForm } from "@/components/ContactForm";
 import { PageHeader } from "@/components/PageHeader";
 import { getDevelopment } from "@/lib/data";
 import { deliveryLabel, statusLabel } from "@/lib/format";
-import { coverImage } from "@/lib/images";
+import { coverImage, galleryImages } from "@/lib/images";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -16,6 +16,7 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ sl
   const item = await getDevelopment(slug);
   if (!item) notFound();
   const image = coverImage(item.slug);
+  const gallery = galleryImages(item.slug);
 
   return (
     <>
@@ -23,6 +24,13 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ sl
       <div className="container detail">
         <div>
           {image ? <img className="detail-photo" src={image} alt="" /> : null}
+          {gallery.length ? (
+            <div className="gallery">
+              {gallery.map((src) => (
+                <img key={src} src={src} alt="" />
+              ))}
+            </div>
+          ) : null}
           <div className="prose">
             <p>
               {item.summary ||

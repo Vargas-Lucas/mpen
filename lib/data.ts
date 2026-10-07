@@ -42,6 +42,15 @@ export async function getDevelopment(slug: string) {
   return rows[0] ?? null;
 }
 
+export async function getSpotlightDevelopments() {
+  return query<Development>(`
+    SELECT * FROM developments
+    WHERE status IN ('lancamento', 'entregue')
+    ORDER BY CASE WHEN delivery ~ '^[0-9]{4}$' THEN delivery::int ELSE 0 END DESC, sort_order
+    LIMIT 3
+  `);
+}
+
 export async function getFeaturedDevelopments() {
   const featured = await query<Development>(
     "SELECT * FROM developments WHERE featured = TRUE ORDER BY sort_order LIMIT 5",

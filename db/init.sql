@@ -40,7 +40,7 @@ INSERT INTO developments
 VALUES
   ('Sunset Village', 'sunset-village', 'lancamento', 'Loteamento Portal do Ribeirão - Ribeirão da Ilha', 'Florianópolis', '', '2029', TRUE, 1),
   ('Village du Soleil', 'village-du-soleil', 'entregue', 'Campeche', 'Florianópolis', '', '2023', TRUE, 2),
-  ('Iconic', 'iconic', 'entregue', 'Morro das Pedras', 'Florianópolis', '', '', TRUE, 3),
+  ('Iconic', 'iconic', 'entregue', 'Morro das Pedras', 'Florianópolis', '', '2023', TRUE, 3),
   ('Chez Soleil', 'chez-soleil', 'entregue', 'Campeche', 'Florianópolis', '', '2019', FALSE, 4),
   ('Vivace', 'vivace', 'entregue', 'Campeche', 'Florianópolis', '', '2018', FALSE, 5),
   ('Moana', 'moana', 'entregue', 'Campeche', 'Florianópolis', '', '2017', FALSE, 6),

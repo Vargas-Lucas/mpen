@@ -2,17 +2,18 @@ import Link from "next/link";
 import { DevelopmentCard } from "@/components/DevelopmentCard";
 import { Hero } from "@/components/Hero";
 import { PostCard } from "@/components/PostCard";
-import { getDevelopments, getPosts } from "@/lib/data";
+import { getDevelopments, getPosts, getSpotlightDevelopments } from "@/lib/data";
 
 export default async function HomePage() {
-  const [developments, posts] = await Promise.all([
+  const [developments, slides, posts] = await Promise.all([
     getDevelopments(),
+    getSpotlightDevelopments(),
     getPosts({ limit: 3 }),
   ]);
 
   return (
     <>
-      <Hero slides={developments} />
+      <Hero slides={slides} />
 
       <section className="section band">
         <div className="container split">
