@@ -1,26 +1,94 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { heroImage, logoImage } from "@/lib/images";
 import { deliveryLabel } from "@/lib/format";
 import type { Development } from "@/lib/types";
 
+const SLIDE_MS = 980;
+
 export function Hero({ slides }: { slides: Development[] }) {
   const [index, setIndex] = useState(0);
-  const slide = slides[index];
-  const image = slide ? heroImage(slide.slug) : "";
-  const logo = slide ? logoImage(slide.slug) : "";
+  const [leaving, setLeaving] = useState<number | null>(null);
+  const [direction, setDirection] = useState<1 | -1>(1);
+  const [hasMoved, setHasMoved] = useState(false);
+
+  useEffect(() => {
+    if (leaving === null) return;
+    const timer = window.setTimeout(() => setLeaving(null), SLIDE_MS);
+    return () => window.clearTimeout(timer);
+  }, [leaving, index]);
+
+  function goTo(next: number, dir: 1 | -1) {
+    if (slides.length < 2 || next === index) return;
+    setDirection(dir);
+    setHasMoved(true);
+    setLeaving(index);
+    setIndex(next);
+  }
 
   function go(step: number) {
     if (slides.length < 2) return;
-    setIndex((current) => (current + step + slides.length) % slides.length);
+    const dir: 1 | -1 = step > 0 ? 1 : -1;
+    goTo((index + step + slides.length) % slides.length, dir);
   }
 
   return (
-    <section className="hero">
-      {image ? <img className="hero-photo" src={image} alt="" /> : null}
-      <div className="hero-shade" />
+    <section
+      className={[
+        "hero",
+        hasMoved ? "has-moved" : "",
+        leaving !== null ? "is-moving" : "",
+        direction < 0 ? "dir-prev" : "dir-next",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
+      {slides.map((item, slideIndex) => {
+        const image = heroImage(item.slug);
+        const logo = logoImage(item.slug);
+        const state =
+          slideIndex === index ? "is-on" : slideIndex === leaving ? "is-leaving" : "";
+        return (
+          <div
+            key={item.id}
+            className={state ? `hero-slide ${state}` : "hero-slide"}
+            aria-hidden={slideIndex !== index}
+            inert={slideIndex !== index}
+          >
+            {image ? <img className="hero-photo" src={image} alt="" /> : null}
+            <div className="hero-shade" />
+            <div className="hero-copy">
+              <Link href={`/empreendimentos/${item.slug}`}>
+                {logo ? (
+                  <>
+                    <h1 className="sr-only">{item.name}</h1>
+                    <img
+                      className={
+                        item.slug === "jai"
+                          ? "hero-logo"
+                          : item.slug === "carpe-diem"
+                            ? "hero-logo mid"
+                            : "hero-logo wide"
+                      }
+                      src={logo}
+                      alt=""
+                    />
+                  </>
+                ) : (
+                  <>
+                    <h1>{item.name}</h1>
+                    <p className="hero-kicker">{item.neighborhood}</p>
+                    {item.delivery ? <p className="hero-meta">{deliveryLabel(item)}</p> : null}
+                  </>
+                )}
+                {item.summary ? <p className="hero-summary">{item.summary}</p> : null}
+              </Link>
+            </div>
+          </div>
+        );
+      })}
 
       {slides.length > 1 ? (
         <>
@@ -37,41 +105,6 @@ export function Hero({ slides }: { slides: Development[] }) {
         </>
       ) : null}
 
-      <div className="hero-copy">
-        {slide ? (
-          <Link href={`/empreendimentos/${slide.slug}`}>
-            {logo ? (
-              <>
-                <h1 className="sr-only">{slide.name}</h1>
-                <img
-                  className={
-                    slide.slug === "jai"
-                      ? "hero-logo"
-                      : slide.slug === "carpe-diem"
-                        ? "hero-logo mid"
-                        : "hero-logo wide"
-                  }
-                  src={logo}
-                  alt=""
-                />
-              </>
-            ) : (
-              <>
-                <h1>{slide.name}</h1>
-                <p className="hero-kicker">{slide.neighborhood}</p>
-                {slide.delivery ? <p className="hero-meta">{deliveryLabel(slide)}</p> : null}
-              </>
-            )}
-            {slide.summary ? <p className="hero-summary">{slide.summary}</p> : null}
-          </Link>
-        ) : (
-          <>
-            <h1>MPEN</h1>
-            <p className="hero-kicker">Florianópolis</p>
-          </>
-        )}
-      </div>
-
       {slides.length > 1 ? (
         <div className="hero-nav">
           {slides.map((item, dotIndex) => (
@@ -81,7 +114,7 @@ export function Hero({ slides }: { slides: Development[] }) {
               className={dotIndex === index ? "dot on" : "dot"}
               aria-label={`Ir para ${item.name}`}
               aria-current={dotIndex === index ? "true" : undefined}
-              onClick={() => setIndex(dotIndex)}
+              onClick={() => goTo(dotIndex, dotIndex > index ? 1 : -1)}
             />
           ))}
         </div>

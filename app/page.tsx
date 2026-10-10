@@ -15,13 +15,13 @@ export default async function HomePage() {
     <>
       <Hero slides={slides} />
 
-      <section className="section band">
-        <div className="container split">
+      <section className="home-intro">
+        <div className="container home-intro-grid">
           <div>
             <p className="kicker">A MPEN</p>
             <h2>Transformando vidas</h2>
           </div>
-          <div>
+          <div className="home-intro-copy">
             <p>
               A MPEN transforma vidas através de empreendimentos que unem sofisticação, qualidade e
               inovação. São mais de 20 anos no sul da Ilha de Florianópolis.
@@ -31,15 +31,36 @@ export default async function HomePage() {
             </Link>
           </div>
         </div>
+        <div className="container">
+          <ul className="home-facts">
+            <li>
+              <strong>{developments.length}</strong>
+              <span>empreendimentos</span>
+            </li>
+            <li>
+              <strong>2003</strong>
+              <span>no sul da Ilha</span>
+            </li>
+            <li>
+              <strong>Florianópolis</strong>
+              <span>foco residencial</span>
+            </li>
+          </ul>
+        </div>
       </section>
 
-      <section className="section">
+      <section className="home-catalog">
         <div className="container">
-          <h2 className="section-title">Conheça nossos empreendimentos</h2>
-          <div className="filters">
-            <Link href="/empreendimentos?status=lancamento">Lançamentos</Link>
-            <Link href="/empreendimentos?status=construcao">Em construção</Link>
-            <Link href="/empreendimentos?status=entregue">Entregues</Link>
+          <div className="home-catalog-head">
+            <div>
+              <h2>Conheça nossos empreendimentos</h2>
+              <p>Escolha por etapa ou percorra os projetos mais recentes.</p>
+            </div>
+            <nav className="home-paths" aria-label="Filtrar empreendimentos">
+              <Link href="/empreendimentos?status=lancamento">Lançamentos</Link>
+              <Link href="/empreendimentos?status=construcao">Em construção</Link>
+              <Link href="/empreendimentos?status=entregue">Entregues</Link>
+            </nav>
           </div>
           <div className="dev-grid">
             {developments.slice(0, 6).map((item) => (
