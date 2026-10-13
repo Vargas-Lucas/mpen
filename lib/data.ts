@@ -43,12 +43,15 @@ export async function getDevelopment(slug: string) {
 }
 
 export async function getSpotlightDevelopments() {
-  return query<Development>(`
+  const rows = await query<Development>(`
     SELECT * FROM developments
     WHERE status IN ('lancamento', 'entregue')
     ORDER BY CASE WHEN delivery ~ '^[0-9]{4}$' THEN delivery::int ELSE 0 END DESC, sort_order
     LIMIT 3
   `);
+  const chez = await getDevelopment("chez-soleil");
+  if (!chez) return rows;
+  return rows.map((item) => (item.slug === "village-du-soleil" ? chez : item));
 }
 
 export async function getFeaturedDevelopments() {

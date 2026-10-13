@@ -17,13 +17,12 @@ const covers: Record<string, string> = {
 
 const heroes: Record<string, string> = {
   "sunset-village": "/images/sunset-hero.jpg",
-  "village-du-soleil": "/images/chez-soleil.png",
+  "chez-soleil": "/images/chez-soleil-aerea.jpg",
   iconic: "/images/iconic-aerea.jpg",
 };
 
 const logos: Record<string, string> = {
   "sunset-village": "/images/sunset-village-mark-3.png",
-  "village-du-soleil": "/images/chez-soleil-mark.png",
   "chez-soleil": "/images/chez-soleil-mark.png",
   vivace: "/images/vivace-logo.png",
   jai: "/images/jai-logo.png",
