@@ -1,8 +1,8 @@
 const covers: Record<string, string> = {
   "sunset-village": "/images/sunset-village.png",
   "village-du-soleil": "/images/village-du-soleil-aerea.jpg",
-  iconic: "/images/iconic-aerea.jpg",
-  "chez-soleil": "/images/chez-soleil-aerea.jpg",
+  iconic: "/images/iconic.jpg",
+  "chez-soleil": "/images/chez-soleil-aerea-2.jpg",
   vivace: "/images/vivace-fachada.jpg",
   moana: "/images/moana-aerea.jpg",
   "carpe-diem": "/images/carpe-diem.png",
@@ -17,8 +17,8 @@ const covers: Record<string, string> = {
 
 const heroes: Record<string, string> = {
   "sunset-village": "/images/sunset-hero.jpg",
-  "chez-soleil": "/images/chez-soleil-aerea.jpg",
-  iconic: "/images/iconic-aerea.jpg",
+  "chez-soleil": "/images/chez-soleil-aerea-2.jpg",
+  iconic: "/images/iconic.jpg",
 };
 
 const logos: Record<string, string> = {
