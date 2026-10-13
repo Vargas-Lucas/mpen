@@ -1,24 +1,24 @@
 const covers: Record<string, string> = {
   "sunset-village": "/images/sunset-village.png",
-  "village-du-soleil": "/images/village-du-soleil.png",
-  iconic: "/images/iconic.jpg",
-  "chez-soleil": "/images/chez-soleil.png",
-  vivace: "/images/vivace.png",
-  moana: "/images/moana.png",
+  "village-du-soleil": "/images/village-du-soleil-aerea.jpg",
+  iconic: "/images/iconic-aerea.jpg",
+  "chez-soleil": "/images/chez-soleil-aerea.jpg",
+  vivace: "/images/vivace-fachada.jpg",
+  moana: "/images/moana-aerea.jpg",
   "carpe-diem": "/images/carpe-diem.png",
-  sanct: "/images/sanct.png",
+  sanct: "/images/sanct-aerea.jpg",
   jai: "/images/jai.png",
-  "riozinho-o2": "/images/riozinho-o2.jpg",
+  "riozinho-o2": "/images/riozinho-o2-aerea.jpg",
   sanctuary: "/images/sanctuary.png",
-  "riozinho-style": "/images/riozinho-style.jpg",
-  "porto-das-mares": "/images/porto-das-mares.png",
-  island: "/images/island.png",
+  "riozinho-style": "/images/riozinho-style-aerea.jpg",
+  "porto-das-mares": "/images/porto-das-mares-aerea.jpg",
+  island: "/images/island-fachada.jpg",
 };
 
 const heroes: Record<string, string> = {
   "sunset-village": "/images/sunset-hero.jpg",
   "village-du-soleil": "/images/chez-soleil.png",
-  iconic: "/images/iconic.jpg",
+  iconic: "/images/iconic-aerea.jpg",
 };
 
 const logos: Record<string, string> = {
