@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { DevelopmentCard } from "@/components/DevelopmentCard";
+import { HomeFacts } from "@/components/HomeFacts";
 import { Hero } from "@/components/Hero";
 import { PostCard } from "@/components/PostCard";
 import { getDevelopments, getPosts, getSpotlightDevelopments } from "@/lib/data";
@@ -32,20 +33,7 @@ export default async function HomePage() {
           </div>
         </div>
         <div className="container">
-          <ul className="home-facts">
-            <li>
-              <strong>{developments.length}</strong>
-              <span>empreendimentos</span>
-            </li>
-            <li>
-              <strong>2003</strong>
-              <span>no sul da Ilha</span>
-            </li>
-            <li>
-              <strong>Florianópolis</strong>
-              <span>foco residencial</span>
-            </li>
-          </ul>
+          <HomeFacts projectCount={developments.length} />
         </div>
       </section>
 

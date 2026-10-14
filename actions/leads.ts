@@ -1,6 +1,8 @@
 "use server";
 
+import { contactChannel } from "@/lib/contacts";
 import { query } from "@/lib/db";
+import { sendContactEmail } from "@/lib/mail";
 
 export type LeadState = { ok: boolean; message: string };
 
@@ -44,6 +46,33 @@ export async function createLead(_prev: LeadState, formData: FormData): Promise<
 
   if (variant === "newsletter") {
     return { ok: true, message: "Inscrição recebida. Você vai receber as novidades da MPEN." };
+  }
+
+  const channelId = source.startsWith("fale-") ? source.slice("fale-".length) : "";
+  const channel = channelId ? contactChannel(channelId) : undefined;
+  if (channel) {
+    const comercial = contactChannel("comercial");
+    const copy =
+      comercial && comercial.email.toLowerCase() !== channel.email.toLowerCase()
+        ? comercial.email
+        : undefined;
+    try {
+      await sendContactEmail({
+        to: channel.email,
+        cc: copy,
+        sector: channel.label,
+        name,
+        email,
+        phone,
+        message,
+      });
+    } catch {
+      return {
+        ok: false,
+        message: "A mensagem foi registrada, mas o e-mail não saiu. Tente de novo em instantes.",
+      };
+    }
+    return { ok: true, message: `Mensagem enviada para ${channel.label}.` };
   }
 
   return { ok: true, message: "Mensagem recebida. Em breve a equipe da MPEN retorna o contato." };
