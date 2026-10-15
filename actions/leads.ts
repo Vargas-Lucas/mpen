@@ -75,5 +75,27 @@ export async function createLead(_prev: LeadState, formData: FormData): Promise<
     return { ok: true, message: `Mensagem enviada para ${channel.label}.` };
   }
 
+  if (source === "parceiro") {
+    const comercial = contactChannel("comercial");
+    if (comercial) {
+      try {
+        await sendContactEmail({
+          to: comercial.email,
+          sector: "Parceria comercial",
+          name,
+          email,
+          phone,
+          message,
+        });
+      } catch {
+        return {
+          ok: false,
+          message: "A mensagem foi registrada, mas o e-mail não saiu. Tente de novo em instantes.",
+        };
+      }
+      return { ok: true, message: "Cadastro enviado para o comercial." };
+    }
+  }
+
   return { ok: true, message: "Mensagem recebida. Em breve a equipe da MPEN retorna o contato." };
 }
