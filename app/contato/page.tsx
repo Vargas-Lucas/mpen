@@ -8,7 +8,7 @@ export default function ContactPage() {
     <>
       <PageHeader
         title="Fale conosco"
-        lede="Escolha o setor e envie a mensagem. Ela segue direto para a equipe certa."
+        lede="Envie a mensagem. Ela segue direto para a equipe certa."
         compact
       />
       <section className="section talk-section">

@@ -19,10 +19,12 @@ export function ContactForm({
   source,
   variant = "contact",
   developmentSlug,
+  fields = "contact",
 }: {
   source: string;
   variant?: "contact" | "newsletter";
   developmentSlug?: string;
+  fields?: "contact" | "aftersales";
 }) {
   const [state, action] = useActionState(createLead, initial);
 
@@ -56,8 +58,20 @@ export function ContactForm({
       </label>
       <label>
         Telefone
-        <input name="phone" type="tel" autoComplete="tel" />
+        <input name="phone" type="tel" autoComplete="tel" required={fields === "aftersales"} />
       </label>
+      {fields === "aftersales" ? (
+        <>
+          <label>
+            Empreendimento
+            <input name="developmentName" required />
+          </label>
+          <label>
+            Unidade
+            <input name="unit" required />
+          </label>
+        </>
+      ) : null}
       <label>
         Mensagem
         <textarea name="message" />

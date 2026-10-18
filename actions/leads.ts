@@ -27,6 +27,16 @@ export async function createLead(_prev: LeadState, formData: FormData): Promise<
   let name = read(formData, "name");
   const phone = read(formData, "phone");
   const message = read(formData, "message");
+  const developmentName = read(formData, "developmentName");
+  const unit = read(formData, "unit");
+  const channelId = source.startsWith("fale-") ? source.slice("fale-".length) : "";
+  const channel = channelId ? contactChannel(channelId) : undefined;
+
+  if (channel?.details === "aftersales") {
+    if (phone.length < 8) return { ok: false, message: "Informe o telefone." };
+    if (developmentName.length < 2) return { ok: false, message: "Informe o empreendimento." };
+    if (!unit) return { ok: false, message: "Informe a unidade." };
+  }
 
   if (variant === "newsletter") {
     name = name || "Assinante";
@@ -34,11 +44,15 @@ export async function createLead(_prev: LeadState, formData: FormData): Promise<
     return { ok: false, message: "Informe seu nome." };
   }
 
+  const storedMessage = developmentName
+    ? [`Empreendimento: ${developmentName}`, `Unidade: ${unit}`, message].filter(Boolean).join("\n")
+    : message;
+
   try {
     await query(
       `INSERT INTO leads (name, email, phone, message, source, development_slug)
        VALUES ($1, $2, $3, $4, $5, $6)`,
-      [name, email, phone, message, source, developmentSlug || null],
+      [name, email, phone, storedMessage, source, developmentSlug || null],
     );
   } catch {
     return { ok: false, message: "Não foi possível enviar agora. Tente de novo em instantes." };
@@ -48,23 +62,24 @@ export async function createLead(_prev: LeadState, formData: FormData): Promise<
     return { ok: true, message: "Inscrição recebida. Você vai receber as novidades da MPEN." };
   }
 
-  const channelId = source.startsWith("fale-") ? source.slice("fale-".length) : "";
-  const channel = channelId ? contactChannel(channelId) : undefined;
   if (channel) {
     const comercial = contactChannel("comercial");
+    const recipients = channel.emails?.length ? channel.emails : [channel.email];
     const copy =
-      comercial && comercial.email.toLowerCase() !== channel.email.toLowerCase()
+      !channel.emails && comercial && !recipients.some((item) => item.toLowerCase() === comercial.email.toLowerCase())
         ? comercial.email
         : undefined;
     try {
       await sendContactEmail({
-        to: channel.email,
+        to: recipients,
         cc: copy,
         sector: channel.label,
         name,
         email,
         phone,
         message,
+        developmentName,
+        unit,
       });
     } catch {
       return {

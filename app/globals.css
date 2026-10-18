@@ -1027,6 +1027,34 @@ button, input, select, textarea { font: inherit; }
 
 .page-hero.is-compact h1 { margin-bottom: 4px; font-size: clamp(28px, 4vw, 36px); }
 
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin: 0 0 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: rgba(255, 255, 255, 0.82);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.back-link svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+.back-link:hover,
+.back-link:focus-visible {
+  color: white;
+}
+
 .detail-photo {
   width: 100%;
   height: 380px;
@@ -1389,6 +1417,305 @@ button, input, select, textarea { font: inherit; }
 .facts dd { margin: 6px 0 0; font-size: 18px; color: var(--navy); }
 
 .prose p { font-size: 17px; }
+
+.project {
+  padding: 36px 0 80px;
+  background: linear-gradient(180deg, #f4f6f8 0%, #ffffff 280px);
+}
+
+.project-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.72fr);
+  gap: 36px;
+  align-items: start;
+}
+
+.project-main,
+.viewer,
+.viewer-thumbs {
+  min-width: 0;
+}
+
+.viewer-stage {
+  position: relative;
+}
+
+.viewer-open {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  padding: 0;
+  border: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #d7dde4;
+  cursor: zoom-in;
+}
+
+.viewer-open img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.viewer-open span,
+.viewer-nav,
+.lightbox-close,
+.lightbox-nav,
+.lightbox-tools button {
+  font-family: inherit;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.viewer-open span {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(12, 14, 43, 0.82);
+  color: white;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.viewer-nav,
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: white;
+  color: var(--navy);
+  box-shadow: 0 8px 24px rgba(12, 14, 43, 0.16);
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.viewer-nav.prev,
+.lightbox-nav.prev { left: 14px; }
+
+.viewer-nav.next,
+.lightbox-nav.next { right: 14px; }
+
+.viewer-nav svg,
+.lightbox-nav svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.viewer-nav:hover,
+.lightbox-nav:hover,
+.lightbox-close:hover,
+.lightbox-tools button:hover:not(:disabled) {
+  background: var(--navy);
+  color: white;
+}
+
+.viewer-caption {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  margin: 14px 2px 10px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.viewer-caption span {
+  color: var(--navy);
+  font-weight: 650;
+}
+
+.viewer-thumbs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scroll-snap-type: x mandatory;
+}
+
+.viewer-thumbs button {
+  flex: 0 0 108px;
+  height: 76px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #e7ebf0;
+  cursor: pointer;
+  scroll-snap-align: start;
+}
+
+.viewer-thumbs button.is-active {
+  border-color: var(--teal);
+}
+
+.viewer-thumbs img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.project-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin: 22px 0 0;
+}
+
+.project-facts div {
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: white;
+}
+
+.project-facts dt {
+  color: var(--teal);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.project-facts dd {
+  margin: 6px 0 0;
+  color: var(--navy);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.project-card {
+  position: sticky;
+  top: 96px;
+  padding: 28px 28px 24px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: white;
+  box-shadow: 0 18px 50px rgba(12, 14, 43, 0.08);
+}
+
+.project-card h2 {
+  margin: 0 0 8px;
+  color: var(--navy);
+  font-size: 28px;
+}
+
+.project-card > p {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.project-card .btn { width: 100%; }
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) 64px;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  background: rgba(8, 10, 28, 0.94);
+}
+
+.lightbox-close {
+  grid-column: 3;
+  justify-self: end;
+  margin: 16px 16px 0 0;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: white;
+  color: var(--navy);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.lightbox-stage {
+  grid-column: 2;
+  grid-row: 2;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  cursor: zoom-in;
+}
+
+.lightbox-stage.is-zoomed { cursor: grab; touch-action: none; }
+
+.lightbox-stage img {
+  width: 100%;
+  height: 78vh;
+  object-fit: contain;
+  object-position: center;
+  transform-origin: center;
+  transition: transform 0.16s ease;
+  user-select: none;
+}
+
+.lightbox-nav {
+  grid-row: 2;
+  align-self: center;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.lightbox-nav.prev { grid-column: 1; justify-self: center; position: static; transform: none; }
+
+.lightbox-nav.next { grid-column: 3; justify-self: center; position: static; transform: none; }
+
+.lightbox-tools {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px 22px;
+  color: white;
+}
+
+.lightbox-tools button {
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  background: transparent;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.lightbox-tools button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.lightbox-tools span {
+  min-width: 64px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 650;
+}
 
 .partner-intro {
   padding: 64px 0 72px;
@@ -2124,12 +2451,64 @@ button, input, select, textarea { font: inherit; }
 
 .talk-choice.is-on small { color: rgba(255, 255, 255, 0.72); }
 
+.talk-quiet {
+  display: inline-block;
+  margin: 12px 2px 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #8b93a7;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.talk-quiet:hover,
+.talk-quiet:focus-visible,
+.talk-quiet.is-on {
+  color: var(--navy);
+}
+
+.talk-reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.32s ease;
+}
+
+.talk-reveal.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.talk-reveal-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
 .talk-panel {
   margin-top: 18px;
   padding: 18px;
   border-radius: 16px;
   background: white;
   box-shadow: 0 10px 30px rgba(12, 14, 43, 0.05);
+  animation: talk-panel-in 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes talk-panel-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .talk-reveal { transition: none; }
+  .talk-panel { animation: none; }
 }
 
 .talk-page .talk-panel {
@@ -2287,13 +2666,18 @@ button, input, select, textarea { font: inherit; }
 
   .header-actions { flex-direction: column; }
 
-  .offers, .dev-grid, .post-grid, .split, .home-intro-grid, .detail, .blog-feature, .footer-grid, .newsletter, .about-intro, .principles-grid, .about-projects, .partner-layout, .partner-steps-grid, .docs-grid, .policy {
+  .offers, .dev-grid, .post-grid, .split, .home-intro-grid, .detail, .blog-feature, .footer-grid, .newsletter, .about-intro, .principles-grid, .about-projects, .partner-layout, .partner-steps-grid, .docs-grid, .policy, .project-layout {
     grid-template-columns: 1fr;
   }
 
   .policy-nav { position: static; }
 
-  .partner-card { position: static; }
+  .partner-card,
+  .project-card { position: static; }
+
+  .lightbox {
+    grid-template-columns: 48px minmax(0, 1fr) 48px;
+  }
 
   .partner-copy h2 { max-width: none; }
 
@@ -2432,7 +2816,9 @@ button, input, select, textarea { font: inherit; }
   .home-facts li,
   .home-fact-icon,
   .partner-steps-grid li,
-  .doc-card {
+  .doc-card,
+  .viewer-open img,
+  .lightbox-stage img {
     animation: none;
     transition: none;
   }

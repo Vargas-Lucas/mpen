@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { rememberReturn } from "@/components/BackButton";
 import { deliveryLabel, statusLabel } from "@/lib/format";
 import { coverImage } from "@/lib/images";
 import type { Development } from "@/lib/types";
@@ -8,7 +11,7 @@ export function DevelopmentCard({ item }: { item: Development }) {
 
   return (
     <article className={`dev-card status-${item.status}`}>
-      <Link href={`/empreendimentos/${item.slug}`}>
+      <Link href={`/empreendimentos/${item.slug}`} onClick={rememberReturn}>
         <div className="dev-media">{image ? <img src={image} alt="" /> : null}</div>
         <div className="dev-body">
           <p className="dev-status">{statusLabel(item.status)}</p>

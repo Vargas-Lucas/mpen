@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { rememberReturn } from "@/components/BackButton";
 import { useEffect, useState } from "react";
 import { heroImage, logoImage } from "@/lib/images";
 import { deliveryLabel } from "@/lib/format";
@@ -60,7 +61,7 @@ export function Hero({ slides }: { slides: Development[] }) {
             {image ? <img className="hero-photo" src={image} alt="" /> : null}
             <div className="hero-shade" />
             <div className="hero-copy">
-              <Link href={`/empreendimentos/${item.slug}`}>
+              <Link href={`/empreendimentos/${item.slug}`} onClick={rememberReturn}>
                 {logo ? (
                   <>
                     <h1 className="sr-only">{item.name}</h1>

@@ -2,7 +2,9 @@ export type ContactChannel = {
   id: string;
   label: string;
   email: string;
-  whatsapp: string;
+  emails?: string[];
+  whatsapp?: string;
+  details?: "aftersales";
 };
 
 export const contactChannels: ContactChannel[] = [
@@ -29,6 +31,13 @@ export const contactChannels: ContactChannel[] = [
     label: "Marketing",
     email: "vitoriapalavroduarte@gmail.com",
     whatsapp: "5554991472911",
+  },
+  {
+    id: "pos-obra",
+    label: "Pós Obra/Reclamações",
+    email: "iorhan.wagner@mpen.net.br",
+    emails: ["iorhan.wagner@mpen.net.br", "comercial@mpen.net.br", "eduardo@mpen.net.br"],
+    details: "aftersales",
   },
 ];
 
