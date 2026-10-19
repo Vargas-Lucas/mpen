@@ -12,7 +12,7 @@ export function FooterLogo() {
         window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
       }}
     >
-      <img src="/logo.png" alt="" className="footer-logo" />
+      <img src="/logo.png" alt="MPEN, construtora no Sul da Ilha de Florianópolis" className="footer-logo" />
     </a>
   );
 }

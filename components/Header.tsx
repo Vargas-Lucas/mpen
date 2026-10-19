@@ -23,7 +23,7 @@ export function Header() {
     <header className={isHome ? "header is-home" : "header"}>
       <div className="container header-inner">
         <Link href="/" className="brand" aria-label="MPEN">
-          <img src="/logo.png" alt="MPEN" />
+          <img src="/logo.png" alt="MPEN, construtora no Sul da Ilha de Florianópolis" />
         </Link>
 
         <button

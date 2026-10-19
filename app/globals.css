@@ -319,7 +319,7 @@ button, input, select, textarea { font: inherit; }
   color: white;
 }
 
-.hero h1 {
+.hero-title {
   margin: 0;
   font-size: clamp(32px, 4.2vw, 58px);
   font-weight: 300;
@@ -729,7 +729,7 @@ button, input, select, textarea { font: inherit; }
   align-items: center;
 }
 
-.home-intro h2 {
+.home-intro-title {
   margin: 0;
   max-width: 11ch;
   font-size: clamp(36px, 4.2vw, 52px);
@@ -737,6 +737,11 @@ button, input, select, textarea { font: inherit; }
   letter-spacing: -0.035em;
   line-height: 1.02;
   color: var(--navy);
+}
+
+h2.kicker {
+  font-family: inherit;
+  line-height: 1.4;
 }
 
 .home-intro-copy p {
@@ -2904,7 +2909,7 @@ button, input, select, textarea { font: inherit; }
 
   .hero { min-height: calc(100vh - 100px); }
 
-  .hero h1 { letter-spacing: 0.08em; }
+  .hero-title { letter-spacing: 0.08em; }
 
   .facts { grid-template-columns: 1fr; }
 }

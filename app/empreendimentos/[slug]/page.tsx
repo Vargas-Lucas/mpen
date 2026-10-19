@@ -3,7 +3,7 @@ import { ContactForm } from "@/components/ContactForm";
 import { PageHeader } from "@/components/PageHeader";
 import { ProjectGallery } from "@/components/ProjectGallery";
 import { getDevelopment } from "@/lib/data";
-import { deliveryLabel, statusLabel } from "@/lib/format";
+import { deliveryLabel, developmentAlt, statusLabel } from "@/lib/format";
 import { coverImage, galleryImages } from "@/lib/images";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -29,7 +29,7 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ sl
       <section className="project">
         <div className="container project-layout">
           <div className="project-main">
-            <ProjectGallery images={images} name={item.name} />
+            <ProjectGallery images={images} name={developmentAlt(item)} />
             <div className={item.slug === "sunset-village" ? "project-facts has-site" : "project-facts"}>
               {item.slug === "sunset-village" ? (
                 <a className="project-fact-link" href="https://sunsetvillage.com.br/">

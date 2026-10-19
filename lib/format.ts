@@ -1,5 +1,10 @@
 import type { Development } from "@/lib/types";
 
+export function developmentAlt(item: Pick<Development, "name" | "neighborhood">) {
+  const place = item.neighborhood.split(" - ").pop()?.trim() || item.neighborhood;
+  return `${item.name} no ${place} - MPEN`;
+}
+
 export function statusLabel(status: string) {
   if (status === "lancamento") return "Lançamento";
   if (status === "construcao") return "Em construção";

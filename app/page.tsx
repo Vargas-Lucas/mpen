@@ -14,13 +14,14 @@ export default async function HomePage() {
 
   return (
     <>
+      <h1 className="sr-only">MPEN | Construtora e Incorporadora no Sul da Ilha de Florianópolis</h1>
       <Hero slides={slides} />
 
       <section className="home-intro">
         <div className="container home-intro-grid">
           <div>
-            <p className="kicker kicker-plain">A Incorporadora Mpen</p>
-            <h2>Transformando vidas</h2>
+            <h2 className="kicker kicker-plain">A Incorporadora Mpen</h2>
+            <h2 className="home-intro-title">Transformando vidas</h2>
           </div>
           <div className="home-intro-copy">
             <p>

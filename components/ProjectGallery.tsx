@@ -191,7 +191,7 @@ export function ProjectGallery({ images, name }: { images: string[]; name: strin
                   event.currentTarget.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
                 }}
               >
-                <img src={src} alt="" />
+                <img src={src} alt={`${name}, foto ${photo + 1} de ${count}`} />
               </button>
             ))}
           </div>

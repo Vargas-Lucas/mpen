@@ -4,7 +4,7 @@ import Link from "next/link";
 import { rememberReturn } from "@/components/BackButton";
 import { useEffect, useState } from "react";
 import { heroImage, logoImage } from "@/lib/images";
-import { deliveryLabel } from "@/lib/format";
+import { deliveryLabel, developmentAlt } from "@/lib/format";
 import type { Development } from "@/lib/types";
 
 const SLIDE_MS = 980;
@@ -58,14 +58,13 @@ export function Hero({ slides }: { slides: Development[] }) {
             aria-hidden={slideIndex !== index}
             inert={slideIndex !== index}
           >
-            {image ? <img className="hero-photo" src={image} alt="" /> : null}
+            {image ? <img className="hero-photo" src={image} alt={developmentAlt(item)} /> : null}
             <div className="hero-shade" />
             <div className="hero-copy">
               {logo && item.slug === "sunset-village" ? (
                 <>
-                  <h1 className="sr-only">{item.name}</h1>
                   <a className="hero-logo-link" href="https://sunsetvillage.com.br/">
-                    <img className="hero-logo wide" src={logo} alt="Sunset Village" />
+                    <img className="hero-logo wide" src={logo} alt={item.name} />
                   </a>
                   {item.summary ? (
                     <Link href={`/empreendimentos/${item.slug}`} onClick={rememberReturn}>
@@ -76,23 +75,20 @@ export function Hero({ slides }: { slides: Development[] }) {
               ) : (
                 <Link href={`/empreendimentos/${item.slug}`} onClick={rememberReturn}>
                   {logo ? (
-                    <>
-                      <h1 className="sr-only">{item.name}</h1>
-                      <img
-                        className={
-                          item.slug === "jai"
-                            ? "hero-logo"
-                            : item.slug === "carpe-diem"
-                              ? "hero-logo mid"
-                              : "hero-logo wide"
-                        }
-                        src={logo}
-                        alt=""
-                      />
-                    </>
+                    <img
+                      className={
+                        item.slug === "jai"
+                          ? "hero-logo"
+                          : item.slug === "carpe-diem"
+                            ? "hero-logo mid"
+                            : "hero-logo wide"
+                      }
+                      src={logo}
+                      alt={item.name}
+                    />
                   ) : (
                     <>
-                      <h1>{item.name}</h1>
+                      <p className="hero-title">{item.name}</p>
                       <p className="hero-kicker">{item.neighborhood}</p>
                       {item.delivery ? <p className="hero-meta">{deliveryLabel(item)}</p> : null}
                     </>

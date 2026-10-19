@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { rememberReturn } from "@/components/BackButton";
-import { deliveryLabel, statusLabel } from "@/lib/format";
+import { deliveryLabel, developmentAlt, statusLabel } from "@/lib/format";
 import { coverImage } from "@/lib/images";
 import type { Development } from "@/lib/types";
 
@@ -12,7 +12,7 @@ export function DevelopmentCard({ item }: { item: Development }) {
   return (
     <article className={`dev-card status-${item.status}`}>
       <Link href={`/empreendimentos/${item.slug}`} onClick={rememberReturn}>
-        <div className="dev-media">{image ? <img src={image} alt="" /> : null}</div>
+        <div className="dev-media">{image ? <img src={image} alt={developmentAlt(item)} /> : null}</div>
         <div className="dev-body">
           <p className="dev-status">{statusLabel(item.status)}</p>
           <h3>{item.name}</h3>

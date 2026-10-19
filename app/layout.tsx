@@ -11,12 +11,30 @@ const manrope = Manrope({
   display: "swap",
 });
 
+const siteUrl = "https://teste.mpen.com.br";
+const siteTitle = "MPEN | Construtora e Incorporadora no Sul da Ilha de Florianópolis";
+const siteDescription =
+  "Há mais de 20 anos, a MPEN é a construtora no Sul da Ilha de Florianópolis. Incorporação residencial com sofisticação e arquitetura.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
-    default: "MPEN — Construtora e incorporadora",
+    default: siteTitle,
     template: "%s — MPEN",
   },
-  description: "Construtora e incorporadora no sul da Ilha de Florianópolis.",
+  description: siteDescription,
+  openGraph: {
+    title: siteTitle,
+    description: siteDescription,
+    type: "website",
+    url: siteUrl,
+    images: [
+      {
+        url: "/images/sobre/capa.png",
+        alt: "Construtora MPEN no Sul da Ilha de Florianópolis",
+      },
+    ],
+  },
 };
 
 export const dynamic = "force-dynamic";

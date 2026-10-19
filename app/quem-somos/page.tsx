@@ -62,7 +62,7 @@ export default async function AboutPage() {
       />
 
       <section className="about-banner">
-        <img src="/images/sobre/capa.png" alt="" />
+        <img src="/images/sobre/capa.png" alt="Profissional da construtora MPEN no Sul da Ilha de Florianópolis" />
         <div className="container">
           <h2>Construímos histórias no Sul da Ilha de Florianópolis.</h2>
           <p>
