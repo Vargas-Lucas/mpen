@@ -327,6 +327,10 @@ button, input, select, textarea { font: inherit; }
   text-transform: uppercase;
 }
 
+.hero-logo-link {
+  display: inline-block;
+}
+
 .hero-logo {
   display: block;
   width: min(210px, 42vw);
@@ -740,6 +744,9 @@ button, input, select, textarea { font: inherit; }
   max-width: 46ch;
   font-size: 16.5px;
   line-height: 1.75;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
   color: var(--muted);
 }
 
@@ -878,6 +885,11 @@ button, input, select, textarea { font: inherit; }
   margin-bottom: 28px;
 }
 
+.home-catalog-head > div {
+  flex: 1;
+  min-width: 0;
+}
+
 .home-catalog-head h2 {
   margin: 0;
   font-size: clamp(26px, 3vw, 34px);
@@ -893,6 +905,7 @@ button, input, select, textarea { font: inherit; }
 
 .home-paths {
   display: flex;
+  flex: none;
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 4px;
@@ -1009,6 +1022,11 @@ button, input, select, textarea { font: inherit; }
   text-transform: uppercase;
   font-size: 13px;
   font-weight: 700;
+}
+
+.kicker-plain {
+  text-transform: none;
+  letter-spacing: 0.04em;
 }
 
 .split h2 { margin: 0; font-size: 40px; color: var(--navy); font-weight: 600; }
@@ -1582,14 +1600,34 @@ button, input, select, textarea { font: inherit; }
   margin: 22px 0 0;
 }
 
-.project-facts div {
+.project-facts.has-site {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.project-facts.has-site .fact-value,
+.project-facts.has-site a.project-fact-link {
+  font-size: 14.5px;
+}
+
+.project-facts div,
+.project-facts a.project-fact-link {
   padding: 14px 16px;
   border: 1px solid var(--line);
   border-radius: 14px;
   background: white;
 }
 
-.project-facts dt {
+.project-facts a.project-fact-link {
+  display: block;
+  color: var(--navy);
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.project-facts a.project-fact-link span {
+  display: block;
+  margin: 0 0 6px;
   color: var(--teal);
   font-size: 11px;
   font-weight: 700;
@@ -1597,11 +1635,58 @@ button, input, select, textarea { font: inherit; }
   text-transform: uppercase;
 }
 
-.project-facts dd {
+.project-facts a.project-fact-link:hover,
+.project-facts a.project-fact-link:focus-visible {
+  border-color: var(--navy);
+}
+
+.project-facts .fact-kicker {
+  margin: 0;
+  color: var(--teal);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.project-facts .fact-value {
   margin: 6px 0 0;
   color: var(--navy);
   font-size: 16px;
   font-weight: 500;
+}
+
+.project-story {
+  margin-top: 28px;
+  max-width: 68ch;
+}
+
+.project-story h2 {
+  margin: 0 0 14px;
+  color: var(--navy);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+}
+
+.project-story p {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.7;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: none;
+  overflow-wrap: normal;
+}
+
+.project-story p.project-story-note {
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: left;
 }
 
 .project-card {
@@ -2226,8 +2311,11 @@ button, input, select, textarea { font: inherit; }
 
 .footer-grid {
   display: grid;
-  grid-template-columns: 1.3fr 1fr 1fr 1fr;
-  gap: 28px;
+  grid-template-columns: minmax(0, 46ch) max-content max-content max-content;
+  justify-content: space-between;
+  column-gap: 32px;
+  row-gap: 28px;
+  align-items: start;
 }
 
 .footer h2 { margin: 0 0 14px; font-size: 16px; font-weight: 500; color: white; }
@@ -2287,9 +2375,18 @@ button, input, select, textarea { font: inherit; }
 
 .footer-logo { height: 46px; width: auto; margin: 0; display: block; }
 
+.footer-about {
+  max-width: 46ch;
+  line-height: 1.55;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: none;
+  overflow-wrap: normal;
+}
+
 .footer-contact {
-  align-self: center;
-  justify-self: start;
+  align-self: start;
+  justify-self: end;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2680,6 +2777,8 @@ button, input, select, textarea { font: inherit; }
   }
 
   .partner-copy h2 { max-width: none; }
+
+  .footer-contact { justify-self: start; }
 
   .home-catalog-head {
     flex-direction: column;

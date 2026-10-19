@@ -24,10 +24,10 @@ export async function sendContactEmail(input: ContactMail) {
     throw new Error("SMTP não configurado");
   }
 
-  const port = Number(process.env.SMTP_PORT || 587);
-  const from = process.env.SMTP_FROM || user;
-  if (!from.toLowerCase().endsWith("@mpen.net.br")) {
-    throw new Error("O remetente do site precisa ser um e-mail @mpen.net.br");
+  const port = Number(process.env.SMTP_PORT || 465);
+  const from = "email@mpen.com.br";
+  if (user.toLowerCase() !== from) {
+    throw new Error("O envio do site precisa autenticar como email@mpen.com.br");
   }
 
   const transporter = nodemailer.createTransport({

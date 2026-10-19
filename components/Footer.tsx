@@ -8,7 +8,10 @@ export function Footer() {
       <div className="container footer-grid">
         <div>
           <FooterLogo />
-          <p>Construtora e incorporadora no sul da Ilha de Florianópolis, desde 2003.</p>
+          <p className="footer-about">
+            Há mais de 20 anos desenvolvendo empreendimentos residenciais no Sul da Ilha de
+            Florianópolis, com qualidade construtiva, arquitetura e compromisso com cada projeto.
+          </p>
         </div>
         <div>
           <Link href="/quem-somos">Quem somos</Link>

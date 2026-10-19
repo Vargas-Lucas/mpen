@@ -19,16 +19,17 @@ export default async function HomePage() {
       <section className="home-intro">
         <div className="container home-intro-grid">
           <div>
-            <p className="kicker">A MPEN</p>
+            <p className="kicker kicker-plain">A Incorporadora Mpen</p>
             <h2>Transformando vidas</h2>
           </div>
           <div className="home-intro-copy">
             <p>
-              A MPEN transforma vidas através de empreendimentos que unem sofisticação, qualidade e
-              inovação. São mais de 20 anos no sul da Ilha de Florianópolis.
+              Há mais de 20 anos, a Incorporadora MPEN desenvolve empreendimentos residenciais no Sul
+              da Ilha de Florianópolis, unindo arquitetura, qualidade construtiva e soluções pensadas
+              para diferentes formas de morar.
             </p>
             <Link className="btn btn-solid" href="/quem-somos">
-              Quem somos
+              Conheça a MPEN
             </Link>
           </div>
         </div>
@@ -42,7 +43,10 @@ export default async function HomePage() {
           <div className="home-catalog-head">
             <div>
               <h2>Conheça nossos empreendimentos</h2>
-              <p>Escolha por etapa ou percorra os projetos mais recentes.</p>
+              <p>
+                Conheça nossos empreendimentos imobiliários em Florianópolis, dos lançamentos aos
+                projetos em construção e já entregues.
+              </p>
             </div>
             <nav className="home-paths" aria-label="Filtrar empreendimentos">
               <Link href="/empreendimentos?status=lancamento">Lançamentos</Link>

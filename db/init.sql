@@ -50,5 +50,5 @@ VALUES
   ('Riozinho O2', 'riozinho-o2', 'entregue', 'Campeche', 'Florianópolis', '', '2013', FALSE, 10),
   ('Sanctuary', 'sanctuary', 'entregue', 'Rio Tavares', 'Florianópolis', '', '2011', FALSE, 11),
   ('Riozinho Style', 'riozinho-style', 'entregue', 'Campeche', 'Florianópolis', '', '2009', FALSE, 12),
-  ('Porto das Marés', 'porto-das-mares', 'entregue', 'Morro das Pedras', 'Florianópolis', '', '2003', FALSE, 13),
-  ('Island', 'island', 'entregue', 'Morro das Pedras', 'Florianópolis', '', '2004', FALSE, 14);
+  ('Island', 'island', 'entregue', 'Morro das Pedras', 'Florianópolis', '', '2004', FALSE, 13),
+  ('Porto das Marés', 'porto-das-mares', 'entregue', 'Morro das Pedras', 'Florianópolis', '', '2003', FALSE, 14);

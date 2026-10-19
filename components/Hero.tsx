@@ -61,31 +61,45 @@ export function Hero({ slides }: { slides: Development[] }) {
             {image ? <img className="hero-photo" src={image} alt="" /> : null}
             <div className="hero-shade" />
             <div className="hero-copy">
-              <Link href={`/empreendimentos/${item.slug}`} onClick={rememberReturn}>
-                {logo ? (
-                  <>
-                    <h1 className="sr-only">{item.name}</h1>
-                    <img
-                      className={
-                        item.slug === "jai"
-                          ? "hero-logo"
-                          : item.slug === "carpe-diem"
-                            ? "hero-logo mid"
-                            : "hero-logo wide"
-                      }
-                      src={logo}
-                      alt=""
-                    />
-                  </>
-                ) : (
-                  <>
-                    <h1>{item.name}</h1>
-                    <p className="hero-kicker">{item.neighborhood}</p>
-                    {item.delivery ? <p className="hero-meta">{deliveryLabel(item)}</p> : null}
-                  </>
-                )}
-                {item.summary ? <p className="hero-summary">{item.summary}</p> : null}
-              </Link>
+              {logo && item.slug === "sunset-village" ? (
+                <>
+                  <h1 className="sr-only">{item.name}</h1>
+                  <a className="hero-logo-link" href="https://sunsetvillage.com.br/">
+                    <img className="hero-logo wide" src={logo} alt="Sunset Village" />
+                  </a>
+                  {item.summary ? (
+                    <Link href={`/empreendimentos/${item.slug}`} onClick={rememberReturn}>
+                      <p className="hero-summary">{item.summary}</p>
+                    </Link>
+                  ) : null}
+                </>
+              ) : (
+                <Link href={`/empreendimentos/${item.slug}`} onClick={rememberReturn}>
+                  {logo ? (
+                    <>
+                      <h1 className="sr-only">{item.name}</h1>
+                      <img
+                        className={
+                          item.slug === "jai"
+                            ? "hero-logo"
+                            : item.slug === "carpe-diem"
+                              ? "hero-logo mid"
+                              : "hero-logo wide"
+                        }
+                        src={logo}
+                        alt=""
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <h1>{item.name}</h1>
+                      <p className="hero-kicker">{item.neighborhood}</p>
+                      {item.delivery ? <p className="hero-meta">{deliveryLabel(item)}</p> : null}
+                    </>
+                  )}
+                  {item.summary ? <p className="hero-summary">{item.summary}</p> : null}
+                </Link>
+              )}
             </div>
           </div>
         );

@@ -22,7 +22,7 @@ const heroes: Record<string, string> = {
 };
 
 const logos: Record<string, string> = {
-  "sunset-village": "/images/sunset-village-mark-3.png",
+  "sunset-village": "/images/sunset-village-mark-4.png",
   "chez-soleil": "/images/chez-soleil-mark.png",
   vivace: "/images/vivace-logo.png",
   jai: "/images/jai-logo.png",
