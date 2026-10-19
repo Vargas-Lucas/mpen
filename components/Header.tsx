@@ -12,6 +12,7 @@ const links = [
 
 export function Header() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const isHome = pathname === "/";
 
@@ -19,8 +20,28 @@ export function Header() {
     setOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    if (!isHome) return;
+    const onScroll = () => {
+      const next = window.scrollY > 12;
+      setScrolled((current) => (current === next ? current : next));
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [isHome]);
+
+  const className = [
+    "header",
+    isHome ? "is-home" : "",
+    open ? "is-open" : "",
+    isHome && scrolled ? "is-scrolled" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <header className={isHome ? "header is-home" : "header"}>
+    <header className={className}>
       <div className="container header-inner">
         <Link href="/" className="brand" aria-label="MPEN">
           <img src="/logo.png" alt="MPEN, construtora no Sul da Ilha de Florianópolis" />

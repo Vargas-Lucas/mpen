@@ -219,8 +219,10 @@ button, input, select, textarea { font: inherit; }
 
 .menu span {
   display: block;
+  width: 20px;
   height: 2px;
   background: white;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
 .hero {
@@ -751,7 +753,8 @@ h2.kicker {
   line-height: 1.75;
   text-align: justify;
   text-align-last: left;
-  hyphens: auto;
+  hyphens: none;
+  overflow-wrap: normal;
   color: var(--muted);
 }
 
@@ -1135,12 +1138,13 @@ h2.kicker {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 1;
   background: rgba(12, 14, 43, 0.55);
 }
 
 .about-banner .container {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   padding: 72px 0;
 }
 
@@ -2905,16 +2909,190 @@ h2.kicker {
 
   .principle,
   .principle:nth-child(2),
-  .principle:hover { transform: none; }
+  .principle:hover {
+    animation: none;
+    transform: none;
+  }
 
-  .hero { min-height: calc(100vh - 100px); }
+  .header-inner {
+    position: static;
+    min-height: 72px;
+    height: 72px;
+  }
+
+  .header.is-home {
+    position: fixed;
+    z-index: 40;
+  }
+
+  .header.is-home.is-scrolled,
+  .header.is-home.is-open {
+    background: var(--navy);
+  }
+
+  .header.is-open .menu span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+
+  .header.is-open .menu span:nth-child(2) { opacity: 0; }
+
+  .header.is-open .menu span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  .header-panel.open {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    width: auto;
+    max-height: calc(100dvh - 72px);
+    overflow: auto;
+    padding: 4px 20px 16px;
+    z-index: 40;
+    box-shadow: 0 18px 32px rgba(12, 14, 43, 0.22);
+  }
+
+  .header.is-open .header-actions {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+  }
+
+  .nav,
+  .header-actions { gap: 0; }
+
+  .header-actions { margin-left: 0; width: 100%; }
+
+  .nav a,
+  .header-actions a {
+    display: block;
+    padding: 13px 0;
+    font-size: 16px;
+  }
+
+  .nav a:hover,
+  .nav a:focus-visible,
+  .header-actions a:hover,
+  .header-actions a:focus-visible {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .menu { width: 44px; height: 44px; }
+
+  .hero { min-height: min(620px, calc(100svh - 64px)); }
+
+  .hero-copy { padding: 0 52px; bottom: 56px; }
+
+  .hero-logo.wide { width: min(280px, 68vw); }
+
+  .hero-nav { left: 20px; right: 20px; bottom: 16px; }
 
   .hero-title { letter-spacing: 0.08em; }
+
+  .dot { position: relative; }
+
+  .dot::before {
+    content: "";
+    position: absolute;
+    left: -6px;
+    right: -6px;
+    top: -18px;
+    bottom: -18px;
+  }
+
+  .section { padding: 48px 0; }
+
+  .home-intro { padding: 36px 0 0; }
+
+  .about-banner .container { padding: 48px 0; }
+
+  .project-facts,
+  .project-facts.has-site { grid-template-columns: 1fr 1fr; }
+
+  .project-facts.has-site > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+
+  .project-facts div,
+  .project-facts a.project-fact-link {
+    min-width: 0;
+    padding: 12px;
+  }
+
+  .project-facts .fact-value,
+  .project-facts.has-site .fact-value,
+  .project-facts.has-site a.project-fact-link {
+    font-size: 16px;
+    overflow-wrap: anywhere;
+  }
+
+  .project-card { padding: 22px 18px 18px; }
+
+  .viewer-thumbs {
+    max-width: 100%;
+    overscroll-behavior-x: contain;
+  }
+
+  .form input,
+  .form textarea,
+  .form select,
+  .listing-search input { font-size: 16px; }
+
+  .form .btn,
+  .center-link .btn,
+  .home-intro .btn,
+  .cookie .btn {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .talk-choice { min-height: 52px; }
+
+  .talk-quiet {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-top: 4px;
+  }
+
+  .talk-close,
+  .talk-whatsapp { width: 44px; height: 44px; }
+
+  .talk-dialog {
+    padding: 18px 16px;
+    border-radius: 16px;
+  }
+
+  .back-link { min-height: 44px; }
+
+  .policy-nav a { min-height: 44px; align-items: center; }
+
+  .faq summary { display: block; min-height: 44px; padding: 10px 0; }
+
+  .footer { padding-bottom: 28px; }
+
+  .footer-social { justify-content: flex-start; }
+
+  .footer-grid a:not(.footer-logo-link) { padding: 6px 0; }
+
+  .footer-grid .footer-social a { width: 44px; height: 44px; }
+
+  .cookie {
+    left: 12px;
+    right: 86px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    width: auto;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .float-contact {
+    right: calc(14px + env(safe-area-inset-right));
+    bottom: calc(14px + env(safe-area-inset-bottom));
+  }
 
   .facts { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 520px) {
+  .header-panel.open { padding-left: 16px; padding-right: 16px; }
+
   .home-paths {
     width: 100%;
     padding: 0;
@@ -2923,9 +3101,84 @@ h2.kicker {
     gap: 6px;
   }
 
+  .container { width: min(1120px, calc(100% - 32px)); }
+
+  .about-banner {
+    min-height: 0;
+    text-align: left;
+  }
+
+  .about-banner img { object-position: 18% center; }
+
+  .about-banner::after { background: rgba(12, 14, 43, 0.62); }
+
+  .about-banner .container { padding: 32px 0 36px; }
+
+  .about-banner h2 {
+    margin: 0 0 14px;
+    font-size: 28px;
+    line-height: 1.2;
+    text-align: left;
+  }
+
+  .about-banner p { font-size: 16px; }
+
+  .principles { padding: 48px 0 56px; }
+
+  .principles-kicker { margin-bottom: 18px; }
+
+  .principle { padding: 22px 18px 20px; }
+
+  .principle-index {
+    top: 10px;
+    right: 14px;
+    font-size: 48px;
+  }
+
+  .principle h3 {
+    font-size: 24px;
+    padding-right: 52px;
+  }
+
+  .principle p { max-width: none; }
+
+  .about-intro img { height: 220px; }
+
+  .about-intro h2,
+  .about-title { font-size: 28px; }
+
+  .page-hero { padding: 36px 0 28px; }
+
+  .page-hero.is-compact { padding: 16px 0 18px; }
+
+  .hero { min-height: 520px; }
+
+  .hero-copy { padding: 0 46px; }
+
+  .blog-search { flex-direction: column; }
+
+  .blog-search input,
+  .blog-search button { min-height: 48px; font-size: 16px; }
+
+  .home-intro-copy p,
+  .project-story p,
+  .page-hero.copy-justified p,
+  .about-banner p,
+  .principle p,
+  .prose p,
+  .partner-copy > p,
+  .partner-points span,
+  .partner-card > p,
+  .partner-steps-grid p,
+  .faq p,
+  .footer-about {
+    text-align: left;
+    text-align-last: auto;
+  }
+
   .home-paths a {
-    height: 36px;
-    padding: 0 10px;
+    height: 44px;
+    padding: 0 12px;
     border: 1px solid var(--line);
     background: white;
   }
