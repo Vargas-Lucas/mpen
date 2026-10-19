@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { contactChannel } from "@/lib/contacts";
 import { getDevelopments } from "@/lib/data";
 
-export const metadata = { title: "Seja parceiro" };
+export const metadata = { title: "Seja parceiro da MPEN" };
 
 const steps = [
   {
@@ -28,18 +28,28 @@ export default async function PartnerPage() {
     <>
       <PageHeader
         compact
-        title="Seja parceiro"
-        lede="Corretores que apresentam os empreendimentos da MPEN no sul da Ilha de Florianópolis."
+        className="copy-justified"
+        title="Seja parceiro da MPEN"
+        lede="Seja um corretor ou uma imobiliária parceira da MPEN Incorporadora e conheça nossos empreendimentos no Sul da Ilha de Florianópolis."
       />
 
       <section className="partner-intro">
         <div className="container partner-layout">
           <div className="partner-copy">
             <p className="kicker">Parceria comercial</p>
-            <h2>Uma parceria para quem vende no sul da Ilha.</h2>
+            <h2>Vamos construir boas oportunidades juntos?</h2>
             <p>
-              A MPEN atua desde 2003 com empreendimentos residenciais no sul da Ilha de
-              Florianópolis. O cadastro chega direto à equipe comercial.
+              A MPEN Incorporadora atua desde 2003 no mercado imobiliário do Sul da Ilha de
+              Florianópolis, desenvolvendo empreendimentos residenciais que valorizam a localização,
+              a arquitetura e a qualidade construtiva.
+            </p>
+            <p>
+              Se você é corretor de imóveis ou representa uma imobiliária e deseja conhecer nossas
+              oportunidades comerciais, queremos conversar com você.
+            </p>
+            <p>
+              Preencha o formulário e entre em contato com nossa equipe comercial para saber mais
+              sobre as possibilidades de parceria.
             </p>
             <ul className="partner-points">
               <li>
@@ -66,9 +76,9 @@ export default async function PartnerPage() {
           </div>
 
           <aside className="partner-card">
-            <h2>Quero ser parceiro</h2>
-            <p>Preencha o cadastro. A mensagem segue para a equipe comercial.</p>
-            <ContactForm source="parceiro" />
+            <h2>Quero ser parceiro da MPEN</h2>
+            <p>Preencha seus dados e nossa equipe comercial entrará em contato para conversar sobre as possibilidades de parceria.</p>
+            <ContactForm source="parceiro" fields="partner" submitLabel="Quero ser parceiro" />
           </aside>
         </div>
       </section>

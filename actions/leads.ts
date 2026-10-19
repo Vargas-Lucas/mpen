@@ -4,7 +4,7 @@ import { contactChannel } from "@/lib/contacts";
 import { query } from "@/lib/db";
 import { sendContactEmail } from "@/lib/mail";
 
-export type LeadState = { ok: boolean; message: string };
+export type LeadState = { ok: boolean; message: string; received?: boolean };
 
 function read(formData: FormData, key: string) {
   return String(formData.get(key) || "").trim();
@@ -29,6 +29,8 @@ export async function createLead(_prev: LeadState, formData: FormData): Promise<
   const message = read(formData, "message");
   const developmentName = read(formData, "developmentName");
   const unit = read(formData, "unit");
+  const creci = read(formData, "creci");
+  const company = read(formData, "company");
   const channelId = source.startsWith("fale-") ? source.slice("fale-".length) : "";
   const channel = channelId ? contactChannel(channelId) : undefined;
 
@@ -44,9 +46,15 @@ export async function createLead(_prev: LeadState, formData: FormData): Promise<
     return { ok: false, message: "Informe seu nome." };
   }
 
-  const storedMessage = developmentName
-    ? [`Empreendimento: ${developmentName}`, `Unidade: ${unit}`, message].filter(Boolean).join("\n")
-    : message;
+  const storedMessage = [
+    developmentName ? `Empreendimento: ${developmentName}` : "",
+    developmentName ? `Unidade: ${unit}` : "",
+    creci ? `CRECI: ${creci}` : "",
+    company ? `Imobiliária: ${company}` : "",
+    message,
+  ]
+    .filter(Boolean)
+    .join("\n");
 
   try {
     await query(
@@ -84,10 +92,11 @@ export async function createLead(_prev: LeadState, formData: FormData): Promise<
     } catch {
       return {
         ok: false,
+        received: true,
         message: "A mensagem foi registrada, mas o e-mail não saiu. Tente de novo em instantes.",
       };
     }
-    return { ok: true, message: `Mensagem enviada para ${channel.label}.` };
+    return { ok: true, received: true, message: `Mensagem enviada para ${channel.label}.` };
   }
 
   if (source === "parceiro") {
@@ -101,14 +110,21 @@ export async function createLead(_prev: LeadState, formData: FormData): Promise<
           email,
           phone,
           message,
+          creci,
+          company,
         });
       } catch {
         return {
           ok: false,
+          received: true,
           message: "A mensagem foi registrada, mas o e-mail não saiu. Tente de novo em instantes.",
         };
       }
-      return { ok: true, message: "Cadastro enviado para o comercial." };
+      return {
+        ok: true,
+        received: true,
+        message: "Nossa equipe comercial entrará em contato para conversar sobre as possibilidades de parceria.",
+      };
     }
   }
 

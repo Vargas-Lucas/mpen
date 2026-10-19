@@ -1,9 +1,8 @@
-import Link from "next/link";
 import { DevelopmentCard } from "@/components/DevelopmentCard";
 import { PageHeader } from "@/components/PageHeader";
 import { getDevelopments } from "@/lib/data";
 
-export const metadata = { title: "Quem somos" };
+export const metadata = { title: "Conheça a Mpen" };
 
 function Mission() {
   return (
@@ -37,17 +36,17 @@ const values = [
   {
     title: "Missão",
     icon: <Mission />,
-    text: "Promover o crescimento planejado e sustentável, imprimindo um toque único em cada projeto.",
+    text: "Desenvolver empreendimentos residenciais que unam qualidade construtiva, arquitetura e funcionalidade, contribuindo para novas formas de morar no Sul da Ilha de Florianópolis.",
   },
   {
     title: "Visão",
     icon: <Vision />,
-    text: "Ser referência em qualidade no mercado de construção civil, unindo engenharia de ponta, arquitetura sofisticada e perfeição nos acabamentos.",
+    text: "Ser reconhecida como uma incorporadora de referência no Sul da Ilha de Florianópolis, pela qualidade dos empreendimentos, pelo conhecimento da região e pela confiança construída com clientes e parceiros.",
   },
   {
     title: "Valores",
     icon: <Values />,
-    text: "Ética, transparência, compromisso e relacionamentos sólidos com parceiros e clientes.",
+    text: "Ética, transparência e responsabilidade em cada etapa. Valorizamos a qualidade construtiva, o respeito aos compromissos assumidos e as relações duradouras com clientes, parceiros e comunidade.",
   },
 ];
 
@@ -56,25 +55,34 @@ export default async function AboutPage() {
   return (
     <>
       <PageHeader
-        title="Quem somos"
-        lede="Construtora e incorporadora com mais de 20 anos no sul da Ilha de Florianópolis."
+        title="Conheça a Mpen"
+        lede="Conheça a MPEN Incorporadora, uma empresa com atuação no mercado imobiliário do Sul da Ilha de Florianópolis desde 2003."
         compact
+        className="copy-justified"
       />
 
       <section className="about-banner">
         <img src="/images/sobre/capa.png" alt="" />
         <div className="container">
-          <h2>Construção com alto potencial de valorização.</h2>
+          <h2>Construímos histórias no Sul da Ilha de Florianópolis.</h2>
           <p>
-            Com mais de duas décadas de atuação e 100% focada no sul da Ilha de Florianópolis, a
-            MPEN se consolida como uma incorporadora que antecipa tendências, mapeia oportunidades
-            e entrega projetos com alto potencial de valorização.
+            Desde 2003, a MPEN Incorporadora participa do desenvolvimento imobiliário do Sul da Ilha
+            de Florianópolis, uma região que reúne natureza, identidade cultural e novas
+            possibilidades de morar.
           </p>
           <p>
-            Desde 2003, combinamos{" "}
-            <strong>localização estratégica, arquitetura inteligente e engenharia de alto padrão</strong>{" "}
-            para criar empreendimentos pensados para o futuro — tanto de quem investe quanto de quem
-            vive.
+            Ao longo de mais de duas décadas, construímos uma trajetória marcada por empreendimentos
+            residenciais que valorizam a localização, a qualidade construtiva e a arquitetura
+            pensada para o cotidiano.
+          </p>
+          <p>
+            Nossa atuação parte de um conhecimento próximo da região e das transformações que fazem
+            parte do seu crescimento. É esse olhar que orienta nossas escolhas, do planejamento de
+            cada projeto à entrega de espaços preparados para diferentes momentos da vida.
+          </p>
+          <p>
+            Mais do que desenvolver imóveis, buscamos criar empreendimentos que façam sentido para
+            as pessoas e para os lugares onde estão inseridos.
           </p>
         </div>
       </section>
@@ -100,25 +108,33 @@ export default async function AboutPage() {
 
       <section className="section">
         <div className="container about-intro">
-          <img src="/images/sobre/prazos.jpg" alt="Ampulheta representando o cumprimento de prazos" />
+          <img src="/images/sobre/compromisso.jpg" alt="Obra em execução ao pôr do sol" />
           <div className="prose">
-            <h2>Pontualidade e compromisso</h2>
+            <h2>Compromisso em cada etapa</h2>
             <p>
-              Na MPEN, acreditamos que cumprir prazos é essencial para manter a confiança dos nossos
-              clientes e parceiros. Com um histórico positivo de entregas pontuais, nossos
-              empreendimentos seguem um rigoroso cronograma de planejamento, execução e finalização,
-              garantindo que cada projeto seja entregue na data prevista, sem atrasos.
+              Na MPEN Incorporadora, acreditamos que a confiança se constrói com planejamento,
+              transparência e responsabilidade.
             </p>
-            <Link className="btn btn-solid" href="/seja-parceiro">
-              Descubra como ser um corretor parceiro.
-            </Link>
+            <p>
+              Desde 2003, desenvolvemos nossa trajetória no Sul da Ilha de Florianópolis,
+              acompanhando cada empreendimento com atenção às etapas de planejamento, execução e
+              entrega.
+            </p>
+            <p>
+              Nosso compromisso é manter uma relação próxima e transparente com clientes e
+              parceiros, respeitando os acordos estabelecidos e buscando qualidade em cada projeto.
+            </p>
+            <p>
+              Mais do que construir empreendimentos residenciais, queremos construir relações de
+              confiança que permaneçam ao longo do tempo.
+            </p>
           </div>
         </div>
       </section>
 
       <section className="section about-band">
         <div className="container">
-          <h2 className="about-title">Alguns de nossos projetos</h2>
+          <h2 className="about-title">Conheça nossos empreendimentos em Florianópolis</h2>
           <div className="dev-grid">
             {projects.map((item) => (
               <DevelopmentCard key={item.slug} item={item} />

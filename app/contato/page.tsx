@@ -7,8 +7,9 @@ export default function ContactPage() {
   return (
     <>
       <PageHeader
+        className="copy-justified"
         title="Fale conosco"
-        lede="Envie a mensagem. Ela segue direto para a equipe certa."
+        lede="Entre em contato com a MPEN Incorporadora em Florianópolis. Nossa equipe está disponível para esclarecer dúvidas sobre empreendimentos, oportunidades comerciais e assuntos relacionados aos nossos projetos."
         compact
       />
       <section className="section talk-section">

@@ -20,11 +20,13 @@ export function ContactForm({
   variant = "contact",
   developmentSlug,
   fields = "contact",
+  submitLabel = "Enviar",
 }: {
   source: string;
   variant?: "contact" | "newsletter";
   developmentSlug?: string;
-  fields?: "contact" | "aftersales";
+  fields?: "contact" | "aftersales" | "partner";
+  submitLabel?: string;
 }) {
   const [state, action] = useActionState(createLead, initial);
 
@@ -40,6 +42,23 @@ export function ContactForm({
         <Submit label="Cadastrar" />
         {state.message ? <p className={state.ok ? "ok" : "err"}>{state.message}</p> : null}
       </form>
+    );
+  }
+
+  if (state.received) {
+    const title =
+      fields === "partner"
+        ? state.ok
+          ? "Cadastro enviado"
+          : "Cadastro registrado"
+        : state.ok
+          ? "Mensagem enviada"
+          : "Mensagem registrada";
+    return (
+      <div className={state.ok ? "form-success" : "form-success is-warning"} role="status">
+        <h3>{title}</h3>
+        <p>{state.message}</p>
+      </div>
     );
   }
 
@@ -72,11 +91,23 @@ export function ContactForm({
           </label>
         </>
       ) : null}
+      {fields === "partner" ? (
+        <>
+          <label>
+            CRECI
+            <input name="creci" autoComplete="off" />
+          </label>
+          <label>
+            Imobiliária
+            <input name="company" autoComplete="organization" />
+          </label>
+        </>
+      ) : null}
       <label>
         Mensagem
         <textarea name="message" />
       </label>
-      <Submit label="Enviar" />
+      <Submit label={submitLabel} />
       {state.message ? (
         <p className={state.ok ? "ok" : "err"} role="status">
           {state.message}

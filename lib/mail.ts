@@ -10,6 +10,8 @@ type ContactMail = {
   message: string;
   developmentName?: string;
   unit?: string;
+  creci?: string;
+  company?: string;
 };
 
 export function mailIsConfigured() {
@@ -50,6 +52,8 @@ export async function sendContactEmail(input: ContactMail) {
       `E-mail: ${input.email}`,
       `Telefone: ${input.phone || "não informado"}`,
       ...(input.developmentName ? [`Empreendimento: ${input.developmentName}`, `Unidade: ${input.unit || "não informada"}`] : []),
+      ...(input.creci ? [`CRECI: ${input.creci}`] : []),
+      ...(input.company ? [`Imobiliária: ${input.company}`] : []),
       "",
       input.message || "Sem mensagem.",
     ].join("\n"),
