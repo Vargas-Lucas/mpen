@@ -56,6 +56,7 @@ export function PostForm({ post }: { post?: Post }) {
     seoDescription,
     keyword: seoKeyword,
   });
+  const ready = checks.filter((item) => item.ok).length;
 
   function insertMarkup(before: string, after = "", placeholder = "") {
     const field = bodyRef.current;
@@ -206,49 +207,83 @@ export function PostForm({ post }: { post?: Post }) {
       </label>
 
       <fieldset className="admin-seo">
-        <legend>Busca no Google</legend>
-        <p className="admin-hint">Revise estes pontos antes de publicar. Se título e descrição ficarem vazios, usamos o artigo.</p>
+        <legend>Como o Google mostra este artigo</legend>
+        <p className="seo-lead">
+          Esta área é só uma revisão para você e a Vitória. Nada aqui impede publicar. Se o título e a
+          descrição do Google ficarem vazios, o site usa o título e o resumo do artigo.
+        </p>
 
-        <div className="seo-preview" aria-label="Prévia na busca do Google">
-          <p className="seo-preview-url">{googleUrl}</p>
-          <p className="seo-preview-title">{googleTitle.length > 60 ? `${googleTitle.slice(0, 57)}...` : googleTitle}</p>
-          <p className="seo-preview-desc">
-            {googleDescription.length > 160 ? `${googleDescription.slice(0, 157)}...` : googleDescription}
-          </p>
+        <div className="seo-block">
+          <h3>Prévia na busca</h3>
+          <p className="admin-hint">É assim que o resultado tende a aparecer quando alguém pesquisa no Google.</p>
+          <div className="seo-preview" aria-label="Prévia na busca do Google">
+            <p className="seo-preview-url">{googleUrl}</p>
+            <p className="seo-preview-title">
+              {googleTitle.length > 60 ? `${googleTitle.slice(0, 57)}...` : googleTitle}
+            </p>
+            <p className="seo-preview-desc">
+              {googleDescription.length > 160 ? `${googleDescription.slice(0, 157)}...` : googleDescription}
+            </p>
+          </div>
         </div>
 
-        <label>
-          Palavra-chave principal
-          <input name="seo_keyword" value={seoKeyword} onChange={(event) => setSeoKeyword(event.target.value)} />
-        </label>
+        <div className="seo-block">
+          <h3>Palavra-chave</h3>
+          <p className="admin-hint">
+            O tema principal do artigo, em 1 ou 2 palavras. Exemplos: Sul da Ilha, Florianópolis, Sunset Village.
+          </p>
+          <label>
+            Palavra-chave principal
+            <input name="seo_keyword" value={seoKeyword} onChange={(event) => setSeoKeyword(event.target.value)} />
+          </label>
+        </div>
 
-        <ul className="seo-checks">
-          {checks.map((item) => (
-            <li key={item.label} className={item.ok ? "is-ok" : "is-off"}>
-              {item.ok ? "Pronto" : "Ajustar"} — {item.label}
-            </li>
-          ))}
-        </ul>
+        <div className="seo-block">
+          <div className="seo-review-head">
+            <h3>Revisão</h3>
+            <span className={ready === checks.length ? "seo-score is-ok" : "seo-score"}>
+              {ready} de {checks.length} pontos ok
+            </span>
+          </div>
+          <p className="admin-hint">O Google não vê esta lista. Ela só mostra se a palavra-chave e os tamanhos estão alinhados.</p>
+          <ul className="seo-checks">
+            {checks.map((item) => (
+              <li key={item.label} className={item.ok ? "is-ok" : "is-off"}>
+                <span className="seo-status">{item.ok ? "Ok" : "Falta"}</span>
+                <div>
+                  <strong>{item.label}</strong>
+                  <p>{item.help}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-        <label>
-          Título no Google
-          <input name="seo_title" value={seoTitle} onChange={(event) => setSeoTitle(event.target.value)} maxLength={120} />
-          <span className={seoTitle.length > 60 ? "admin-count is-long" : "admin-count"}>{seoTitle.length}/60</span>
-        </label>
-
-        <label>
-          Descrição no Google
-          <textarea
-            name="seo_description"
-            rows={3}
-            value={seoDescription}
-            onChange={(event) => setSeoDescription(event.target.value)}
-            maxLength={320}
-          />
-          <span className={seoDescription.length > 160 ? "admin-count is-long" : "admin-count"}>
-            {seoDescription.length}/160
-          </span>
-        </label>
+        <div className="seo-block">
+          <h3>Título e descrição</h3>
+          <p className="admin-hint">
+            O título azul e o texto cinza da prévia vêm daqui. Deixe vazios se o título e o resumo do artigo já
+            estiverem bons.
+          </p>
+          <label>
+            Título no Google
+            <input name="seo_title" value={seoTitle} onChange={(event) => setSeoTitle(event.target.value)} maxLength={120} />
+            <span className={seoTitle.length > 60 ? "admin-count is-long" : "admin-count"}>{seoTitle.length}/60</span>
+          </label>
+          <label>
+            Descrição no Google
+            <textarea
+              name="seo_description"
+              rows={3}
+              value={seoDescription}
+              onChange={(event) => setSeoDescription(event.target.value)}
+              maxLength={320}
+            />
+            <span className={seoDescription.length > 160 ? "admin-count is-long" : "admin-count"}>
+              {seoDescription.length}/160
+            </span>
+          </label>
+        </div>
       </fieldset>
 
       <Actions />
