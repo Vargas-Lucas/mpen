@@ -30,13 +30,7 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ sl
         <div className="container project-layout">
           <div className="project-main">
             <ProjectGallery images={images} name={developmentAlt(item)} />
-            <div className={item.slug === "sunset-village" ? "project-facts has-site" : "project-facts"}>
-              {item.slug === "sunset-village" ? (
-                <a className="project-fact-link" href="https://sunsetvillage.com.br/">
-                  <span>Site</span>
-                  Conheça mais
-                </a>
-              ) : null}
+            <div className="project-facts">
               <div>
                 <p className="fact-kicker">Status</p>
                 <p className="fact-value">{statusLabel(item.status)}</p>
@@ -72,6 +66,11 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ sl
                 </div>
               ) : null}
             </div>
+            {item.slug === "sunset-village" ? (
+              <a className="project-site" href="https://sunsetvillage.com.br/">
+                Conheça mais
+              </a>
+            ) : null}
             {item.slug === "sunset-village" ? (
               <div className="project-story">
                 <h2>Sunset Village: Apartamentos no Sul da Ilha de Florianópolis</h2>

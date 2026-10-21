@@ -20,14 +20,18 @@ export default async function HomePage() {
       <section className="home-intro">
         <div className="container home-intro-grid">
           <div>
-            <h2 className="kicker kicker-plain">A Incorporadora Mpen</h2>
-            <h2 className="home-intro-title">Transformando vidas</h2>
+            <h2 className="kicker kicker-plain">A MPEN</h2>
+            <h2 className="home-intro-title">MPEN Incorporadora: transformando vidas no Sul da Ilha</h2>
           </div>
           <div className="home-intro-copy">
             <p>
-              Há mais de 20 anos, a Incorporadora MPEN desenvolve empreendimentos residenciais no Sul
-              da Ilha de Florianópolis, unindo arquitetura, qualidade construtiva e soluções pensadas
-              para diferentes formas de morar.
+              Há mais de 20 anos, a MPEN é uma construtora que desenvolve empreendimentos
+              residenciais no Sul da Ilha de Florianópolis, unindo arquitetura, qualidade construtiva
+              e soluções pensadas para diferentes formas de morar.
+            </p>
+            <p>
+              Conheça nossos apartamentos e empreendimentos imobiliários em Florianópolis, dos
+              lançamentos aos projetos em construção e já entregues.
             </p>
             <Link className="btn btn-solid" href="/quem-somos">
               Conheça a MPEN
@@ -43,10 +47,10 @@ export default async function HomePage() {
         <div className="container">
           <div className="home-catalog-head">
             <div>
-              <h2>Conheça nossos empreendimentos</h2>
+              <h2>Conheça nossos empreendimentos em Florianópolis</h2>
               <p>
-                Conheça nossos empreendimentos imobiliários em Florianópolis, dos lançamentos aos
-                projetos em construção e já entregues.
+                Explore os lançamentos, empreendimentos em construção e imóveis já entregues pela
+                MPEN no Sul da Ilha de Florianópolis.
               </p>
             </div>
             <nav className="home-paths" aria-label="Filtrar empreendimentos">
