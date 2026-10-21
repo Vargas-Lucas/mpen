@@ -62,13 +62,20 @@ export async function getFeaturedDevelopments() {
   return query<Development>("SELECT * FROM developments ORDER BY sort_order LIMIT 3");
 }
 
-export async function getPosts(filters: { q?: string; limit?: number } = {}) {
+export async function getPosts(filters: { q?: string; category?: string; limit?: number } = {}) {
   const where = ["published_at IS NOT NULL"];
   const params: unknown[] = [];
 
+  if (filters.category) {
+    params.push(filters.category);
+    where.push(`category = $${params.length}`);
+  }
+
   if (filters.q) {
     params.push(`%${filters.q}%`);
-    where.push(`(title ILIKE $${params.length} OR excerpt ILIKE $${params.length} OR category ILIKE $${params.length})`);
+    where.push(
+      `(title ILIKE $${params.length} OR excerpt ILIKE $${params.length} OR body ILIKE $${params.length} OR category ILIKE $${params.length})`,
+    );
   }
 
   let sql = `
@@ -91,6 +98,26 @@ export async function getPost(slug: string) {
     [slug],
   );
   return rows[0] ?? null;
+}
+
+export async function getRelatedPosts(post: Pick<Post, "id" | "category">, limit = 3) {
+  const same = await query<Post>(
+    `SELECT * FROM posts
+     WHERE published_at IS NOT NULL AND id <> $1 AND category = $2
+     ORDER BY published_at DESC
+     LIMIT $3`,
+    [post.id, post.category, limit],
+  );
+  if (same.length >= limit) return same;
+
+  const extra = await query<Post>(
+    `SELECT * FROM posts
+     WHERE published_at IS NOT NULL AND id <> $1 AND category <> $2
+     ORDER BY published_at DESC
+     LIMIT $3`,
+    [post.id, post.category, limit - same.length],
+  );
+  return [...same, ...extra];
 }
 
 export async function getAdminPosts() {

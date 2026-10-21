@@ -7,7 +7,9 @@ export const SITE_NAME = "MPEN Incorporadora";
 const TITLE_FALLBACK = "MPEN";
 const DEFAULT_IMAGE = "/images/sobre/capa.png";
 
-export function articleSeo(post: Pick<Post, "title" | "slug" | "excerpt" | "cover" | "seo_title" | "seo_description">) {
+export function articleSeo(
+  post: Pick<Post, "title" | "slug" | "excerpt" | "cover" | "cover_alt" | "seo_title" | "seo_description">,
+) {
   const title = post.seo_title.trim() || (post.title.trim() ? `${post.title.trim()} — MPEN` : TITLE_FALLBACK);
   const description =
     post.seo_description.trim() ||
@@ -15,7 +17,8 @@ export function articleSeo(post: Pick<Post, "title" | "slug" | "excerpt" | "cove
     `${post.title} no blog da MPEN Incorporadora.`;
   const path = `/blog/${post.slug}`;
   const image = post.cover.startsWith("/images/") ? post.cover : DEFAULT_IMAGE;
-  return { title, description, path, image };
+  const imageAlt = post.cover_alt?.trim() || post.title;
+  return { title, description, path, image, imageAlt };
 }
 
 function isoDate(value: string | Date | null) {
@@ -39,7 +42,7 @@ export function articleMetadata(post: Post): Metadata {
       publishedTime: isoDate(post.published_at),
       locale: "pt_BR",
       siteName: SITE_NAME,
-      images: [{ url: seo.image, alt: post.title }],
+      images: [{ url: seo.image, alt: seo.imageAlt }],
     },
     twitter: {
       card: "summary_large_image",

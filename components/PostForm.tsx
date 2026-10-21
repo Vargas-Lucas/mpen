@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
-import { savePost, type PostState } from "@/actions/posts";
+import { savePost, uploadPostImage, type PostState } from "@/actions/posts";
+import { articleSeoChecks } from "@/lib/seo-check";
 import { POST_CATEGORIES, slugify } from "@/lib/slug";
 import { toDatetimeLocal } from "@/lib/format";
 import type { Post } from "@/lib/types";
@@ -29,9 +30,14 @@ export function PostForm({ post }: { post?: Post }) {
   const [slug, setSlug] = useState(post?.slug ?? "");
   const [slugTouched, setSlugTouched] = useState(Boolean(post?.slug));
   const [excerpt, setExcerpt] = useState(post?.excerpt ?? "");
+  const [body, setBody] = useState(post?.body ?? "");
   const [seoTitle, setSeoTitle] = useState(post?.seo_title ?? "");
   const [seoDescription, setSeoDescription] = useState(post?.seo_description ?? "");
+  const [seoKeyword, setSeoKeyword] = useState(post?.seo_keyword ?? "");
   const [preview, setPreview] = useState(post?.cover || "");
+  const [imageMessage, setImageMessage] = useState("");
+  const bodyRef = useRef<HTMLTextAreaElement>(null);
+  const imageRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!slugTouched) setSlug(title ? slugify(title) : "");
@@ -41,6 +47,45 @@ export function PostForm({ post }: { post?: Post }) {
   const googleDescription =
     seoDescription.trim() || excerpt.trim() || "O resumo ou a descrição de SEO aparece aqui.";
   const googleUrl = `teste.mpen.com.br › blog › ${slug || "titulo-do-artigo"}`;
+  const checks = articleSeoChecks({
+    title,
+    slug,
+    excerpt,
+    body,
+    seoTitle,
+    seoDescription,
+    keyword: seoKeyword,
+  });
+
+  function insertMarkup(before: string, after = "", placeholder = "") {
+    const field = bodyRef.current;
+    const start = field?.selectionStart ?? body.length;
+    const end = field?.selectionEnd ?? body.length;
+    const selected = body.slice(start, end) || placeholder;
+    const next = `${body.slice(0, start)}${before}${selected}${after}${body.slice(end)}`;
+    setBody(next);
+    requestAnimationFrame(() => {
+      field?.focus();
+      const cursor = start + before.length + selected.length;
+      field?.setSelectionRange(cursor, cursor);
+    });
+  }
+
+  async function onBodyImage(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    const data = new FormData();
+    data.set("image", file);
+    data.set("slug", slug || "artigo");
+    const result = await uploadPostImage(data);
+    if (!result.ok || !result.url) {
+      setImageMessage(result.message || "Não foi possível guardar a imagem.");
+      return;
+    }
+    setImageMessage("");
+    insertMarkup(`![`, `](${result.url})`, "descreva a imagem");
+  }
 
   return (
     <form className="form admin-form" action={action}>
@@ -85,10 +130,37 @@ export function PostForm({ post }: { post?: Post }) {
         <textarea name="excerpt" rows={3} value={excerpt} onChange={(event) => setExcerpt(event.target.value)} />
       </label>
 
-      <label>
-        Texto
-        <textarea className="admin-body" name="body" rows={14} defaultValue={post?.body ?? ""} />
-      </label>
+      <div className="admin-body-wrap">
+        <span>Texto</span>
+        <div className="admin-toolbar">
+          <button type="button" className="admin-tool" onClick={() => insertMarkup("## ", "", "Subtítulo")}>
+            Subtítulo
+          </button>
+          <button type="button" className="admin-tool" onClick={() => insertMarkup("[", "](https://)", "texto do link")}>
+            Link
+          </button>
+          <button type="button" className="admin-tool" onClick={() => imageRef.current?.click()}>
+            Imagem
+          </button>
+        </div>
+        <input
+          ref={imageRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          hidden
+          onChange={onBodyImage}
+        />
+        <textarea
+          ref={bodyRef}
+          className="admin-body"
+          name="body"
+          rows={14}
+          value={body}
+          onChange={(event) => setBody(event.target.value)}
+        />
+        <span className="admin-hint">Use os botões para subtítulo, link e imagem no meio do texto.</span>
+        {imageMessage ? <p className="err">{imageMessage}</p> : null}
+      </div>
 
       <label>
         Capa
@@ -117,6 +189,12 @@ export function PostForm({ post }: { post?: Post }) {
       ) : null}
 
       <label>
+        Texto alternativo da capa
+        <input name="cover_alt" defaultValue={post?.cover_alt ?? ""} />
+        <span className="admin-hint">Descreve a foto para busca e acessibilidade.</span>
+      </label>
+
+      <label>
         Data de publicação
         <input name="published_at" type="datetime-local" defaultValue={toDatetimeLocal(post?.published_at ?? null)} />
         <span className="admin-hint">Se ficar vazio na hora de publicar, usamos a data de agora.</span>
@@ -129,7 +207,7 @@ export function PostForm({ post }: { post?: Post }) {
 
       <fieldset className="admin-seo">
         <legend>Busca no Google</legend>
-        <p className="admin-hint">Se ficar vazio, usamos o título e o resumo do artigo.</p>
+        <p className="admin-hint">Revise estes pontos antes de publicar. Se título e descrição ficarem vazios, usamos o artigo.</p>
 
         <div className="seo-preview" aria-label="Prévia na busca do Google">
           <p className="seo-preview-url">{googleUrl}</p>
@@ -138,6 +216,19 @@ export function PostForm({ post }: { post?: Post }) {
             {googleDescription.length > 160 ? `${googleDescription.slice(0, 157)}...` : googleDescription}
           </p>
         </div>
+
+        <label>
+          Palavra-chave principal
+          <input name="seo_keyword" value={seoKeyword} onChange={(event) => setSeoKeyword(event.target.value)} />
+        </label>
+
+        <ul className="seo-checks">
+          {checks.map((item) => (
+            <li key={item.label} className={item.ok ? "is-ok" : "is-off"}>
+              {item.ok ? "Pronto" : "Ajustar"} — {item.label}
+            </li>
+          ))}
+        </ul>
 
         <label>
           Título no Google

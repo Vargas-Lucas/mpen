@@ -42,15 +42,29 @@ async function uniqueSlug(base: string, exceptId?: number) {
   }
 }
 
-async function saveCover(file: File, slug: string) {
+async function saveBlogImage(file: File, slug: string) {
   const ext = COVER_TYPES[file.type];
-  if (!ext) throw new Error("A capa precisa ser JPG, PNG ou WebP.");
-  if (file.size > MAX_COVER) throw new Error("A capa pode ter no máximo 5 MB.");
+  if (!ext) throw new Error("A imagem precisa ser JPG, PNG ou WebP.");
+  if (file.size > MAX_COVER) throw new Error("A imagem pode ter no máximo 5 MB.");
   const dir = path.join(process.cwd(), "public", "images", "blog");
   await mkdir(dir, { recursive: true });
   const name = `${slug}-${Date.now()}.${ext}`;
   await writeFile(path.join(dir, name), Buffer.from(await file.arrayBuffer()));
   return `/images/blog/${name}`;
+}
+
+export async function uploadPostImage(formData: FormData): Promise<{ ok: boolean; url?: string; message?: string }> {
+  await requireEditor();
+  const file = formData.get("image");
+  const slug = slugify(read(formData, "slug") || "artigo");
+  if (!(file instanceof File) || file.size === 0) {
+    return { ok: false, message: "Escolha uma imagem." };
+  }
+  try {
+    return { ok: true, url: await saveBlogImage(file, slug) };
+  } catch (error) {
+    return { ok: false, message: error instanceof Error ? error.message : "Não foi possível guardar a imagem." };
+  }
 }
 
 export async function savePost(_prev: PostState, formData: FormData): Promise<PostState> {
@@ -68,6 +82,8 @@ export async function savePost(_prev: PostState, formData: FormData): Promise<Po
   const slugInput = read(formData, "slug");
   const seoTitle = read(formData, "seo_title");
   const seoDescription = read(formData, "seo_description");
+  const seoKeyword = read(formData, "seo_keyword");
+  const coverAlt = read(formData, "cover_alt");
   const coverFile = formData.get("cover");
 
   if (title.length < 3) {
@@ -87,7 +103,7 @@ export async function savePost(_prev: PostState, formData: FormData): Promise<Po
 
   try {
     if (coverFile instanceof File && coverFile.size > 0) {
-      cover = await saveCover(coverFile, slug);
+      cover = await saveBlogImage(coverFile, slug);
     }
   } catch (error) {
     return { ok: false, message: error instanceof Error ? error.message : "Não foi possível guardar a capa." };
@@ -101,17 +117,45 @@ export async function savePost(_prev: PostState, formData: FormData): Promise<Po
     if (current) {
       await query(
         `UPDATE posts
-         SET title = $1, slug = $2, excerpt = $3, body = $4, category = $5, cover = $6,
-             seo_title = $7, seo_description = $8, published_at = $9, featured = $10
-         WHERE id = $11`,
-        [title, slug, excerpt, body, category, cover, seoTitle, seoDescription, publishedAt, featured, current.id],
+         SET title = $1, slug = $2, excerpt = $3, body = $4, category = $5, cover = $6, cover_alt = $7,
+             seo_title = $8, seo_description = $9, seo_keyword = $10, published_at = $11, featured = $12
+         WHERE id = $13`,
+        [
+          title,
+          slug,
+          excerpt,
+          body,
+          category,
+          cover,
+          coverAlt,
+          seoTitle,
+          seoDescription,
+          seoKeyword,
+          publishedAt,
+          featured,
+          current.id,
+        ],
       );
     } else {
       const created = await query<{ id: number }>(
-        `INSERT INTO posts (title, slug, excerpt, body, category, cover, seo_title, seo_description, published_at, featured)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        `INSERT INTO posts
+           (title, slug, excerpt, body, category, cover, cover_alt, seo_title, seo_description, seo_keyword, published_at, featured)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
          RETURNING id`,
-        [title, slug, excerpt, body, category, cover, seoTitle, seoDescription, publishedAt, featured],
+        [
+          title,
+          slug,
+          excerpt,
+          body,
+          category,
+          cover,
+          coverAlt,
+          seoTitle,
+          seoDescription,
+          seoKeyword,
+          publishedAt,
+          featured,
+        ],
       );
       savedId = created[0]?.id ?? 0;
     }

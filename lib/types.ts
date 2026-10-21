@@ -21,8 +21,10 @@ export type Post = {
   body: string;
   category: string;
   cover: string;
+  cover_alt: string;
   seo_title: string;
   seo_description: string;
+  seo_keyword: string;
   published_at: string | null;
   featured: boolean;
 };

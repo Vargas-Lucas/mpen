@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { formatDate } from "@/lib/format";
 import type { Post } from "@/lib/types";
 
 export function PostCard({ post, large = false }: { post: Post; large?: boolean }) {
@@ -12,6 +13,7 @@ export function PostCard({ post, large = false }: { post: Post; large?: boolean 
       <span>{post.category}</span>
       <strong>{post.title}</strong>
       {post.excerpt ? <em>{post.excerpt}</em> : null}
+      {post.published_at ? <time dateTime={post.published_at}>{formatDate(post.published_at)}</time> : null}
     </Link>
   );
 }

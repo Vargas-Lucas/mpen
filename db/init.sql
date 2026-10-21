@@ -21,8 +21,10 @@ CREATE TABLE posts (
   body TEXT NOT NULL DEFAULT '',
   category TEXT NOT NULL DEFAULT 'MPEN',
   cover TEXT NOT NULL DEFAULT '',
+  cover_alt TEXT NOT NULL DEFAULT '',
   seo_title TEXT NOT NULL DEFAULT '',
   seo_description TEXT NOT NULL DEFAULT '',
+  seo_keyword TEXT NOT NULL DEFAULT '',
   published_at TIMESTAMPTZ,
   featured BOOLEAN NOT NULL DEFAULT FALSE
 );

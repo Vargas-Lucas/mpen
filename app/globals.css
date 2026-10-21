@@ -2361,6 +2361,31 @@ h2.kicker {
   font-weight: 700;
 }
 
+.blog-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 28px;
+}
+
+.blog-filters a {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 14px;
+}
+
+.blog-filters a.is-on {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: white;
+}
+
+.post-card time {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.78);
+}
+
 .empty {
   text-align: center;
   background: white;
@@ -2392,6 +2417,45 @@ h2.kicker {
 }
 
 .article .meta { color: var(--teal); font-weight: 700; }
+
+.article-body { margin-top: 18px; }
+
+.article-body h2,
+.article-body h3 {
+  margin: 28px 0 10px;
+  color: var(--navy);
+}
+
+.article-body h2 { font-size: 28px; }
+
+.article-body h3 { font-size: 22px; }
+
+.article-body p { margin: 0 0 16px; }
+
+.article-body a {
+  color: var(--blue);
+  text-decoration: underline;
+}
+
+.article-body img {
+  display: block;
+  width: 100%;
+  border-radius: 14px;
+  margin: 20px 0;
+}
+
+.article-more { padding-top: 8px; }
+
+.article-cta {
+  margin: 36px 0 0;
+  text-align: center;
+}
+
+.article-cta a {
+  color: var(--navy);
+  font-weight: 600;
+  text-decoration: underline;
+}
 
 .footer {
   background: var(--navy);
@@ -3169,6 +3233,8 @@ h2.kicker {
   .blog-search input,
   .blog-search button { min-height: 48px; font-size: 16px; }
 
+  .blog-filters a { min-height: 40px; display: inline-flex; align-items: center; }
+
   .home-intro-copy p,
   .project-story p,
   .page-hero.copy-justified p,
@@ -3566,7 +3632,48 @@ h2.kicker {
   font-weight: 400;
 }
 
+.admin-body-wrap {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-body-wrap > span {
+  font-weight: 500;
+}
+
+.admin-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-tool {
+  border: 1px solid var(--line);
+  background: white;
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.admin-tool:hover,
+.admin-tool:focus-visible {
+  border-color: var(--navy);
+}
+
 .admin-body { min-height: 280px; }
+
+.seo-checks {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.seo-checks .is-ok { color: #1b6b3a; }
+
+.seo-checks .is-off { color: #9d1c2a; }
 
 .admin-cover-preview img {
   width: 100%;

@@ -82,11 +82,7 @@ export default async function HomePage() {
                 <PostCard key={post.id} post={post} />
               ))}
             </div>
-          ) : (
-            <div className="empty">
-              <p>Nenhum artigo publicado ainda. A listagem do blog já está pronta para receber os posts.</p>
-            </div>
-          )}
+          ) : null}
           <div className="center-link">
             <Link className="btn btn-solid" href="/blog">
               Visite o blog
