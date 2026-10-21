@@ -23,6 +23,7 @@ export function CookieBar() {
         type="button"
         onClick={() => {
           window.localStorage.setItem("mpen-cookies", "1");
+          window.dispatchEvent(new Event("mpen-cookies-accepted"));
           setOpen(false);
         }}
       >

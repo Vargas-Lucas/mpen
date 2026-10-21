@@ -20,6 +20,9 @@ export type Post = {
   excerpt: string;
   body: string;
   category: string;
-  published_at: string;
+  cover: string;
+  seo_title: string;
+  seo_description: string;
+  published_at: string | null;
   featured: boolean;
 };

@@ -3,7 +3,10 @@ import { PageHeader } from "@/components/PageHeader";
 import { PostCard } from "@/components/PostCard";
 import { getPosts } from "@/lib/data";
 
-export const metadata = { title: "Blog" };
+export const metadata = {
+  title: "Blog",
+  description: "Conteúdos e notícias da MPEN Incorporadora e dos empreendimentos no Sul da Ilha de Florianópolis.",
+};
 
 export default async function BlogPage({
   searchParams,

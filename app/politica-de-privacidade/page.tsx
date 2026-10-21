@@ -45,6 +45,7 @@ const sections = [
     items: [
       "Quando necessário para o processamento de solicitações específicas do usuário",
       "Para cumprimento de obrigações legais e regulamentares",
+      "Com o Google Analytics, se você aceitar o aviso de cookies, para medição de audiência do site",
       "Em caso de fusão, aquisição ou reorganização societária, sempre respeitando as normas de privacidade aplicáveis",
     ],
     after: [
@@ -85,6 +86,7 @@ const sections = [
     title: "Cookies e tecnologias semelhantes",
     paragraphs: [
       "Nosso site pode utilizar cookies e tecnologias semelhantes para aprimorar a experiência do usuário, armazenando preferências e coletando informações sobre navegação. Você pode gerenciar as configurações de cookies diretamente no seu navegador.",
+      "Se você aceitar o aviso de cookies, podemos usar o Google Analytics 4 para entender quais páginas são visitadas. Sem o aceite, essa medição não é carregada.",
     ],
   },
   {

@@ -92,3 +92,17 @@ export async function getPost(slug: string) {
   );
   return rows[0] ?? null;
 }
+
+export async function getAdminPosts() {
+  return query<Post>(`
+    SELECT * FROM posts
+    ORDER BY CASE WHEN published_at IS NULL THEN 0 ELSE 1 END,
+      COALESCE(published_at, NOW()) DESC,
+      id DESC
+  `);
+}
+
+export async function getAdminPost(id: number) {
+  const rows = await query<Post>("SELECT * FROM posts WHERE id = $1", [id]);
+  return rows[0] ?? null;
+}

@@ -20,8 +20,19 @@ CREATE TABLE posts (
   excerpt TEXT NOT NULL DEFAULT '',
   body TEXT NOT NULL DEFAULT '',
   category TEXT NOT NULL DEFAULT 'MPEN',
+  cover TEXT NOT NULL DEFAULT '',
+  seo_title TEXT NOT NULL DEFAULT '',
+  seo_description TEXT NOT NULL DEFAULT '',
   published_at TIMESTAMPTZ,
   featured BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE editors (
+  id SERIAL PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  password_hash TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE leads (
