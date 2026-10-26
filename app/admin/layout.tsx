@@ -16,12 +16,18 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           MPEN · Blog
         </a>
         {editor ? (
-          <form action={logoutEditor}>
-            <span>{editor.email}</span>
-            <button className="admin-quiet" type="submit">
-              Sair
-            </button>
-          </form>
+          <>
+            <nav className="admin-nav" aria-label="Painel">
+              <a href="/admin">Artigos</a>
+              <a href="/admin/categorias">Categorias</a>
+            </nav>
+            <form action={logoutEditor}>
+              <span>{editor.email}</span>
+              <button className="admin-quiet" type="submit">
+                Sair
+              </button>
+            </form>
+          </>
         ) : null}
       </header>
       {children}

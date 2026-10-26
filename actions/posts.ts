@@ -3,6 +3,7 @@
 import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 import { redirect } from "next/navigation";
+import { ensureCategory } from "@/actions/categories";
 import { requireEditor } from "@/lib/auth";
 import { query } from "@/lib/db";
 import { slugify } from "@/lib/slug";
@@ -75,8 +76,9 @@ export async function savePost(_prev: PostState, formData: FormData): Promise<Po
   const title = read(formData, "title");
   const excerpt = read(formData, "excerpt");
   const body = read(formData, "body");
-  const category = read(formData, "category") || "MPEN";
-  const intent = read(formData, "intent") === "publish" ? "publish" : "draft";
+  const category = await ensureCategory(read(formData, "category") || "MPEN");
+  const intentRaw = read(formData, "intent");
+  const intent = intentRaw === "publish" || intentRaw === "preview" ? intentRaw : "draft";
   const featured = formData.get("featured") === "on";
   const removeCover = formData.get("remove_cover") === "on";
   const slugInput = read(formData, "slug");
@@ -110,7 +112,11 @@ export async function savePost(_prev: PostState, formData: FormData): Promise<Po
   }
 
   const publishedAt =
-    intent === "publish" ? parsePublishDate(read(formData, "published_at")) : null;
+    intent === "publish"
+      ? parsePublishDate(read(formData, "published_at"))
+      : intent === "preview"
+        ? current?.published_at ?? null
+        : null;
 
   let savedId = current?.id ?? 0;
   try {
@@ -164,6 +170,7 @@ export async function savePost(_prev: PostState, formData: FormData): Promise<Po
   }
 
   if (!savedId) return { ok: false, message: "Não foi possível salvar o artigo agora." };
+  if (intent === "preview") redirect(`/blog/${slug}?preview=1`);
   redirect(`/admin/artigos/${savedId}?salvo=1`);
 }
 

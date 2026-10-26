@@ -13,6 +13,12 @@ export type Development = {
   sort_order: number;
 };
 
+export type Category = {
+  id: number;
+  name: string;
+  slug: string;
+};
+
 export type Post = {
   id: number;
   title: string;

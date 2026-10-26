@@ -2,8 +2,7 @@ import Link from "next/link";
 import { ContactForm } from "@/components/ContactForm";
 import { PageHeader } from "@/components/PageHeader";
 import { PostCard } from "@/components/PostCard";
-import { getPosts } from "@/lib/data";
-import { POST_CATEGORIES } from "@/lib/slug";
+import { getCategories, getPosts } from "@/lib/data";
 
 export const metadata = {
   title: { absolute: "Blog MPEN: Florianópolis, arquitetura e mercado imobiliário" },
@@ -27,7 +26,10 @@ export default async function BlogPage({
   const params = await searchParams;
   const q = params.q?.trim() || "";
   const category = params.categoria?.trim() || "";
-  const posts = await getPosts({ q, category: category || undefined });
+  const [posts, categories] = await Promise.all([
+    getPosts({ q, category: category || undefined }),
+    getCategories(),
+  ]);
   const [lead, ...rest] = posts;
   const filtered = Boolean(q || category);
 
@@ -49,13 +51,13 @@ export default async function BlogPage({
             <Link className={!category ? "is-on" : undefined} href={blogHref(q)}>
               Todas
             </Link>
-            {POST_CATEGORIES.map((item) => (
+            {categories.map((item) => (
               <Link
-                key={item}
-                className={category === item ? "is-on" : undefined}
-                href={blogHref(q, item)}
+                key={item.id}
+                className={category === item.name ? "is-on" : undefined}
+                href={blogHref(q, item.name)}
               >
-                {item}
+                {item.name}
               </Link>
             ))}
           </nav>
@@ -63,10 +65,17 @@ export default async function BlogPage({
           {posts.length === 0 ? (
             <div className="empty">
               <p>
-                {filtered
-                  ? "Nenhum artigo encontrado. Tente outra palavra-chave ou categoria."
-                  : "Nenhum artigo publicado ainda."}
+                {category
+                  ? `Nenhum artigo em ${category} ainda. Veja todas as categorias.`
+                  : q
+                    ? "Nenhum artigo encontrado. Tente outra palavra-chave."
+                    : "Nenhum artigo publicado ainda."}
               </p>
+              {category ? (
+                <p>
+                  <Link href={blogHref(q)}>Ver todos os artigos</Link>
+                </p>
+              ) : null}
             </div>
           ) : (
             <div className="blog-feature">

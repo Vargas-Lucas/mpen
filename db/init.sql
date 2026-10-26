@@ -29,6 +29,13 @@ CREATE TABLE posts (
   featured BOOLEAN NOT NULL DEFAULT FALSE
 );
 
+CREATE TABLE categories (
+  id SERIAL PRIMARY KEY,
+  name TEXT UNIQUE NOT NULL,
+  slug TEXT UNIQUE NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 CREATE TABLE editors (
   id SERIAL PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
@@ -47,6 +54,13 @@ CREATE TABLE leads (
   development_slug TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+INSERT INTO categories (name, slug) VALUES
+  ('MPEN', 'mpen'),
+  ('Empreendimentos', 'empreendimentos'),
+  ('Sul da Ilha', 'sul-da-ilha'),
+  ('Institucional', 'institucional'),
+  ('Novidades', 'novidades');
 
 INSERT INTO developments
   (name, slug, status, neighborhood, city, summary, delivery, featured, sort_order)

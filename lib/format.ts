@@ -28,6 +28,17 @@ export function formatDate(value: string) {
   }).format(new Date(value));
 }
 
+export function readingMinutes(body: string) {
+  const words = body
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, " ")
+    .replace(/\[[^\]]+\]\([^)]+\)/g, " ")
+    .replace(/[#*_>`]/g, " ")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean).length;
+  return Math.max(1, Math.round(words / 180));
+}
+
 export function toDatetimeLocal(value: string | null) {
   if (!value) return "";
   const parts = Object.fromEntries(

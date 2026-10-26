@@ -1,31 +1,91 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
+import { useActionState, useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
+import { createCategory, type CategoryState } from "@/actions/categories";
 import { savePost, uploadPostImage, type PostState } from "@/actions/posts";
+
+const ArticleEditor = dynamic(
+  () => import("@/components/ArticleEditor").then((mod) => mod.ArticleEditor),
+  {
+    ssr: false,
+    loading: () => <div className="admin-visual" aria-hidden="true" />,
+  },
+);
 import { articleSeoChecks } from "@/lib/seo-check";
-import { POST_CATEGORIES, slugify } from "@/lib/slug";
+import { SITE_URL } from "@/lib/seo";
+import { slugify } from "@/lib/slug";
 import { toDatetimeLocal } from "@/lib/format";
-import type { Post } from "@/lib/types";
+import type { Category, Post } from "@/lib/types";
 
 const initial: PostState = { ok: false, message: "" };
+const host = SITE_URL.replace(/^https?:\/\//, "");
 
-function Actions() {
+function Actions({ published }: { published?: boolean }) {
   const { pending } = useFormStatus();
+  const [clicked, setClicked] = useState("");
   return (
-    <div className="admin-actions">
-      <button className="admin-secondary" name="intent" value="draft" type="submit" disabled={pending}>
-        {pending ? "Salvando..." : "Salvar rascunho"}
+    <div className="admin-publish">
+      <button
+        className="admin-submit"
+        name="intent"
+        value="publish"
+        type="submit"
+        disabled={pending}
+        onClick={() => setClicked("publish")}
+      >
+        {pending && clicked === "publish" ? "Publicando..." : published ? "Atualizar" : "Publicar"}
       </button>
-      <button className="admin-submit admin-submit-inline" name="intent" value="publish" type="submit" disabled={pending}>
-        {pending ? "Publicando..." : "Publicar"}
+      <button
+        className="admin-secondary"
+        name="intent"
+        value="preview"
+        type="submit"
+        disabled={pending}
+        onClick={() => setClicked("preview")}
+      >
+        {pending && clicked === "preview" ? "Abrindo..." : "Ver como"}
+      </button>
+      <button
+        className="admin-secondary"
+        name="intent"
+        value="draft"
+        type="submit"
+        disabled={pending}
+        onClick={() => setClicked("draft")}
+      >
+        {pending && clicked === "draft" ? "Salvando..." : published ? "Voltar para rascunho" : "Salvar rascunho"}
       </button>
     </div>
   );
 }
 
-export function PostForm({ post }: { post?: Post }) {
+function SeoMeter({ length, min, max }: { length: number; min: number; max: number }) {
+  const state = length > max ? "over" : length >= min ? "ok" : length > 0 ? "short" : "empty";
+  const pct = Math.min(100, (length / max) * 100);
+  return (
+    <div className={`seo-meter is-${state}`} aria-hidden="true">
+      <span style={{ width: `${Math.max(pct, length > 0 ? 4 : 0)}%` }} />
+    </div>
+  );
+}
+
+const categoryInitial: CategoryState = { ok: false, message: "" };
+
+export function PostForm({ post, categories }: { post?: Post; categories: Category[] }) {
   const [state, action] = useActionState(savePost, initial);
+  const [categoryState, addCategory] = useActionState(createCategory, categoryInitial);
+  const [names, setNames] = useState(() => {
+    const list = categories.map((item) => item.name);
+    if (post?.category && !list.includes(post.category)) list.unshift(post.category);
+    return list;
+  });
+  const [category, setCategory] = useState(
+    post?.category || categories.find((item) => item.name === "MPEN")?.name || categories[0]?.name || "",
+  );
+  const [addingCategory, setAddingCategory] = useState(false);
+  const [newCategory, setNewCategory] = useState("");
   const [title, setTitle] = useState(post?.title ?? "");
   const [slug, setSlug] = useState(post?.slug ?? "");
   const [slugTouched, setSlugTouched] = useState(Boolean(post?.slug));
@@ -35,18 +95,24 @@ export function PostForm({ post }: { post?: Post }) {
   const [seoDescription, setSeoDescription] = useState(post?.seo_description ?? "");
   const [seoKeyword, setSeoKeyword] = useState(post?.seo_keyword ?? "");
   const [preview, setPreview] = useState(post?.cover || "");
-  const [imageMessage, setImageMessage] = useState("");
-  const bodyRef = useRef<HTMLTextAreaElement>(null);
-  const imageRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!slugTouched) setSlug(title ? slugify(title) : "");
   }, [title, slugTouched]);
 
-  const googleTitle = seoTitle.trim() || (title.trim() ? `${title.trim()} — MPEN` : "Título do artigo — MPEN");
-  const googleDescription =
-    seoDescription.trim() || excerpt.trim() || "O resumo ou a descrição de SEO aparece aqui.";
-  const googleUrl = `teste.mpen.com.br › blog › ${slug || "titulo-do-artigo"}`;
+  useEffect(() => {
+    if (categoryState.ok && categoryState.name) {
+      setNames((current) => (current.includes(categoryState.name!) ? current : [...current, categoryState.name!]));
+      setCategory(categoryState.name);
+      setAddingCategory(false);
+      setNewCategory("");
+    }
+  }, [categoryState]);
+
+  const fallbackTitle = title.trim() ? `${title.trim()} — MPEN` : "";
+  const fallbackDescription = excerpt.trim();
+  const snippetTitle = seoTitle !== "" ? seoTitle : fallbackTitle;
+  const snippetDescription = seoDescription !== "" ? seoDescription : fallbackDescription;
   const checks = articleSeoChecks({
     title,
     slug,
@@ -58,240 +124,252 @@ export function PostForm({ post }: { post?: Post }) {
   });
   const ready = checks.filter((item) => item.ok).length;
 
-  function insertMarkup(before: string, after = "", placeholder = "") {
-    const field = bodyRef.current;
-    const start = field?.selectionStart ?? body.length;
-    const end = field?.selectionEnd ?? body.length;
-    const selected = body.slice(start, end) || placeholder;
-    const next = `${body.slice(0, start)}${before}${selected}${after}${body.slice(end)}`;
-    setBody(next);
-    requestAnimationFrame(() => {
-      field?.focus();
-      const cursor = start + before.length + selected.length;
-      field?.setSelectionRange(cursor, cursor);
-    });
-  }
-
-  async function onBodyImage(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    event.target.value = "";
-    if (!file) return;
+  function submitNewCategory() {
     const data = new FormData();
-    data.set("image", file);
-    data.set("slug", slug || "artigo");
-    const result = await uploadPostImage(data);
-    if (!result.ok || !result.url) {
-      setImageMessage(result.message || "Não foi possível guardar a imagem.");
-      return;
-    }
-    setImageMessage("");
-    insertMarkup(`![`, `](${result.url})`, "descreva a imagem");
+    data.set("name", newCategory);
+    data.set("stay", "1");
+    addCategory(data);
   }
 
   return (
     <form className="form admin-form" action={action}>
       {post ? <input name="id" type="hidden" value={post.id} /> : null}
+      <input name="seo_title" type="hidden" value={seoTitle} />
+      <input name="seo_description" type="hidden" value={seoDescription} />
 
-      <label>
-        Título
-        <input
-          name="title"
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-          required
-          minLength={3}
-        />
-      </label>
-
-      <label>
-        Endereço no site
-        <input
-          name="slug"
-          value={slug}
-          onChange={(event) => {
-            setSlugTouched(true);
-            setSlug(event.target.value);
-          }}
-        />
-        <span className="admin-hint">Fica em /blog/{slug || "titulo-do-artigo"}</span>
-      </label>
-
-      <label>
-        Categoria
-        <input name="category" defaultValue={post?.category || "MPEN"} list="post-categories" />
-        <datalist id="post-categories">
-          {POST_CATEGORIES.map((item) => (
-            <option key={item} value={item} />
-          ))}
-        </datalist>
-      </label>
-
-      <label>
-        Resumo
-        <textarea name="excerpt" rows={3} value={excerpt} onChange={(event) => setExcerpt(event.target.value)} />
-      </label>
-
-      <div className="admin-body-wrap">
-        <span>Texto</span>
-        <div className="admin-toolbar">
-          <button type="button" className="admin-tool" onClick={() => insertMarkup("## ", "", "Subtítulo")}>
-            Subtítulo
-          </button>
-          <button type="button" className="admin-tool" onClick={() => insertMarkup("[", "](https://)", "texto do link")}>
-            Link
-          </button>
-          <button type="button" className="admin-tool" onClick={() => imageRef.current?.click()}>
-            Imagem
-          </button>
-        </div>
-        <input
-          ref={imageRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          hidden
-          onChange={onBodyImage}
-        />
-        <textarea
-          ref={bodyRef}
-          className="admin-body"
-          name="body"
-          rows={14}
-          value={body}
-          onChange={(event) => setBody(event.target.value)}
-        />
-        <span className="admin-hint">Use os botões para subtítulo, link e imagem no meio do texto.</span>
-        {imageMessage ? <p className="err">{imageMessage}</p> : null}
-      </div>
-
-      <label>
-        Capa
-        <input
-          name="cover"
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          onChange={(event) => {
-            const file = event.target.files?.[0];
-            setPreview(file ? URL.createObjectURL(file) : post?.cover || "");
-          }}
-        />
-        <span className="admin-hint">JPG, PNG ou WebP, até 5 MB.</span>
-      </label>
-
-      {preview ? (
-        <div className="admin-cover-preview">
-          <img src={preview} alt="" />
-          {post?.cover ? (
-            <label className="admin-check">
-              <input name="remove_cover" type="checkbox" />
-              Remover capa
-            </label>
-          ) : null}
-        </div>
-      ) : null}
-
-      <label>
-        Texto alternativo da capa
-        <input name="cover_alt" defaultValue={post?.cover_alt ?? ""} />
-        <span className="admin-hint">Descreve a foto para busca e acessibilidade.</span>
-      </label>
-
-      <label>
-        Data de publicação
-        <input name="published_at" type="datetime-local" defaultValue={toDatetimeLocal(post?.published_at ?? null)} />
-        <span className="admin-hint">Se ficar vazio na hora de publicar, usamos a data de agora.</span>
-      </label>
-
-      <label className="admin-check">
-        <input name="featured" type="checkbox" defaultChecked={post?.featured} />
-        Destacar na listagem do blog
-      </label>
-
-      <fieldset className="admin-seo">
-        <legend>Como o Google mostra este artigo</legend>
-        <p className="seo-lead">
-          Esta área é só uma revisão para você e a Vitória. Nada aqui impede publicar. Se o título e a
-          descrição do Google ficarem vazios, o site usa o título e o resumo do artigo.
-        </p>
-
-        <div className="seo-block">
-          <h3>Prévia na busca</h3>
-          <p className="admin-hint">É assim que o resultado tende a aparecer quando alguém pesquisa no Google.</p>
-          <div className="seo-preview" aria-label="Prévia na busca do Google">
-            <p className="seo-preview-url">{googleUrl}</p>
-            <p className="seo-preview-title">
-              {googleTitle.length > 60 ? `${googleTitle.slice(0, 57)}...` : googleTitle}
-            </p>
-            <p className="seo-preview-desc">
-              {googleDescription.length > 160 ? `${googleDescription.slice(0, 157)}...` : googleDescription}
-            </p>
-          </div>
-        </div>
-
-        <div className="seo-block">
-          <h3>Palavra-chave</h3>
-          <p className="admin-hint">
-            O tema principal do artigo, em 1 ou 2 palavras. Exemplos: Sul da Ilha, Florianópolis, Sunset Village.
-          </p>
-          <label>
-            Palavra-chave principal
-            <input name="seo_keyword" value={seoKeyword} onChange={(event) => setSeoKeyword(event.target.value)} />
-          </label>
-        </div>
-
-        <div className="seo-block">
-          <div className="seo-review-head">
-            <h3>Revisão</h3>
-            <span className={ready === checks.length ? "seo-score is-ok" : "seo-score"}>
-              {ready} de {checks.length} pontos ok
-            </span>
-          </div>
-          <p className="admin-hint">O Google não vê esta lista. Ela só mostra se a palavra-chave e os tamanhos estão alinhados.</p>
-          <ul className="seo-checks">
-            {checks.map((item) => (
-              <li key={item.label} className={item.ok ? "is-ok" : "is-off"}>
-                <span className="seo-status">{item.ok ? "Ok" : "Falta"}</span>
-                <div>
-                  <strong>{item.label}</strong>
-                  <p>{item.help}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="seo-block">
-          <h3>Título e descrição</h3>
-          <p className="admin-hint">
-            O título azul e o texto cinza da prévia vêm daqui. Deixe vazios se o título e o resumo do artigo já
-            estiverem bons.
-          </p>
-          <label>
-            Título no Google
-            <input name="seo_title" value={seoTitle} onChange={(event) => setSeoTitle(event.target.value)} maxLength={120} />
-            <span className={seoTitle.length > 60 ? "admin-count is-long" : "admin-count"}>{seoTitle.length}/60</span>
-          </label>
-          <label>
-            Descrição no Google
-            <textarea
-              name="seo_description"
-              rows={3}
-              value={seoDescription}
-              onChange={(event) => setSeoDescription(event.target.value)}
-              maxLength={320}
+      <div className="admin-editor-grid">
+        <div className="admin-write">
+          <label className="admin-title-field">
+            <span className="sr-only">Título</span>
+            <input
+              className="admin-title-input"
+              name="title"
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              placeholder="Adicionar título"
+              required
+              minLength={3}
             />
-            <span className={seoDescription.length > 160 ? "admin-count is-long" : "admin-count"}>
-              {seoDescription.length}/160
-            </span>
           </label>
-        </div>
-      </fieldset>
 
-      <Actions />
-      {state.message ? (
-        <p className="err" role="status">
-          {state.message}
-        </p>
-      ) : null}
+          <p className="admin-permalink">
+            <span>Endereço:</span>
+            <span className="admin-permalink-base">
+              {host}/blog/
+            </span>
+            <input
+              name="slug"
+              value={slug}
+              onChange={(event) => {
+                setSlugTouched(true);
+                setSlug(event.target.value);
+              }}
+              placeholder="titulo-do-artigo"
+            />
+          </p>
+
+          <input name="body" type="hidden" value={body} />
+          <ArticleEditor
+            value={body}
+            onChange={setBody}
+            uploadImage={async (file) => {
+              const data = new FormData();
+              data.set("image", file);
+              data.set("slug", slug || "artigo");
+              return uploadPostImage(data);
+            }}
+          />
+
+          <fieldset className="admin-seo">
+            <legend>SEO</legend>
+            <p className="seo-lead">
+              A palavra-chave só serve para esta revisão. O Google vê o título azul, o endereço e a
+              descrição cinza da prévia.
+            </p>
+
+            <div className="seo-block">
+              <label>
+                Palavra-chave principal
+                <input
+                  name="seo_keyword"
+                  value={seoKeyword}
+                  onChange={(event) => setSeoKeyword(event.target.value)}
+                  placeholder="Ex.: Santa Catarina"
+                />
+              </label>
+            </div>
+
+            <div className="seo-block">
+              <h3>Prévia no Google</h3>
+              <p className="admin-hint">Edite aqui o que aparece na busca. O título do artigo pode ficar longo.</p>
+              <div className="seo-snippet">
+                <label className="seo-snippet-field">
+                  <span className="sr-only">Título no Google</span>
+                  <input
+                    className="seo-preview-title"
+                    value={snippetTitle}
+                    onChange={(event) => setSeoTitle(event.target.value)}
+                    maxLength={120}
+                    placeholder="Título que aparece no Google"
+                  />
+                </label>
+                <div className="seo-meter-row">
+                  <SeoMeter length={snippetTitle.length} min={50} max={60} />
+                  <span className={snippetTitle.length > 60 ? "admin-count is-long" : "admin-count"}>
+                    {snippetTitle.length}/60
+                  </span>
+                </div>
+                <p className="seo-preview-url">
+                  {host} › blog › {slug || "titulo-do-artigo"}
+                </p>
+                <label className="seo-snippet-field">
+                  <span className="sr-only">Descrição no Google</span>
+                  <textarea
+                    className="seo-preview-desc"
+                    rows={3}
+                    value={snippetDescription}
+                    onChange={(event) => setSeoDescription(event.target.value)}
+                    maxLength={320}
+                    placeholder="Descrição que aparece no Google"
+                  />
+                </label>
+                <div className="seo-meter-row">
+                  <SeoMeter length={snippetDescription.length} min={50} max={160} />
+                  <span className={snippetDescription.length > 160 ? "admin-count is-long" : "admin-count"}>
+                    {snippetDescription.length}/160
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="seo-block">
+              <div className="seo-review-head">
+                <h3>Análise</h3>
+                <span className={ready === checks.length ? "seo-score is-ok" : "seo-score"}>
+                  {ready} de {checks.length} pontos ok
+                </span>
+              </div>
+              <ul className="seo-checks">
+                {checks.map((item) => (
+                  <li key={item.label} className={item.ok ? "is-ok" : "is-off"}>
+                    <span className="seo-status">{item.ok ? "Ok" : "Falta"}</span>
+                    <div>
+                      <strong>{item.label}</strong>
+                      <p>{item.help}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </fieldset>
+        </div>
+
+        <aside className="admin-side">
+          <div className="admin-box">
+            <h3>Publicar</h3>
+            <Actions published={Boolean(post?.published_at)} />
+            {state.message ? (
+              <p className="err" role="status">
+                {state.message}
+              </p>
+            ) : null}
+          </div>
+
+          <div className="admin-box">
+            <h3>Categoria</h3>
+            <label>
+              <span className="sr-only">Categoria</span>
+              <select name="category" value={category} onChange={(event) => setCategory(event.target.value)} required>
+                {names.length === 0 ? <option value="">Crie uma categoria primeiro</option> : null}
+                {names.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {addingCategory ? (
+              <div className="admin-category-new">
+                <label>
+                  Nome da nova categoria
+                  <input
+                    value={newCategory}
+                    onChange={(event) => setNewCategory(event.target.value)}
+                    minLength={2}
+                    placeholder="Ex.: Arquitetura"
+                  />
+                </label>
+                <div className="admin-toolbar">
+                  <button className="admin-secondary" type="button" onClick={submitNewCategory}>
+                    Salvar categoria
+                  </button>
+                  <button className="admin-tool" type="button" onClick={() => setAddingCategory(false)}>
+                    Cancelar
+                  </button>
+                </div>
+                {categoryState.message ? <p className="err">{categoryState.message}</p> : null}
+              </div>
+            ) : (
+              <button className="admin-tool" type="button" onClick={() => setAddingCategory(true)}>
+                Nova categoria
+              </button>
+            )}
+          </div>
+
+          <div className="admin-box">
+            <h3>Imagem de capa</h3>
+            <label>
+              <span className="sr-only">Capa</span>
+              <input
+                name="cover"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  setPreview(file ? URL.createObjectURL(file) : post?.cover || "");
+                }}
+              />
+              <span className="admin-hint">JPG, PNG ou WebP, até 5 MB.</span>
+            </label>
+            {preview ? (
+              <div className="admin-cover-preview">
+                <img src={preview} alt="" />
+                {post?.cover ? (
+                  <label className="admin-check">
+                    <input name="remove_cover" type="checkbox" />
+                    Remover capa
+                  </label>
+                ) : null}
+              </div>
+            ) : null}
+            <label>
+              Texto alternativo
+              <input name="cover_alt" defaultValue={post?.cover_alt ?? ""} />
+            </label>
+          </div>
+
+          <div className="admin-box">
+            <h3>Resumo</h3>
+            <label>
+              <span className="sr-only">Resumo</span>
+              <textarea name="excerpt" rows={4} value={excerpt} onChange={(event) => setExcerpt(event.target.value)} />
+            </label>
+            <p className="admin-hint">Aparece na listagem do blog. Se a descrição do Google ficar vazia, usamos este texto.</p>
+          </div>
+
+          <div className="admin-box">
+            <h3>Publicação</h3>
+            <label>
+              Data
+              <input name="published_at" type="datetime-local" defaultValue={toDatetimeLocal(post?.published_at ?? null)} />
+            </label>
+            <label className="admin-check">
+              <input name="featured" type="checkbox" defaultChecked={post?.featured} />
+              Destacar na listagem
+            </label>
+          </div>
+        </aside>
+      </div>
     </form>
   );
 }

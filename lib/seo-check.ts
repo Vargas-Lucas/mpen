@@ -1,7 +1,17 @@
 export type SeoCheck = { ok: boolean; label: string; help: string };
 
+function folded(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
 function hasKeyword(value: string, keyword: string) {
-  return keyword.length > 0 && value.toLowerCase().includes(keyword.toLowerCase());
+  const needle = folded(keyword);
+  return needle.length > 0 && folded(value).includes(needle);
 }
 
 export function articleSeoChecks(input: {
@@ -14,8 +24,8 @@ export function articleSeoChecks(input: {
   keyword: string;
 }): SeoCheck[] {
   const keyword = input.keyword.trim();
-  const title = input.seoTitle.trim() || input.title.trim();
-  const description = input.seoDescription.trim() || input.excerpt.trim();
+  const googleTitle = input.seoTitle.trim() || (input.title.trim() ? `${input.title.trim()} — MPEN` : "");
+  const googleDescription = input.seoDescription.trim() || input.excerpt.trim();
   const text = `${input.title} ${input.excerpt} ${input.body}`;
 
   return [
@@ -25,19 +35,19 @@ export function articleSeoChecks(input: {
       help: "Escreva o tema principal em 1 ou 2 palavras, como Sul da Ilha ou Florianópolis.",
     },
     {
-      ok: hasKeyword(title, keyword),
+      ok: hasKeyword(googleTitle, keyword),
       label: "Aparece no título",
-      help: "Inclua a palavra-chave no título do Google ou no título do artigo.",
+      help: "Inclua a palavra-chave no título azul da prévia.",
     },
     {
       ok: hasKeyword(input.slug, keyword),
       label: "Aparece no endereço",
-      help: "O endereço fica mais claro se tiver a palavra, sem acento: /blog/sul-da-ilha.",
+      help: "Conta hífen e acento: Santa Catarina e /blog/santa-catarina são a mesma coisa.",
     },
     {
-      ok: hasKeyword(description, keyword),
+      ok: hasKeyword(googleDescription, keyword),
       label: "Aparece na descrição",
-      help: "Repita a palavra-chave na descrição do Google ou no resumo.",
+      help: "Repita a palavra-chave no texto cinza da prévia.",
     },
     {
       ok: hasKeyword(text, keyword),
@@ -45,14 +55,14 @@ export function articleSeoChecks(input: {
       help: "Use a palavra-chave de forma natural no corpo do artigo.",
     },
     {
-      ok: title.length > 0 && title.length <= 60,
+      ok: googleTitle.length > 0 && googleTitle.length <= 60,
       label: "Título com até 60 caracteres",
-      help: "Títulos longos o Google corta. Fique perto de 50 a 60 caracteres.",
+      help: "Encurte o título azul da prévia. O título do artigo, em cima, pode ficar longo.",
     },
     {
-      ok: description.length >= 50 && description.length <= 160,
+      ok: googleDescription.length >= 50 && googleDescription.length <= 160,
       label: "Descrição entre 50 e 160 caracteres",
-      help: "Esse tamanho costuma aparecer inteiro no resultado da busca.",
+      help: "Ajuste o texto cinza da prévia para 50 a 160 caracteres.",
     },
   ];
 }

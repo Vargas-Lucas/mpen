@@ -1,5 +1,5 @@
 import { query } from "@/lib/db";
-import type { Development, Post } from "@/lib/types";
+import type { Category, Development, Post } from "@/lib/types";
 
 const STATUSES = new Set(["lancamento", "construcao", "entregue"]);
 
@@ -62,6 +62,36 @@ export async function getFeaturedDevelopments() {
   return query<Development>("SELECT * FROM developments ORDER BY sort_order LIMIT 3");
 }
 
+const FALLBACK_CATEGORIES: Category[] = [
+  { id: 1, name: "Empreendimentos", slug: "empreendimentos" },
+  { id: 2, name: "Institucional", slug: "institucional" },
+  { id: 3, name: "MPEN", slug: "mpen" },
+  { id: 4, name: "Novidades", slug: "novidades" },
+  { id: 5, name: "Sul da Ilha", slug: "sul-da-ilha" },
+];
+
+export async function getCategories() {
+  try {
+    return await query<Category>("SELECT id, name, slug FROM categories ORDER BY name");
+  } catch {
+    return FALLBACK_CATEGORIES;
+  }
+}
+
+export async function getAdminCategories() {
+  try {
+    return await query<Category & { posts: number }>(`
+      SELECT c.id, c.name, c.slug, COUNT(p.id)::int AS posts
+      FROM categories c
+      LEFT JOIN posts p ON p.category = c.name
+      GROUP BY c.id, c.name, c.slug
+      ORDER BY c.name
+    `);
+  } catch {
+    return FALLBACK_CATEGORIES.map((item) => ({ ...item, posts: 0 }));
+  }
+}
+
 export async function getPosts(filters: { q?: string; category?: string; limit?: number } = {}) {
   const where = ["published_at IS NOT NULL"];
   const params: unknown[] = [];
@@ -97,6 +127,11 @@ export async function getPost(slug: string) {
     "SELECT * FROM posts WHERE slug = $1 AND published_at IS NOT NULL",
     [slug],
   );
+  return rows[0] ?? null;
+}
+
+export async function getPostBySlug(slug: string) {
+  const rows = await query<Post>("SELECT * FROM posts WHERE slug = $1", [slug]);
   return rows[0] ?? null;
 }
 

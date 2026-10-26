@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { DeletePostButton } from "@/components/DeletePostButton";
 import { PostForm } from "@/components/PostForm";
 import { requireEditor } from "@/lib/auth";
-import { getAdminPost } from "@/lib/data";
+import { getAdminPost, getCategories } from "@/lib/data";
 
 export default async function EditPostPage({
   params,
@@ -15,7 +15,7 @@ export default async function EditPostPage({
   await requireEditor();
   const { id } = await params;
   const { salvo } = await searchParams;
-  const post = await getAdminPost(Number(id));
+  const [post, categories] = await Promise.all([getAdminPost(Number(id)), getCategories()]);
   if (!post) notFound();
 
   return (
@@ -28,18 +28,16 @@ export default async function EditPostPage({
           Artigo salvo.
         </p>
       ) : null}
-      <PostForm post={post} />
+      <PostForm post={post} categories={categories} />
       <div className="admin-footer-row">
         <p className="admin-back">
           <Link href="/admin">Voltar aos artigos</Link>
-          {post.published_at ? (
-            <>
-              {" · "}
-              <a href={`/blog/${post.slug}`} target="_blank" rel="noreferrer">
-                Ver no site
-              </a>
-            </>
-          ) : null}
+          <>
+            {" · "}
+            <a href={`/blog/${post.slug}${post.published_at ? "" : "?preview=1"}`} target="_blank" rel="noreferrer">
+              {post.published_at ? "Ver no site" : "Ver como"}
+            </a>
+          </>
         </p>
         <DeletePostButton id={post.id} title={post.title} />
       </div>
