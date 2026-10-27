@@ -1,6 +1,6 @@
 import Link from "next/link";
+import { BlogToolbar } from "@/components/BlogToolbar";
 import { ContactForm } from "@/components/ContactForm";
-import { PageHeader } from "@/components/PageHeader";
 import { PostCard } from "@/components/PostCard";
 import { getCategories, getPosts } from "@/lib/data";
 
@@ -35,32 +35,24 @@ export default async function BlogPage({
 
   return (
     <>
-      <PageHeader
-        title="Blog MPEN: Florianópolis, arquitetura e mercado imobiliário"
-        lede="Conteúdos sobre o mercado imobiliário de Florianópolis, arquitetura, construção civil e qualidade de vida em Santa Catarina. Conheça tendências, informações sobre a região e novidades dos empreendimentos da MPEN Incorporadora."
-      />
-      <section className="section">
+      <section className="page-hero blog-hero">
         <div className="container">
-          <form className="blog-search" action="/blog" method="get">
-            {category ? <input type="hidden" name="categoria" value={category} /> : null}
-            <input name="q" defaultValue={q} placeholder="Buscar artigos..." />
-            <button type="submit">Buscar</button>
-          </form>
-
-          <nav className="blog-filters" aria-label="Categorias do blog">
-            <Link className={!category ? "is-on" : undefined} href={blogHref(q)}>
-              Todas
-            </Link>
-            {categories.map((item) => (
-              <Link
-                key={item.id}
-                className={category === item.name ? "is-on" : undefined}
-                href={blogHref(q, item.name)}
-              >
-                {item.name}
-              </Link>
-            ))}
-          </nav>
+          <h1>
+            <span className="blog-hero-short">Blog MPEN</span>
+            <span className="blog-hero-full">
+              Blog MPEN: Florianópolis, arquitetura e mercado imobiliário
+            </span>
+          </h1>
+          <p>
+            Conteúdos sobre o mercado imobiliário de Florianópolis, arquitetura, construção civil e
+            qualidade de vida em Santa Catarina. Conheça tendências, informações sobre a região e
+            novidades dos empreendimentos da MPEN Incorporadora.
+          </p>
+        </div>
+      </section>
+      <section className="section blog-index">
+        <div className="container">
+          <BlogToolbar key={`${q}-${category}`} q={q} category={category} categories={categories} />
 
           {posts.length === 0 ? (
             <div className="empty">
