@@ -1174,43 +1174,89 @@ h2.kicker {
 }
 
 .about-banner {
-  background: white;
-  color: var(--navy);
-  padding: 8px 0 0;
+  position: relative;
+  min-height: min(72vh, 620px);
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  color: white;
+  background: #1d2030;
 }
 
 .about-banner img {
-  display: block;
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: 420px;
+  height: 100%;
   object-fit: cover;
-  object-position: center;
-  border-radius: 16px;
+  object-position: 28% 42%;
+}
+
+.about-banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(90deg, rgba(12, 14, 43, 0.42) 0%, rgba(12, 14, 43, 0.08) 55%, rgba(12, 14, 43, 0.28) 100%),
+    linear-gradient(180deg, rgba(12, 14, 43, 0.06) 0%, rgba(12, 14, 43, 0.18) 42%, rgba(12, 14, 43, 0.78) 100%);
+}
+
+.about-banner .container {
+  position: relative;
+  z-index: 2;
+  padding: 120px 0 56px;
+}
+
+.about-banner-kicker {
+  margin: 0 0 14px;
+  color: #b7e0ee;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
 }
 
 .about-banner h2 {
-  margin: 28px 0 0;
-  max-width: 16em;
-  color: var(--navy);
-  font-size: clamp(28px, 4vw, 44px);
-  line-height: 1.18;
+  margin: 0;
+  max-width: 14em;
+  color: white;
+  font-size: clamp(36px, 4.4vw, 56px);
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  text-shadow: 0 2px 28px rgba(12, 14, 43, 0.35);
 }
 
 .about-story-wrap {
-  padding-top: 40px;
-  padding-bottom: 8px;
+  padding: 72px 0 80px;
 }
 
 .about-story {
-  max-width: 680px;
+  display: grid;
+  grid-template-columns: minmax(240px, 0.9fr) minmax(320px, 1.1fr);
+  gap: 28px 80px;
+  align-items: start;
+  max-width: none;
 }
 
-.about-story p {
-  margin: 0 0 18px;
-  color: var(--text);
-  font-size: 17px;
-  line-height: 1.75;
+.about-story-lede {
+  margin: 0;
+  color: var(--navy);
+  font-size: clamp(22px, 2.1vw, 28px);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1.38;
 }
+
+.about-story-copy p {
+  margin: 0 0 22px;
+  color: var(--muted);
+  font-size: 16.5px;
+  line-height: 1.8;
+}
+
+.about-story-copy p:last-child { margin-bottom: 0; }
 
 .about-intro {
   display: grid;
@@ -3345,29 +3391,61 @@ h2.kicker {
     border: 0;
   }
 
-  .about-banner { padding: 12px 0 0; }
+  .about-banner {
+    display: block;
+    min-height: 0;
+    overflow: visible;
+    background: white;
+    color: var(--navy);
+    padding: 12px 0 0;
+  }
 
   .about-banner img {
+    position: relative;
+    display: block;
+    width: min(1120px, calc(100% - 40px));
     height: 248px;
+    margin: 0 auto;
+    border-radius: 16px;
+    transform: none;
+    animation: none;
     object-position: 20% 28%;
   }
 
+  .about-banner::after { display: none; }
+
+  .about-banner .container { padding: 20px 0 0; }
+
+  .about-banner-kicker { display: none; }
+
   .about-banner h2 {
-    margin-top: 20px;
     max-width: none;
+    color: var(--navy);
     font-size: 26px;
     line-height: 1.22;
+    letter-spacing: 0;
+    text-shadow: none;
   }
 
   .about-story-wrap { padding-top: 14px; padding-bottom: 28px; }
 
-  .about-story p {
-    font-size: 16px;
-    line-height: 1.7;
-    margin-bottom: 16px;
+  .about-story {
+    display: block;
+    gap: 0;
   }
 
-  .about-story p:first-child {
+  .about-story-lede,
+  .about-story-copy p {
+    max-width: none;
+    font-size: 16px;
+    font-weight: 300;
+    letter-spacing: 0;
+    line-height: 1.7;
+    margin: 0 0 16px;
+    color: var(--text);
+  }
+
+  .about-story-lede {
     font-size: 17px;
     color: var(--navy);
   }
@@ -3484,13 +3562,16 @@ h2.kicker {
 
   .container { width: min(1120px, calc(100% - 32px)); }
 
-  .about-banner img { height: 220px; }
+  .about-banner img {
+    width: min(1120px, calc(100% - 32px));
+    height: 220px;
+  }
 
   .about-banner h2 { font-size: 23px; }
 
-  .about-story p { font-size: 15.5px; }
+  .about-story-copy p { font-size: 15.5px; }
 
-  .about-story p:first-child { font-size: 16.5px; }
+  .about-story-lede { font-size: 16.5px; }
 
   .principles { padding: 40px 0 48px; }
 

@@ -62,33 +62,36 @@ export default async function AboutPage() {
       />
 
       <section className="about-banner">
+        <img src="/images/sobre/capa.png" alt="Profissional da construtora MPEN no Sul da Ilha de Florianópolis" />
         <div className="container">
-          <img src="/images/sobre/capa.png" alt="Profissional da construtora MPEN no Sul da Ilha de Florianópolis" />
+          <p className="about-banner-kicker">Sul da Ilha · desde 2003</p>
           <h2>Construímos histórias no Sul da Ilha de Florianópolis.</h2>
         </div>
       </section>
 
       <section className="section about-story-wrap">
         <div className="container about-story">
-          <p>
+          <p className="about-story-lede">
             Desde 2003, a MPEN Incorporadora participa do desenvolvimento imobiliário do Sul da Ilha
             de Florianópolis, uma região que reúne natureza, identidade cultural e novas
             possibilidades de morar.
           </p>
-          <p>
-            Ao longo de mais de duas décadas, construímos uma trajetória marcada por empreendimentos
-            residenciais que valorizam a localização, a qualidade construtiva e a arquitetura
-            pensada para o cotidiano.
-          </p>
-          <p>
-            Nossa atuação parte de um conhecimento próximo da região e das transformações que fazem
-            parte do seu crescimento. É esse olhar que orienta nossas escolhas, do planejamento de
-            cada projeto à entrega de espaços preparados para diferentes momentos da vida.
-          </p>
-          <p>
-            Mais do que desenvolver imóveis, buscamos criar empreendimentos que façam sentido para
-            as pessoas e para os lugares onde estão inseridos.
-          </p>
+          <div className="about-story-copy">
+            <p>
+              Ao longo de mais de duas décadas, construímos uma trajetória marcada por empreendimentos
+              residenciais que valorizam a localização, a qualidade construtiva e a arquitetura
+              pensada para o cotidiano.
+            </p>
+            <p>
+              Nossa atuação parte de um conhecimento próximo da região e das transformações que fazem
+              parte do seu crescimento. É esse olhar que orienta nossas escolhas, do planejamento de
+              cada projeto à entrega de espaços preparados para diferentes momentos da vida.
+            </p>
+            <p>
+              Mais do que desenvolver imóveis, buscamos criar empreendimentos que façam sentido para
+              as pessoas e para os lugares onde estão inseridos.
+            </p>
+          </div>
         </div>
       </section>
 
