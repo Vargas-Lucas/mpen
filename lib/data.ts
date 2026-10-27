@@ -1,4 +1,5 @@
 import { query } from "@/lib/db";
+import { ensureBlogSchema } from "@/lib/ensure-schema";
 import type { Category, Development, Post } from "@/lib/types";
 
 const STATUSES = new Set(["lancamento", "construcao", "entregue"]);
@@ -72,6 +73,7 @@ const FALLBACK_CATEGORIES: Category[] = [
 
 export async function getCategories() {
   try {
+    await ensureBlogSchema();
     return await query<Category>("SELECT id, name, slug FROM categories ORDER BY name");
   } catch {
     return FALLBACK_CATEGORIES;
@@ -80,6 +82,7 @@ export async function getCategories() {
 
 export async function getAdminCategories() {
   try {
+    await ensureBlogSchema();
     return await query<Category & { posts: number }>(`
       SELECT c.id, c.name, c.slug, COUNT(p.id)::int AS posts
       FROM categories c

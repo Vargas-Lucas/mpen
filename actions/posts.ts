@@ -2,10 +2,11 @@
 
 import { mkdir, writeFile } from "fs/promises";
 import path from "path";
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
 import { ensureCategory } from "@/actions/categories";
 import { requireEditor } from "@/lib/auth";
 import { query } from "@/lib/db";
+import { dbErrorMessage, ensureBlogSchema } from "@/lib/ensure-schema";
 import { slugify } from "@/lib/slug";
 import type { Post } from "@/lib/types";
 
@@ -31,14 +32,15 @@ function parsePublishDate(value: string) {
 }
 
 async function uniqueSlug(base: string, exceptId?: number) {
-  let slug = base;
+  const root = base || "artigo";
+  let slug = root;
   let n = 2;
   while (true) {
     const rows = exceptId
       ? await query<{ id: number }>("SELECT id FROM posts WHERE slug = $1 AND id <> $2", [slug, exceptId])
       : await query<{ id: number }>("SELECT id FROM posts WHERE slug = $1", [slug]);
     if (rows.length === 0) return slug;
-    slug = `${base}-${n}`;
+    slug = `${root}-${n}`;
     n += 1;
   }
 }
@@ -68,58 +70,92 @@ export async function uploadPostImage(formData: FormData): Promise<{ ok: boolean
   }
 }
 
+type SaveIntent = "publish" | "preview" | "draft";
+
+function readIntent(formData: FormData): SaveIntent | null {
+  const intent = read(formData, "intent");
+  if (intent === "publish" || intent === "preview" || intent === "draft") return intent;
+  return null;
+}
+
+export async function publishPost(_prev: PostState, formData: FormData): Promise<PostState> {
+  formData.set("intent", "publish");
+  return savePost(_prev, formData);
+}
+
+export async function previewPost(_prev: PostState, formData: FormData): Promise<PostState> {
+  formData.set("intent", "preview");
+  return savePost(_prev, formData);
+}
+
+export async function draftPost(_prev: PostState, formData: FormData): Promise<PostState> {
+  formData.set("intent", "draft");
+  return savePost(_prev, formData);
+}
+
 export async function savePost(_prev: PostState, formData: FormData): Promise<PostState> {
   await requireEditor();
 
-  const idValue = read(formData, "id");
-  const id = idValue ? Number(idValue) : 0;
-  const title = read(formData, "title");
-  const excerpt = read(formData, "excerpt");
-  const body = read(formData, "body");
-  const category = await ensureCategory(read(formData, "category") || "MPEN");
-  const intentRaw = read(formData, "intent");
-  const intent = intentRaw === "publish" || intentRaw === "preview" ? intentRaw : "draft";
-  const featured = formData.get("featured") === "on";
-  const removeCover = formData.get("remove_cover") === "on";
-  const slugInput = read(formData, "slug");
-  const seoTitle = read(formData, "seo_title");
-  const seoDescription = read(formData, "seo_description");
-  const seoKeyword = read(formData, "seo_keyword");
-  const coverAlt = read(formData, "cover_alt");
-  const coverFile = formData.get("cover");
-
-  if (title.length < 3) {
-    return { ok: false, message: "Informe um título com pelo menos 3 caracteres." };
-  }
-
-  let current: Post | null = null;
-  if (id) {
-    const rows = await query<Post>("SELECT * FROM posts WHERE id = $1", [id]);
-    current = rows[0] ?? null;
-    if (!current) return { ok: false, message: "Artigo não encontrado." };
-  }
-
-  const slug = await uniqueSlug(slugify(slugInput || title), id || undefined);
-  let cover = current?.cover || "";
-  if (removeCover) cover = "";
-
   try {
-    if (coverFile instanceof File && coverFile.size > 0) {
-      cover = await saveBlogImage(coverFile, slug);
+    await ensureBlogSchema();
+
+    const idValue = read(formData, "id");
+    const id = idValue ? Number(idValue) : 0;
+    const title = read(formData, "title");
+    const excerpt = read(formData, "excerpt");
+    const body = read(formData, "body");
+    const categoryName = read(formData, "category") || "MPEN";
+    const intent = readIntent(formData);
+    if (!intent) {
+      return { ok: false, message: "Escolha Publicar, Ver como ou Salvar rascunho." };
     }
-  } catch (error) {
-    return { ok: false, message: error instanceof Error ? error.message : "Não foi possível guardar a capa." };
-  }
+    const featured = formData.get("featured") === "on";
+    const removeCover = formData.get("remove_cover") === "on";
+    const slugInput = read(formData, "slug");
+    const seoTitle = read(formData, "seo_title");
+    const seoDescription = read(formData, "seo_description");
+    const seoKeyword = read(formData, "seo_keyword");
+    const coverAlt = read(formData, "cover_alt");
+    const coverFile = formData.get("cover");
 
-  const publishedAt =
-    intent === "publish"
-      ? parsePublishDate(read(formData, "published_at"))
-      : intent === "preview"
-        ? current?.published_at ?? null
-        : null;
+    if (title.length < 3) {
+      return { ok: false, message: "Informe um título com pelo menos 3 caracteres." };
+    }
 
-  let savedId = current?.id ?? 0;
-  try {
+    let category = categoryName;
+    try {
+      category = await ensureCategory(categoryName);
+    } catch {
+      category = categoryName;
+    }
+
+    let current: Post | null = null;
+    if (id) {
+      const rows = await query<Post>("SELECT * FROM posts WHERE id = $1", [id]);
+      current = rows[0] ?? null;
+      if (!current) return { ok: false, message: "Artigo não encontrado." };
+    }
+
+    const slug = await uniqueSlug(slugify(slugInput || title), id || undefined);
+    let cover = current?.cover || "";
+    if (removeCover) cover = "";
+
+    if (coverFile instanceof File && coverFile.size > 0) {
+      try {
+        cover = await saveBlogImage(coverFile, slug);
+      } catch (error) {
+        return { ok: false, message: error instanceof Error ? error.message : "Não foi possível guardar a capa." };
+      }
+    }
+
+    const publishedAt =
+      intent === "publish"
+        ? parsePublishDate(read(formData, "published_at"))
+        : intent === "preview"
+          ? current?.published_at ?? null
+          : null;
+
+    let savedId = current?.id ?? 0;
     if (current) {
       await query(
         `UPDATE posts
@@ -165,13 +201,15 @@ export async function savePost(_prev: PostState, formData: FormData): Promise<Po
       );
       savedId = created[0]?.id ?? 0;
     }
-  } catch {
-    return { ok: false, message: "Não foi possível salvar o artigo agora." };
-  }
 
-  if (!savedId) return { ok: false, message: "Não foi possível salvar o artigo agora." };
-  if (intent === "preview") redirect(`/blog/${slug}?preview=1`);
-  redirect(`/admin/artigos/${savedId}?salvo=1`);
+    if (!savedId) return { ok: false, message: "Não foi possível salvar o artigo agora." };
+    if (intent === "preview") redirect(`/blog/${slug}?preview=1`);
+    if (intent === "publish") redirect(`/admin/artigos/${savedId}?publicado=1`);
+    redirect(`/admin/artigos/${savedId}?rascunho=1`);
+  } catch (error) {
+    unstable_rethrow(error);
+    return { ok: false, message: dbErrorMessage(error, "Não foi possível salvar o artigo agora.") };
+  }
 }
 
 export async function deletePost(formData: FormData) {

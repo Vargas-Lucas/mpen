@@ -563,16 +563,64 @@ button, input, select, textarea { font: inherit; }
 }
 
 .post-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  color: white;
+  background: #1f2245;
+  transition: transform 0.55s cubic-bezier(0.22, 0.8, 0.2, 1), box-shadow 0.55s ease;
+}
+
+.post-card > * {
+  position: relative;
+  z-index: 2;
+}
+
+.post-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
   background:
     linear-gradient(180deg, rgba(12, 14, 43, 0.08), rgba(12, 14, 43, 0.78)),
     linear-gradient(145deg, #1f2245, #1e73be);
-  color: white;
+  transition: transform 1s cubic-bezier(0.22, 0.8, 0.2, 1);
 }
 
-.post-card.has-cover {
+.post-card.has-cover::before {
   background:
-    linear-gradient(180deg, rgba(12, 14, 43, 0.12), rgba(12, 14, 43, 0.82)),
+    linear-gradient(180deg, rgba(12, 14, 43, 0.18), rgba(12, 14, 43, 0.78)),
     var(--post-cover) center / cover no-repeat;
+}
+
+.post-card::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: -80%;
+  width: 42%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+  transform: skewX(-18deg);
+  pointer-events: none;
+}
+
+.post-card:hover,
+.post-card:focus-visible {
+  transform: translateY(-8px);
+  box-shadow: 0 22px 44px rgba(12, 14, 43, 0.2);
+}
+
+.post-card:hover::before,
+.post-card:focus-visible::before {
+  transform: scale(1.08);
+}
+
+.post-card:hover::after,
+.post-card:focus-visible::after {
+  left: 140%;
+  transition: left 0.85s ease;
 }
 
 .dev-media {
@@ -3587,6 +3635,9 @@ h2.kicker {
   .dev-media img,
   .dev-media::before,
   .dev-media::after,
+  .post-card,
+  .post-card::before,
+  .post-card::after,
   .dev-consult::before,
   .dev-consult::after,
   .dev-status,
@@ -3615,7 +3666,9 @@ h2.kicker {
   }
 
   .partner-steps-grid li:hover,
-  .doc-card:hover { transform: none; }
+  .doc-card:hover,
+  .post-card:hover,
+  .post-card:focus-visible { transform: none; }
 
   .home-facts li:hover,
   .home-facts li:focus-within,
@@ -3953,9 +4006,14 @@ h2.kicker {
   gap: 8px;
 }
 
-.admin-publish [value="preview"] { order: 1; }
-.admin-publish [value="publish"] { order: 2; }
-.admin-publish [value="draft"] { order: 3; }
+.admin-publish .is-preview { order: 1; }
+.admin-publish .is-publish { order: 2; }
+.admin-publish .is-draft { order: 3; }
+
+.admin-publish.is-pending {
+  pointer-events: none;
+  opacity: 0.72;
+}
 
 .admin-publish .admin-submit,
 .admin-publish .admin-secondary {
@@ -4013,6 +4071,14 @@ h2.kicker {
 .admin-category-new {
   display: grid;
   gap: 8px;
+}
+
+.admin-draft-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
 }
 
 .admin-category-form {

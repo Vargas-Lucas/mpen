@@ -1,10 +1,10 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
 import { createCategory, type CategoryState } from "@/actions/categories";
-import { savePost, uploadPostImage, type PostState } from "@/actions/posts";
+import { draftPost, previewPost, publishPost, uploadPostImage, type PostState } from "@/actions/posts";
 
 const ArticleEditor = dynamic(
   () => import("@/components/ArticleEditor").then((mod) => mod.ArticleEditor),
@@ -22,37 +22,43 @@ import type { Category, Post } from "@/lib/types";
 const initial: PostState = { ok: false, message: "" };
 const host = SITE_URL.replace(/^https?:\/\//, "");
 
-function Actions({ published }: { published?: boolean }) {
+type SaveAction = (formData: FormData) => void;
+
+function Actions({
+  published,
+  publish,
+  preview,
+  draft,
+}: {
+  published?: boolean;
+  publish: SaveAction;
+  preview: SaveAction;
+  draft: SaveAction;
+}) {
   const { pending } = useFormStatus();
   const [clicked, setClicked] = useState("");
   return (
-    <div className="admin-publish">
+    <div className={pending ? "admin-publish is-pending" : "admin-publish"}>
       <button
-        className="admin-submit"
-        name="intent"
-        value="publish"
+        className="admin-submit is-publish"
         type="submit"
-        disabled={pending}
+        formAction={publish}
         onClick={() => setClicked("publish")}
       >
         {pending && clicked === "publish" ? "Publicando..." : published ? "Atualizar" : "Publicar"}
       </button>
       <button
-        className="admin-secondary"
-        name="intent"
-        value="preview"
+        className="admin-secondary is-preview"
         type="submit"
-        disabled={pending}
+        formAction={preview}
         onClick={() => setClicked("preview")}
       >
-        {pending && clicked === "preview" ? "Abrindo..." : "Ver como"}
+        {pending && clicked === "preview" ? "Abrindo prévia..." : "Ver como"}
       </button>
       <button
-        className="admin-secondary"
-        name="intent"
-        value="draft"
+        className="admin-secondary is-draft"
         type="submit"
-        disabled={pending}
+        formAction={draft}
         onClick={() => setClicked("draft")}
       >
         {pending && clicked === "draft" ? "Salvando..." : published ? "Voltar para rascunho" : "Salvar rascunho"}
@@ -72,10 +78,41 @@ function SeoMeter({ length, min, max }: { length: number; min: number; max: numb
 }
 
 const categoryInitial: CategoryState = { ok: false, message: "" };
+const DRAFT_KEY = "mpen-draft-novo";
 
-export function PostForm({ post, categories }: { post?: Post; categories: Category[] }) {
-  const [state, action] = useActionState(savePost, initial);
+type LocalDraft = {
+  title?: string;
+  slug?: string;
+  slugTouched?: boolean;
+  excerpt?: string;
+  body?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeyword?: string;
+  category?: string;
+};
+
+export function PostForm({
+  post,
+  categories,
+  saved,
+}: {
+  post?: Post;
+  categories: Category[];
+  saved?: boolean;
+}) {
+  const [publishState, publishAction] = useActionState(publishPost, initial);
+  const [previewState, previewAction] = useActionState(previewPost, initial);
+  const [draftState, draftAction] = useActionState(draftPost, initial);
+  const state = publishState.message
+    ? publishState
+    : previewState.message
+      ? previewState
+      : draftState;
   const [categoryState, addCategory] = useActionState(createCategory, categoryInitial);
+  const [catPending, startCategory] = useTransition();
+  const [draftReady, setDraftReady] = useState(Boolean(post));
+  const [restored, setRestored] = useState(false);
   const [names, setNames] = useState(() => {
     const list = categories.map((item) => item.name);
     if (post?.category && !list.includes(post.category)) list.unshift(post.category);
@@ -95,10 +132,72 @@ export function PostForm({ post, categories }: { post?: Post; categories: Catego
   const [seoDescription, setSeoDescription] = useState(post?.seo_description ?? "");
   const [seoKeyword, setSeoKeyword] = useState(post?.seo_keyword ?? "");
   const [preview, setPreview] = useState(post?.cover || "");
+  const [editorKey, setEditorKey] = useState(0);
+
+  useEffect(() => {
+    if (saved) {
+      try {
+        sessionStorage.removeItem(DRAFT_KEY);
+      } catch {
+        /* ignore */
+      }
+    }
+    if (post) {
+      setDraftReady(true);
+      return;
+    }
+    try {
+      const raw = sessionStorage.getItem(DRAFT_KEY);
+      if (raw) {
+        const data = JSON.parse(raw) as LocalDraft;
+        if (data.title) setTitle(data.title);
+        if (data.slug) setSlug(data.slug);
+        if (data.slugTouched) setSlugTouched(true);
+        if (data.excerpt) setExcerpt(data.excerpt);
+        if (data.body) setBody(data.body);
+        if (data.seoTitle) setSeoTitle(data.seoTitle);
+        if (data.seoDescription) setSeoDescription(data.seoDescription);
+        if (data.seoKeyword) setSeoKeyword(data.seoKeyword);
+        if (data.category) {
+          setNames((current) => (current.includes(data.category!) ? current : [...current, data.category!]));
+          setCategory(data.category);
+        }
+        setRestored(Boolean(data.title || data.body || data.excerpt));
+      }
+    } catch {
+      /* ignore broken local draft */
+    }
+    setDraftReady(true);
+  }, [post, saved]);
 
   useEffect(() => {
     if (!slugTouched) setSlug(title ? slugify(title) : "");
   }, [title, slugTouched]);
+
+  useEffect(() => {
+    if (post || !draftReady) return;
+    const timer = window.setTimeout(() => {
+      try {
+        sessionStorage.setItem(
+          DRAFT_KEY,
+          JSON.stringify({
+            title,
+            slug,
+            slugTouched,
+            excerpt,
+            body,
+            seoTitle,
+            seoDescription,
+            seoKeyword,
+            category,
+          } satisfies LocalDraft),
+        );
+      } catch {
+        /* quota */
+      }
+    }, 400);
+    return () => window.clearTimeout(timer);
+  }, [post, draftReady, title, slug, slugTouched, excerpt, body, seoTitle, seoDescription, seoKeyword, category]);
 
   useEffect(() => {
     if (categoryState.ok && categoryState.name) {
@@ -108,6 +207,21 @@ export function PostForm({ post, categories }: { post?: Post; categories: Catego
       setNewCategory("");
     }
   }, [categoryState]);
+
+  function discardLocalDraft() {
+    sessionStorage.removeItem(DRAFT_KEY);
+    setTitle(post?.title ?? "");
+    setSlug(post?.slug ?? "");
+    setSlugTouched(Boolean(post?.slug));
+    setExcerpt(post?.excerpt ?? "");
+    setBody(post?.body ?? "");
+    setSeoTitle(post?.seo_title ?? "");
+    setSeoDescription(post?.seo_description ?? "");
+    setSeoKeyword(post?.seo_keyword ?? "");
+    setCategory(post?.category || categories.find((item) => item.name === "MPEN")?.name || categories[0]?.name || "");
+    setRestored(false);
+    setEditorKey((current) => current + 1);
+  }
 
   const fallbackTitle = title.trim() ? `${title.trim()} — MPEN` : "";
   const fallbackDescription = excerpt.trim();
@@ -125,17 +239,34 @@ export function PostForm({ post, categories }: { post?: Post; categories: Catego
   const ready = checks.filter((item) => item.ok).length;
 
   function submitNewCategory() {
+    const name = newCategory.trim();
+    if (name.length < 2) return;
     const data = new FormData();
-    data.set("name", newCategory);
+    data.set("name", name);
     data.set("stay", "1");
-    addCategory(data);
+    startCategory(() => {
+      addCategory(data);
+    });
   }
 
   return (
-    <form className="form admin-form" action={action}>
+    <form className="form admin-form" action={draftAction}>
       {post ? <input name="id" type="hidden" value={post.id} /> : null}
       <input name="seo_title" type="hidden" value={seoTitle} />
       <input name="seo_description" type="hidden" value={seoDescription} />
+      {restored ? (
+        <p className="ok admin-draft-banner" role="status">
+          Rascunho local restaurado.{" "}
+          <button className="admin-tool" type="button" onClick={discardLocalDraft}>
+            Começar em branco
+          </button>
+        </p>
+      ) : null}
+      {state.message ? (
+        <p className="err" role="alert">
+          {state.message}
+        </p>
+      ) : null}
 
       <div className="admin-editor-grid">
         <div className="admin-write">
@@ -169,16 +300,21 @@ export function PostForm({ post, categories }: { post?: Post; categories: Catego
           </p>
 
           <input name="body" type="hidden" value={body} />
-          <ArticleEditor
-            value={body}
-            onChange={setBody}
-            uploadImage={async (file) => {
-              const data = new FormData();
-              data.set("image", file);
-              data.set("slug", slug || "artigo");
-              return uploadPostImage(data);
-            }}
-          />
+          {draftReady ? (
+            <ArticleEditor
+              key={editorKey}
+              value={body}
+              onChange={setBody}
+              uploadImage={async (file) => {
+                const data = new FormData();
+                data.set("image", file);
+                data.set("slug", slug || "artigo");
+                return uploadPostImage(data);
+              }}
+            />
+          ) : (
+            <div className="admin-visual" aria-hidden="true" />
+          )}
 
           <fieldset className="admin-seo">
             <legend>SEO</legend>
@@ -267,7 +403,12 @@ export function PostForm({ post, categories }: { post?: Post; categories: Catego
         <aside className="admin-side">
           <div className="admin-box">
             <h3>Publicar</h3>
-            <Actions published={Boolean(post?.published_at)} />
+            <Actions
+              published={Boolean(post?.published_at)}
+              publish={publishAction}
+              preview={previewAction}
+              draft={draftAction}
+            />
             {state.message ? (
               <p className="err" role="status">
                 {state.message}
@@ -295,13 +436,19 @@ export function PostForm({ post, categories }: { post?: Post; categories: Catego
                   <input
                     value={newCategory}
                     onChange={(event) => setNewCategory(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        event.preventDefault();
+                        submitNewCategory();
+                      }
+                    }}
                     minLength={2}
                     placeholder="Ex.: Arquitetura"
                   />
                 </label>
                 <div className="admin-toolbar">
-                  <button className="admin-secondary" type="button" onClick={submitNewCategory}>
-                    Salvar categoria
+                  <button className="admin-secondary" type="button" onClick={submitNewCategory} disabled={catPending}>
+                    {catPending ? "Salvando..." : "Salvar categoria"}
                   </button>
                   <button className="admin-tool" type="button" onClick={() => setAddingCategory(false)}>
                     Cancelar
