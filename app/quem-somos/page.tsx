@@ -56,15 +56,20 @@ export default async function AboutPage() {
     <>
       <PageHeader
         title="Conheça a Mpen"
-        lede="Conheça a MPEN Incorporadora, uma empresa com atuação no mercado imobiliário do Sul da Ilha de Florianópolis desde 2003."
+        lede="Incorporadora residencial no Sul da Ilha de Florianópolis desde 2003."
         compact
-        className="copy-justified"
+        className="about-hero"
       />
 
       <section className="about-banner">
-        <img src="/images/sobre/capa.png" alt="Profissional da construtora MPEN no Sul da Ilha de Florianópolis" />
         <div className="container">
+          <img src="/images/sobre/capa.png" alt="Profissional da construtora MPEN no Sul da Ilha de Florianópolis" />
           <h2>Construímos histórias no Sul da Ilha de Florianópolis.</h2>
+        </div>
+      </section>
+
+      <section className="section about-story-wrap">
+        <div className="container about-story">
           <p>
             Desde 2003, a MPEN Incorporadora participa do desenvolvimento imobiliário do Sul da Ilha
             de Florianópolis, uma região que reúne natureza, identidade cultural e novas

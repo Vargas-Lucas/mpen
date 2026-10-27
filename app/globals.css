@@ -1166,59 +1166,50 @@ h2.kicker {
   overflow-wrap: normal;
 }
 
+.about-hero p {
+  max-width: 34em;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
 .about-banner {
-  position: relative;
-  min-height: 460px;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  color: white;
-  text-align: center;
-  background: #1d2030;
+  background: white;
+  color: var(--navy);
+  padding: 8px 0 0;
 }
 
 .about-banner img {
-  position: absolute;
-  inset: 0;
+  display: block;
   width: 100%;
-  height: 100%;
+  height: 420px;
   object-fit: cover;
   object-position: center;
-  transform: scale(1.08);
-  animation: banner-drift 18s ease-in-out infinite alternate;
-}
-
-.about-banner::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: rgba(12, 14, 43, 0.55);
-}
-
-.about-banner .container {
-  position: relative;
-  z-index: 2;
-  padding: 72px 0;
+  border-radius: 16px;
 }
 
 .about-banner h2 {
-  margin: 0 auto 18px;
-  max-width: 820px;
-  color: white;
-  font-size: clamp(32px, 4.4vw, 52px);
-  line-height: 1.15;
+  margin: 28px 0 0;
+  max-width: 16em;
+  color: var(--navy);
+  font-size: clamp(28px, 4vw, 44px);
+  line-height: 1.18;
 }
 
-.about-banner p {
-  margin: 0 auto 14px;
-  max-width: 760px;
-  color: rgba(255, 255, 255, 0.92);
+.about-story-wrap {
+  padding-top: 40px;
+  padding-bottom: 8px;
+}
+
+.about-story {
+  max-width: 680px;
+}
+
+.about-story p {
+  margin: 0 0 18px;
+  color: var(--text);
   font-size: 17px;
-  text-align: justify;
-  text-align-last: left;
-  hyphens: none;
-  overflow-wrap: normal;
+  line-height: 1.75;
 }
 
 .about-intro {
@@ -3343,7 +3334,50 @@ h2.kicker {
 
   .home-intro { padding: 36px 0 0; }
 
-  .about-banner .container { padding: 48px 0; }
+  .about-hero {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+  }
+
+  .about-banner { padding: 12px 0 0; }
+
+  .about-banner img {
+    height: 248px;
+    object-position: 20% 28%;
+  }
+
+  .about-banner h2 {
+    margin-top: 20px;
+    max-width: none;
+    font-size: 26px;
+    line-height: 1.22;
+  }
+
+  .about-story-wrap { padding-top: 14px; padding-bottom: 28px; }
+
+  .about-story p {
+    font-size: 16px;
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+
+  .about-story p:first-child {
+    font-size: 17px;
+    color: var(--navy);
+  }
+
+  .principles-glow,
+  .principle::before,
+  .principle::after,
+  .principle-index { display: none; }
+
+  .principle-orb { animation: none; margin-bottom: 12px; }
 
   .project-facts { grid-template-columns: 1fr 1fr; }
 
@@ -3450,41 +3484,26 @@ h2.kicker {
 
   .container { width: min(1120px, calc(100% - 32px)); }
 
-  .about-banner {
-    min-height: 0;
-    text-align: left;
-  }
+  .about-banner img { height: 220px; }
 
-  .about-banner img { object-position: 18% center; }
+  .about-banner h2 { font-size: 23px; }
 
-  .about-banner::after { background: rgba(12, 14, 43, 0.62); }
+  .about-story p { font-size: 15.5px; }
 
-  .about-banner .container { padding: 32px 0 36px; }
+  .about-story p:first-child { font-size: 16.5px; }
 
-  .about-banner h2 {
-    margin: 0 0 14px;
-    font-size: 28px;
-    line-height: 1.2;
-    text-align: left;
-  }
+  .principles { padding: 40px 0 48px; }
 
-  .about-banner p { font-size: 16px; }
+  .principles-kicker { margin-bottom: 16px; }
 
-  .principles { padding: 48px 0 56px; }
-
-  .principles-kicker { margin-bottom: 18px; }
-
-  .principle { padding: 22px 18px 20px; }
-
-  .principle-index {
-    top: 10px;
-    right: 14px;
-    font-size: 48px;
+  .principle {
+    padding: 20px 18px 18px;
+    border-radius: 16px;
   }
 
   .principle h3 {
-    font-size: 24px;
-    padding-right: 52px;
+    font-size: 22px;
+    padding-right: 0;
   }
 
   .principle p { max-width: none; }
@@ -3550,7 +3569,7 @@ h2.kicker {
   .home-intro-copy p,
   .project-story p,
   .page-hero.copy-justified p,
-  .about-banner p,
+  .about-story p,
   .principle p,
   .prose p,
   .partner-copy > p,
