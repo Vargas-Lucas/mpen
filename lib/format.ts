@@ -19,13 +19,20 @@ export function deliveryLabel(item: Pick<Development, "status" | "delivery">) {
   return `Entrega em ${item.delivery}`;
 }
 
-export function formatDate(value: string) {
+export function formatDate(value: string | Date) {
   return new Intl.DateTimeFormat("pt-BR", {
     timeZone: "America/Sao_Paulo",
     day: "2-digit",
     month: "long",
     year: "numeric",
-  }).format(new Date(value));
+  }).format(value instanceof Date ? value : new Date(value));
+}
+
+export function dateTimeAttr(value: string | Date | null | undefined) {
+  if (!value) return undefined;
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return undefined;
+  return date.toISOString();
 }
 
 export function readingMinutes(body: string) {

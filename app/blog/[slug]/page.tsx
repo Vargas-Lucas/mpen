@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getEditorSession } from "@/lib/auth";
 import { getPost, getPostBySlug, getRelatedPosts } from "@/lib/data";
-import { formatDate, readingMinutes } from "@/lib/format";
+import { dateTimeAttr, formatDate, readingMinutes } from "@/lib/format";
 import { ArticleBody } from "@/lib/markdown";
 import { articleJsonLd, articleMetadata } from "@/lib/seo";
 
@@ -87,7 +87,7 @@ export default async function PostPage({
             <p className="story-meta">
               <Link href={`/blog?categoria=${encodeURIComponent(post.category)}`}>{post.category}</Link>
               <span aria-hidden="true">·</span>
-              <time dateTime={post.published_at || undefined}>{dateLabel}</time>
+              <time dateTime={dateTimeAttr(post.published_at)}>{dateLabel}</time>
               <span aria-hidden="true">·</span>
               <span>{minutes} min de leitura</span>
             </p>
@@ -139,7 +139,7 @@ export default async function PostPage({
                         <span>
                           <em>{item.category}</em>
                           <strong>{item.title}</strong>
-                          {item.published_at ? <time dateTime={item.published_at}>{formatDate(item.published_at)}</time> : null}
+                          {item.published_at ? <time dateTime={dateTimeAttr(item.published_at)}>{formatDate(item.published_at)}</time> : null}
                         </span>
                       </Link>
                     </li>
