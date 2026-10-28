@@ -1,23 +1,15 @@
 "use server";
 
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
 import { redirect, unstable_rethrow } from "next/navigation";
 import { ensureCategory } from "@/actions/categories";
 import { requireEditor } from "@/lib/auth";
 import { query } from "@/lib/db";
 import { dbErrorMessage, ensureBlogSchema } from "@/lib/ensure-schema";
+import { saveBlogImage } from "@/lib/media";
 import { slugify } from "@/lib/slug";
 import type { Post } from "@/lib/types";
 
 export type PostState = { ok: boolean; message: string };
-
-const MAX_COVER = 5 * 1024 * 1024;
-const COVER_TYPES: Record<string, string> = {
-  "image/jpeg": "jpg",
-  "image/png": "png",
-  "image/webp": "webp",
-};
 
 function read(formData: FormData, key: string) {
   return String(formData.get(key) || "").trim();
@@ -43,17 +35,6 @@ async function uniqueSlug(base: string, exceptId?: number) {
     slug = `${root}-${n}`;
     n += 1;
   }
-}
-
-async function saveBlogImage(file: File, slug: string) {
-  const ext = COVER_TYPES[file.type];
-  if (!ext) throw new Error("A imagem precisa ser JPG, PNG ou WebP.");
-  if (file.size > MAX_COVER) throw new Error("A imagem pode ter no máximo 5 MB.");
-  const dir = path.join(process.cwd(), "public", "images", "blog");
-  await mkdir(dir, { recursive: true });
-  const name = `${slug}-${Date.now()}.${ext}`;
-  await writeFile(path.join(dir, name), Buffer.from(await file.arrayBuffer()));
-  return `/images/blog/${name}`;
 }
 
 export async function uploadPostImage(formData: FormData): Promise<{ ok: boolean; url?: string; message?: string }> {

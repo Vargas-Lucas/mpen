@@ -24,6 +24,15 @@ export async function ensureBlogSchema() {
   await query(`ALTER TABLE posts ADD COLUMN IF NOT EXISTS seo_title TEXT NOT NULL DEFAULT ''`);
   await query(`ALTER TABLE posts ADD COLUMN IF NOT EXISTS seo_description TEXT NOT NULL DEFAULT ''`);
   await query(`ALTER TABLE posts ADD COLUMN IF NOT EXISTS seo_keyword TEXT NOT NULL DEFAULT ''`);
+  await query(`
+    CREATE TABLE IF NOT EXISTS media (
+      id SERIAL PRIMARY KEY,
+      path TEXT UNIQUE NOT NULL,
+      mime TEXT NOT NULL,
+      bytes BYTEA NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
 
   for (const [name, slug] of DEFAULT_CATEGORIES) {
     await query(
