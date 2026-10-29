@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useActionState, useEffect, useState, useTransition } from "react";
+import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
 import { createCategory, type CategoryState } from "@/actions/categories";
 import { savePost, uploadPostImage, type PostState } from "@/actions/posts";
@@ -149,6 +149,8 @@ export function PostForm({
   const [seoDescription, setSeoDescription] = useState(post?.seo_description ?? "");
   const [seoKeyword, setSeoKeyword] = useState(post?.seo_keyword ?? "");
   const [preview, setPreview] = useState(post?.cover || "");
+  const [removeCover, setRemoveCover] = useState(false);
+  const coverInputRef = useRef<HTMLInputElement>(null);
   const [editorKey, setEditorKey] = useState(0);
 
   useEffect(() => {
@@ -478,15 +480,19 @@ export function PostForm({
 
           <div className="admin-box">
             <h3>Imagem de capa</h3>
+            {removeCover ? <input type="hidden" name="remove_cover" value="on" /> : null}
             <label>
               <span className="sr-only">Capa</span>
               <input
+                ref={coverInputRef}
                 name="cover"
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
                 onChange={(event) => {
                   const file = event.target.files?.[0];
-                  setPreview(file ? URL.createObjectURL(file) : post?.cover || "");
+                  if (!file) return;
+                  setRemoveCover(false);
+                  setPreview(URL.createObjectURL(file));
                 }}
               />
               <span className="admin-hint">JPG, PNG ou WebP, até 5 MB.</span>
@@ -494,14 +500,21 @@ export function PostForm({
             {preview ? (
               <div className="admin-cover-preview">
                 <img src={preview.startsWith("blob:") ? preview : blogImageSrc(preview)} alt="" />
-                {post?.cover ? (
-                  <label className="admin-check">
-                    <input name="remove_cover" type="checkbox" />
-                    Remover capa
-                  </label>
-                ) : null}
+                <button
+                  className="admin-tool admin-tool-danger"
+                  type="button"
+                  onClick={() => {
+                    setPreview("");
+                    setRemoveCover(true);
+                    if (coverInputRef.current) coverInputRef.current.value = "";
+                  }}
+                >
+                  Excluir imagem
+                </button>
               </div>
-            ) : null}
+            ) : (
+              <p className="admin-hint">Nenhuma capa neste artigo.</p>
+            )}
             <label>
               Texto alternativo
               <input name="cover_alt" defaultValue={post?.cover_alt ?? ""} />

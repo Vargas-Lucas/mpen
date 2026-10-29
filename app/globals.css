@@ -4721,6 +4721,17 @@ h2.kicker {
   margin: 12px 0;
 }
 
+.admin-editor-image {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+  margin: 12px 0;
+}
+
+.admin-editor-image img {
+  margin: 0;
+}
+
 .admin-visual .tiptap a {
   color: var(--blue);
   font-weight: 600;
@@ -4847,6 +4858,23 @@ h2.kicker {
   max-height: 240px;
   object-fit: cover;
   border-radius: 12px;
+}
+
+.admin-cover-preview {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+}
+
+.admin-tool-danger {
+  color: #9d1c2a;
+  border-color: #e4b4ba;
+}
+
+.admin-tool-danger:hover,
+.admin-tool-danger:focus-visible {
+  border-color: #9d1c2a;
+  background: #fdf4f5;
 }
 
 .form .admin-check {

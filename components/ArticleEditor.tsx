@@ -3,9 +3,28 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
-import { EditorContent, useEditor } from "@tiptap/react";
+import { EditorContent, NodeViewWrapper, ReactNodeViewRenderer, useEditor, type NodeViewProps } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { jsonToMarkdown, markdownToHtml, normalizeHref } from "@/lib/editor-markdown";
+
+const ArticleImage = Image.extend({
+  addNodeView() {
+    return ReactNodeViewRenderer(ArticleImageView);
+  },
+});
+
+function ArticleImageView({ node, deleteNode }: NodeViewProps) {
+  const src = String(node.attrs.src || "");
+  const alt = String(node.attrs.alt || "");
+  return (
+    <NodeViewWrapper className="admin-editor-image">
+      <img src={src} alt={alt} />
+      <button type="button" className="admin-tool admin-tool-danger" contentEditable={false} onClick={deleteNode}>
+        Excluir imagem
+      </button>
+    </NodeViewWrapper>
+  );
+}
 
 type Props = {
   value: string;
@@ -47,7 +66,7 @@ export function ArticleEditor({ value, onChange, uploadImage }: Props) {
           defaultProtocol: "https",
         },
       }),
-      Image.configure({ inline: false, allowBase64: false }),
+      ArticleImage.configure({ inline: false, allowBase64: false }),
       Placeholder.configure({
         placeholder: "Escreva o artigo aqui. O texto já aparece como no site.",
       }),
@@ -162,6 +181,16 @@ export function ArticleEditor({ value, onChange, uploadImage }: Props) {
         >
           {uploading ? "Enviando..." : "Imagem"}
         </button>
+        {editor.isActive("image") ? (
+          <button
+            type="button"
+            className="admin-tool admin-tool-danger"
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={() => editor.chain().focus().deleteSelection().run()}
+          >
+            Excluir imagem
+          </button>
+        ) : null}
       </div>
 
       {linkOpen ? (
@@ -197,7 +226,7 @@ export function ArticleEditor({ value, onChange, uploadImage }: Props) {
         <EditorContent editor={editor} />
       </div>
       <p className="admin-hint">
-        Selecione um trecho e clique em Negrito, Itálico ou Link. Para foto, clique em Imagem — ela aparece na hora.
+        Selecione um trecho e clique em Negrito, Itálico ou Link. Para foto, clique em Imagem. Clique na foto e em Excluir imagem para tirá-la do texto.
       </p>
       {imageMessage ? <p className="err">{imageMessage}</p> : null}
     </div>
