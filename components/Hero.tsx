@@ -3,13 +3,15 @@
 import Link from "next/link";
 import { rememberReturn } from "@/components/BackButton";
 import { useEffect, useState } from "react";
+import { useI18n } from "@/components/I18nProvider";
 import { heroImage, logoImage } from "@/lib/images";
-import { deliveryLabel, developmentAlt } from "@/lib/format";
+import { deliveryLabel, developmentAlt, placeLabel } from "@/lib/format";
 import type { Development } from "@/lib/types";
 
 const SLIDE_MS = 980;
 
 export function Hero({ slides }: { slides: Development[] }) {
+  const { locale, t } = useI18n();
   const [index, setIndex] = useState(0);
   const [leaving, setLeaving] = useState<number | null>(null);
   const [direction, setDirection] = useState<1 | -1>(1);
@@ -62,7 +64,7 @@ export function Hero({ slides }: { slides: Development[] }) {
               <img
                 className="hero-photo"
                 src={image}
-                alt={developmentAlt(item)}
+                alt={developmentAlt(item, locale)}
                 width={1600}
                 height={1000}
                 fetchPriority={slideIndex === 0 ? "high" : "low"}
@@ -108,8 +110,8 @@ export function Hero({ slides }: { slides: Development[] }) {
                   ) : (
                     <>
                       <p className="hero-title">{item.name}</p>
-                      <p className="hero-kicker">{item.neighborhood}</p>
-                      {item.delivery ? <p className="hero-meta">{deliveryLabel(item)}</p> : null}
+                      <p className="hero-kicker">{placeLabel(item.neighborhood, locale)}</p>
+                      {item.delivery ? <p className="hero-meta">{deliveryLabel(item, locale)}</p> : null}
                     </>
                   )}
                   {item.summary ? <p className="hero-summary">{item.summary}</p> : null}
@@ -122,12 +124,12 @@ export function Hero({ slides }: { slides: Development[] }) {
 
       {slides.length > 1 ? (
         <>
-          <button type="button" className="hero-arrow prev" aria-label="Empreendimento anterior" onClick={() => go(-1)}>
+          <button type="button" className="hero-arrow prev" aria-label={t.hero.prev} onClick={() => go(-1)}>
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path fill="none" stroke="currentColor" strokeWidth="1.6" d="M14.5 5.5 8 12l6.5 6.5" />
             </svg>
           </button>
-          <button type="button" className="hero-arrow next" aria-label="Próximo empreendimento" onClick={() => go(1)}>
+          <button type="button" className="hero-arrow next" aria-label={t.hero.next} onClick={() => go(1)}>
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path fill="none" stroke="currentColor" strokeWidth="1.6" d="M9.5 5.5 16 12l-6.5 6.5" />
             </svg>
@@ -142,7 +144,7 @@ export function Hero({ slides }: { slides: Development[] }) {
               key={item.id}
               type="button"
               className={dotIndex === index ? "dot on" : "dot"}
-              aria-label={`Ir para ${item.name}`}
+              aria-label={`${t.hero.goTo} ${item.name}`}
               aria-current={dotIndex === index ? "true" : undefined}
               onClick={() => goTo(dotIndex, dotIndex > index ? 1 : -1)}
             />

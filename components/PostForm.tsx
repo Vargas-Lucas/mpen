@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { useActionState, useEffect, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
 import { createCategory, type CategoryState } from "@/actions/categories";
-import { draftPost, previewPost, publishPost, uploadPostImage, type PostState } from "@/actions/posts";
+import { savePost, uploadPostImage, type PostState } from "@/actions/posts";
 
 const ArticleEditor = dynamic(
   () => import("@/components/ArticleEditor").then((mod) => mod.ArticleEditor),
@@ -23,46 +23,24 @@ import type { Category, Post } from "@/lib/types";
 const initial: PostState = { ok: false, message: "" };
 const host = SITE_URL.replace(/^https?:\/\//, "");
 
-type SaveAction = (formData: FormData) => void;
+function markIntent(event: React.MouseEvent<HTMLButtonElement>) {
+  const field = event.currentTarget.form?.elements.namedItem("intent");
+  if (field instanceof HTMLInputElement) field.value = event.currentTarget.value;
+}
 
-function Actions({
-  published,
-  publish,
-  preview,
-  draft,
-}: {
-  published?: boolean;
-  publish: SaveAction;
-  preview: SaveAction;
-  draft: SaveAction;
-}) {
-  const { pending } = useFormStatus();
-  const [clicked, setClicked] = useState("");
+function Actions({ published }: { published?: boolean }) {
+  const { pending, data } = useFormStatus();
+  const intent = pending ? String(data?.get("intent") || "") : "";
   return (
     <div className={pending ? "admin-publish is-pending" : "admin-publish"}>
-      <button
-        className="admin-submit is-publish"
-        type="submit"
-        formAction={publish}
-        onClick={() => setClicked("publish")}
-      >
-        {pending && clicked === "publish" ? "Publicando..." : published ? "Atualizar" : "Publicar"}
+      <button className="admin-submit is-publish" type="submit" value="publish" onClick={markIntent}>
+        {intent === "publish" ? "Publicando..." : published ? "Atualizar" : "Publicar"}
       </button>
-      <button
-        className="admin-secondary is-preview"
-        type="submit"
-        formAction={preview}
-        onClick={() => setClicked("preview")}
-      >
-        {pending && clicked === "preview" ? "Abrindo prévia..." : "Ver como"}
+      <button className="admin-secondary is-preview" type="submit" value="preview" onClick={markIntent}>
+        {intent === "preview" ? "Abrindo prévia..." : "Ver como"}
       </button>
-      <button
-        className="admin-secondary is-draft"
-        type="submit"
-        formAction={draft}
-        onClick={() => setClicked("draft")}
-      >
-        {pending && clicked === "draft" ? "Salvando..." : published ? "Voltar para rascunho" : "Salvar rascunho"}
+      <button className="admin-secondary is-draft" type="submit" value="draft" onClick={markIntent}>
+        {intent === "draft" ? "Salvando..." : published ? "Voltar para rascunho" : "Salvar rascunho"}
       </button>
     </div>
   );
@@ -80,6 +58,51 @@ function SeoMeter({ length, min, max }: { length: number; min: number; max: numb
 
 const categoryInitial: CategoryState = { ok: false, message: "" };
 const DRAFT_KEY = "mpen-draft-novo";
+
+function TranslationFields({ post }: { post?: Post }) {
+  const languages = [
+    { code: "en", label: "Inglês" },
+    { code: "es", label: "Espanhol" },
+  ] as const;
+
+  return (
+    <>
+      {languages.map((language) => {
+        const copy = post?.translations?.[language.code];
+        return (
+          <div className="admin-box" key={language.code}>
+            <h3>{language.label}</h3>
+            <p className="admin-hint">Usado quando o visitante escolhe este idioma. Se ficar vazio, o site mostra o texto em português.</p>
+            <label>
+              Título
+              <input name={`title_${language.code}`} defaultValue={copy?.title ?? ""} />
+            </label>
+            <label>
+              Resumo
+              <textarea name={`excerpt_${language.code}`} rows={3} defaultValue={copy?.excerpt ?? ""} />
+            </label>
+            <label>
+              Texto
+              <textarea name={`body_${language.code}`} rows={8} defaultValue={copy?.body ?? ""} />
+            </label>
+            <label>
+              Texto alternativo da capa
+              <input name={`cover_alt_${language.code}`} defaultValue={copy?.cover_alt ?? ""} />
+            </label>
+            <label>
+              Título no Google
+              <input name={`seo_title_${language.code}`} defaultValue={copy?.seo_title ?? ""} />
+            </label>
+            <label>
+              Descrição no Google
+              <textarea name={`seo_description_${language.code}`} rows={3} defaultValue={copy?.seo_description ?? ""} />
+            </label>
+          </div>
+        );
+      })}
+    </>
+  );
+}
 
 type LocalDraft = {
   title?: string;
@@ -102,14 +125,7 @@ export function PostForm({
   categories: Category[];
   saved?: boolean;
 }) {
-  const [publishState, publishAction] = useActionState(publishPost, initial);
-  const [previewState, previewAction] = useActionState(previewPost, initial);
-  const [draftState, draftAction] = useActionState(draftPost, initial);
-  const state = publishState.message
-    ? publishState
-    : previewState.message
-      ? previewState
-      : draftState;
+  const [state, saveAction] = useActionState(savePost, initial);
   const [categoryState, addCategory] = useActionState(createCategory, categoryInitial);
   const [catPending, startCategory] = useTransition();
   const [draftReady, setDraftReady] = useState(Boolean(post));
@@ -251,7 +267,8 @@ export function PostForm({
   }
 
   return (
-    <form className="form admin-form" action={draftAction}>
+    <form className="form admin-form" action={saveAction}>
+      <input name="intent" type="hidden" defaultValue="" />
       {post ? <input name="id" type="hidden" value={post.id} /> : null}
       <input name="seo_title" type="hidden" value={seoTitle} />
       <input name="seo_description" type="hidden" value={seoDescription} />
@@ -404,12 +421,7 @@ export function PostForm({
         <aside className="admin-side">
           <div className="admin-box">
             <h3>Publicar</h3>
-            <Actions
-              published={Boolean(post?.published_at)}
-              publish={publishAction}
-              preview={previewAction}
-              draft={draftAction}
-            />
+            <Actions published={Boolean(post?.published_at)} />
             {state.message ? (
               <p className="err" role="status">
                 {state.message}
@@ -504,6 +516,8 @@ export function PostForm({
             </label>
             <p className="admin-hint">Aparece na listagem do blog. Se a descrição do Google ficar vazia, usamos este texto.</p>
           </div>
+
+          <TranslationFields post={post} />
 
           <div className="admin-box">
             <h3>Publicação</h3>

@@ -1,78 +1,10 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
-
-export const metadata = { title: "Termos de uso" };
+import { termsSections } from "@/lib/copy/legal";
+import { ui } from "@/lib/copy/ui";
+import { getLocale } from "@/lib/i18n-server";
 
 const email = "contato@mpen.com.br";
-
-const sections = [
-  {
-    id: "aceitacao",
-    title: "Aceitação dos termos",
-    paragraphs: [
-      "Ao acessar e utilizar o site mpen.com.br, você declara ter lido, compreendido e concordado com os presentes Termos de Uso. O uso contínuo do site significa a aceitação integral destes termos.",
-    ],
-  },
-  {
-    id: "uso",
-    title: "Uso permitido",
-    groups: [
-      {
-        label: "Você pode:",
-        items: [
-          "Navegar pelo site e acessar conteúdo para fins informativos",
-          "Baixar informações disponibilizadas publicamente, desde que não sejam alteradas ou reproduzidas para fins comerciais",
-          "Entrar em contato com a MPEN para obter informações ou esclarecer dúvidas sobre os serviços oferecidos",
-        ],
-      },
-      {
-        label: "É proibido:",
-        items: [
-          "Utilizar qualquer conteúdo do site para fins comerciais sem autorização prévia",
-          "Copiar, modificar, distribuir, transmitir ou explorar indevidamente qualquer parte do site",
-          "Praticar qualquer ato que possa comprometer a segurança, funcionamento ou integridade do site",
-        ],
-      },
-    ],
-  },
-  {
-    id: "propriedade",
-    title: "Propriedade intelectual",
-    paragraphs: [
-      "Todo o conteúdo presente no site mpen.com.br, incluindo textos, imagens, logotipos, ícones, vídeos e outros materiais, é de propriedade exclusiva da MPEN ou licenciado para seu uso e encontra-se protegido por leis de direitos autorais e propriedade intelectual.",
-      "O uso indevido de qualquer material do site sem autorização expressa poderá resultar em penalidades legais.",
-    ],
-  },
-  {
-    id: "responsabilidade",
-    title: "Limitação de responsabilidade",
-    paragraphs: [
-      "Nos esforçamos para manter as informações do site atualizadas e precisas. No entanto, não garantimos que todas as informações estejam livres de erros, omissões ou desatualizações.",
-      "A MPEN não se responsabiliza por:",
-    ],
-    items: [
-      "Qualquer dano ou prejuízo resultante do uso ou impossibilidade de uso do site",
-      "Conteúdo de terceiros acessado por meio de links disponibilizados no site",
-      "Falhas técnicas, interrupções ou indisponibilidade temporária do site",
-    ],
-    after: ["O uso do site é de responsabilidade do próprio usuário."],
-  },
-  {
-    id: "alteracoes",
-    title: "Alterações nos termos",
-    paragraphs: [
-      "A MPEN reserva-se o direito de modificar estes Termos de Uso a qualquer momento, sem aviso prévio. As alterações entrarão em vigor imediatamente após sua publicação no site.",
-      "Recomendamos que os usuários revisitem esta página regularmente para se manterem atualizados sobre eventuais mudanças.",
-    ],
-  },
-  {
-    id: "contato",
-    title: "Contato",
-    paragraphs: [
-      `Para quaisquer dúvidas, solicitações ou questionamentos sobre estes Termos de Uso, entre em contato pelo e-mail ${email}.`,
-    ],
-  },
-];
 
 function Text({ value }: { value: string }) {
   if (!value.includes(email)) return value;
@@ -86,18 +18,22 @@ function Text({ value }: { value: string }) {
   );
 }
 
-export default function TermsPage() {
+export async function generateMetadata() {
+  return { title: ui(await getLocale()).terms.title };
+}
+
+export default async function TermsPage() {
+  const locale = await getLocale();
+  const t = ui(locale);
+  const sections = termsSections(locale);
+
   return (
     <>
-      <PageHeader
-        compact
-        title="Termos de uso"
-        lede="A utilização do site mpen.com.br está sujeita aos seguintes Termos de Uso."
-      />
+      <PageHeader compact title={t.terms.title} lede={t.terms.lede} />
       <section className="policy-wrap">
         <div className="container policy">
-          <nav className="policy-nav" aria-label="Nestes termos">
-            <p className="kicker">Nesta página</p>
+          <nav className="policy-nav" aria-label={t.terms.nav}>
+            <p className="kicker">{t.privacy.onPage}</p>
             <ol>
               {sections.map((section, index) => (
                 <li key={section.id}>
@@ -111,10 +47,7 @@ export default function TermsPage() {
           </nav>
 
           <article className="policy-body">
-            <p className="policy-lead">
-              Ao acessar e navegar pelo site, você concorda em cumprir os termos estabelecidos abaixo. Caso não
-              concorde, recomendamos que interrompa o uso deste site imediatamente.
-            </p>
+            <p className="policy-lead">{t.terms.lead}</p>
             {sections.map((section, index) => (
               <section id={section.id} key={section.id}>
                 <h2>
@@ -136,23 +69,22 @@ export default function TermsPage() {
                     </ul>
                   </div>
                 ))}
-                {"items" in section && section.items ? (
+                {section.items ? (
                   <ul>
                     {section.items.map((item) => (
                       <li key={item}>{item}</li>
                     ))}
                   </ul>
                 ) : null}
-                {"after" in section &&
-                  section.after?.map((paragraph) => (
-                    <p key={paragraph}>
-                      <Text value={paragraph} />
-                    </p>
-                  ))}
+                {section.after?.map((paragraph) => (
+                  <p key={paragraph}>
+                    <Text value={paragraph} />
+                  </p>
+                ))}
               </section>
             ))}
             <p className="policy-related">
-              O tratamento de dados pessoais está na <Link href="/politica-de-privacidade">Política de privacidade</Link>.
+              {t.terms.related} <Link href="/politica-de-privacidade">{t.privacy.title}</Link>.
             </p>
           </article>
         </div>

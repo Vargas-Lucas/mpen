@@ -24,6 +24,7 @@ export async function ensureBlogSchema() {
   await query(`ALTER TABLE posts ADD COLUMN IF NOT EXISTS seo_title TEXT NOT NULL DEFAULT ''`);
   await query(`ALTER TABLE posts ADD COLUMN IF NOT EXISTS seo_description TEXT NOT NULL DEFAULT ''`);
   await query(`ALTER TABLE posts ADD COLUMN IF NOT EXISTS seo_keyword TEXT NOT NULL DEFAULT ''`);
+  await query(`ALTER TABLE posts ADD COLUMN IF NOT EXISTS translations JSONB NOT NULL DEFAULT '{}'::jsonb`);
   await query(`
     CREATE TABLE IF NOT EXISTS media (
       id SERIAL PRIMARY KEY,

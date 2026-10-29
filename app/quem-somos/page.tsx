@@ -1,8 +1,9 @@
+import type { ReactNode } from "react";
 import { DevelopmentCard } from "@/components/DevelopmentCard";
 import { PageHeader } from "@/components/PageHeader";
+import { ui } from "@/lib/copy/ui";
 import { getDevelopments } from "@/lib/data";
-
-export const metadata = { title: "Conheça a Mpen" };
+import { getLocale } from "@/lib/i18n-server";
 
 function Mission() {
   return (
@@ -32,65 +33,38 @@ function Values() {
   );
 }
 
-const values = [
-  {
-    title: "Missão",
-    icon: <Mission />,
-    text: "Desenvolver empreendimentos residenciais que unam qualidade construtiva, arquitetura e funcionalidade, contribuindo para novas formas de morar no Sul da Ilha de Florianópolis.",
-  },
-  {
-    title: "Visão",
-    icon: <Vision />,
-    text: "Ser reconhecida como uma incorporadora de referência no Sul da Ilha de Florianópolis, pela qualidade dos empreendimentos, pelo conhecimento da região e pela confiança construída com clientes e parceiros.",
-  },
-  {
-    title: "Valores",
-    icon: <Values />,
-    text: "Ética, transparência e responsabilidade em cada etapa. Valorizamos a qualidade construtiva, o respeito aos compromissos assumidos e as relações duradouras com clientes, parceiros e comunidade.",
-  },
-];
+export async function generateMetadata() {
+  return { title: ui(await getLocale()).about.title };
+}
 
 export default async function AboutPage() {
+  const t = ui(await getLocale());
   const projects = (await getDevelopments()).slice(0, 6);
+  const values: { title: string; icon: ReactNode; text: string }[] = [
+    { title: t.about.mission, icon: <Mission />, text: t.about.missionText },
+    { title: t.about.vision, icon: <Vision />, text: t.about.visionText },
+    { title: t.about.values, icon: <Values />, text: t.about.valuesText },
+  ];
+
   return (
     <>
-      <PageHeader
-        title="Conheça a Mpen"
-        lede="Incorporadora residencial no Sul da Ilha de Florianópolis desde 2003."
-        compact
-        className="about-hero"
-      />
+      <PageHeader title={t.about.title} lede={t.about.lede} compact className="about-hero" />
 
       <section className="about-banner">
-        <img src="/images/sobre/capa.png" alt="Profissional da construtora MPEN no Sul da Ilha de Florianópolis" />
+        <img src="/images/sobre/capa.png" alt={t.about.bannerAlt} />
         <div className="container">
-          <p className="about-banner-kicker">Sul da Ilha · desde 2003</p>
-          <h2>Construímos histórias no Sul da Ilha de Florianópolis.</h2>
+          <p className="about-banner-kicker">{t.about.kicker}</p>
+          <h2>{t.about.h2}</h2>
         </div>
       </section>
 
       <section className="section about-story-wrap">
         <div className="container about-story">
-          <p className="about-story-lede">
-            Desde 2003, a MPEN Incorporadora participa do desenvolvimento imobiliário do Sul da Ilha
-            de Florianópolis, uma região que reúne natureza, identidade cultural e novas
-            possibilidades de morar.
-          </p>
+          <p className="about-story-lede">{t.about.lede2}</p>
           <div className="about-story-copy">
-            <p>
-              Ao longo de mais de duas décadas, construímos uma trajetória marcada por empreendimentos
-              residenciais que valorizam a localização, a qualidade construtiva e a arquitetura
-              pensada para o cotidiano.
-            </p>
-            <p>
-              Nossa atuação parte de um conhecimento próximo da região e das transformações que fazem
-              parte do seu crescimento. É esse olhar que orienta nossas escolhas, do planejamento de
-              cada projeto à entrega de espaços preparados para diferentes momentos da vida.
-            </p>
-            <p>
-              Mais do que desenvolver imóveis, buscamos criar empreendimentos que façam sentido para
-              as pessoas e para os lugares onde estão inseridos.
-            </p>
+            <p>{t.about.p1}</p>
+            <p>{t.about.p2}</p>
+            <p>{t.about.p3}</p>
           </div>
         </div>
       </section>
@@ -98,7 +72,7 @@ export default async function AboutPage() {
       <section className="principles">
         <div className="principles-glow" aria-hidden="true" />
         <div className="container">
-          <p className="principles-kicker">O que nos move</p>
+          <p className="principles-kicker">{t.about.move}</p>
           <div className="principles-grid">
             {values.map((item, index) => (
               <article key={item.title} className="principle" style={{ animationDelay: `${index * 140}ms` }}>
@@ -116,33 +90,20 @@ export default async function AboutPage() {
 
       <section className="section">
         <div className="container about-intro">
-          <img src="/images/sobre/compromisso.jpg" alt="Obra em execução ao pôr do sol" />
+          <img src="/images/sobre/compromisso.jpg" alt={t.about.commitAlt} />
           <div className="prose">
-            <h2>Compromisso em cada etapa</h2>
-            <p>
-              Na MPEN Incorporadora, acreditamos que a confiança se constrói com planejamento,
-              transparência e responsabilidade.
-            </p>
-            <p>
-              Desde 2003, desenvolvemos nossa trajetória no Sul da Ilha de Florianópolis,
-              acompanhando cada empreendimento com atenção às etapas de planejamento, execução e
-              entrega.
-            </p>
-            <p>
-              Nosso compromisso é manter uma relação próxima e transparente com clientes e
-              parceiros, respeitando os acordos estabelecidos e buscando qualidade em cada projeto.
-            </p>
-            <p>
-              Mais do que construir empreendimentos residenciais, queremos construir relações de
-              confiança que permaneçam ao longo do tempo.
-            </p>
+            <h2>{t.about.commitTitle}</h2>
+            <p>{t.about.c1}</p>
+            <p>{t.about.c2}</p>
+            <p>{t.about.c3}</p>
+            <p>{t.about.c4}</p>
           </div>
         </div>
       </section>
 
       <section className="section about-band">
         <div className="container">
-          <h2 className="about-title">Conheça nossos empreendimentos em Florianópolis</h2>
+          <h2 className="about-title">{t.home.catalogTitle}</h2>
           <div className="dev-grid">
             {projects.map((item) => (
               <DevelopmentCard key={item.slug} item={item} />

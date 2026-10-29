@@ -1,3 +1,7 @@
+"use client";
+
+import { useI18n } from "@/components/I18nProvider";
+
 function IconProjects() {
   return (
     <svg className="home-fact-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -31,23 +35,24 @@ type HomeFactsProps = {
 };
 
 export function HomeFacts({ projectCount }: HomeFactsProps) {
+  const { t } = useI18n();
   const items = [
     {
       icon: <IconProjects />,
       value: String(projectCount),
-      label: "empreendimentos",
+      label: t.home.projects,
     },
     {
       icon: <IconSince />,
       value: "2003",
-      label: "no sul da Ilha",
+      label: t.home.since,
     },
     {
       icon: <IconRegion />,
       value: "Florianópolis",
-      label: "foco residencial",
+      label: t.home.focus,
     },
-  ] as const;
+  ];
 
   return (
     <ul className="home-facts">

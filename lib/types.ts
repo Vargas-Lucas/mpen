@@ -33,4 +33,19 @@ export type Post = {
   seo_keyword: string;
   published_at: string | null;
   featured: boolean;
+  translations: PostTranslations;
+};
+
+export type PostTranslation = {
+  title: string;
+  excerpt: string;
+  body: string;
+  cover_alt: string;
+  seo_title: string;
+  seo_description: string;
+};
+
+export type PostTranslations = {
+  en?: Partial<PostTranslation>;
+  es?: Partial<PostTranslation>;
 };

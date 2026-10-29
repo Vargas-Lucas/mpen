@@ -2,13 +2,10 @@ import Link from "next/link";
 import { BlogToolbar } from "@/components/BlogToolbar";
 import { ContactForm } from "@/components/ContactForm";
 import { PostCard } from "@/components/PostCard";
+import { categoryLabel, ui } from "@/lib/copy/ui";
 import { getCategories, getPosts } from "@/lib/data";
-
-export const metadata = {
-  title: { absolute: "Blog MPEN: Florianópolis, arquitetura e mercado imobiliário" },
-  description:
-    "Conteúdos sobre o mercado imobiliário de Florianópolis, arquitetura, construção civil e qualidade de vida em Santa Catarina. Conheça tendências, informações sobre a região e novidades dos empreendimentos da MPEN Incorporadora.",
-};
+import { getLocale } from "@/lib/i18n-server";
+import { localizePosts } from "@/lib/post-i18n";
 
 function blogHref(q: string, category = "") {
   const params = new URLSearchParams();
@@ -18,36 +15,41 @@ function blogHref(q: string, category = "") {
   return query ? `/blog?${query}` : "/blog";
 }
 
+export async function generateMetadata() {
+  const t = ui(await getLocale()).blog;
+  return {
+    title: { absolute: t.title },
+    description: t.lede,
+  };
+}
+
 export default async function BlogPage({
   searchParams,
 }: {
   searchParams: Promise<{ q?: string; categoria?: string }>;
 }) {
+  const locale = await getLocale();
+  const t = ui(locale).blog;
   const params = await searchParams;
   const q = params.q?.trim() || "";
   const category = params.categoria?.trim() || "";
-  const [posts, categories] = await Promise.all([
+  const [storedPosts, categories] = await Promise.all([
     getPosts({ q, category: category || undefined }),
     getCategories(),
   ]);
+  const posts = localizePosts(storedPosts, locale);
   const [lead, ...rest] = posts;
-  const filtered = Boolean(q || category);
+  const categoryName = categoryLabel(category, locale);
 
   return (
     <>
       <section className="page-hero blog-hero">
         <div className="container">
           <h1>
-            <span className="blog-hero-short">Blog MPEN</span>
-            <span className="blog-hero-full">
-              Blog MPEN: Florianópolis, arquitetura e mercado imobiliário
-            </span>
+            <span className="blog-hero-short">{t.short}</span>
+            <span className="blog-hero-full">{t.title}</span>
           </h1>
-          <p>
-            Conteúdos sobre o mercado imobiliário de Florianópolis, arquitetura, construção civil e
-            qualidade de vida em Santa Catarina. Conheça tendências, informações sobre a região e
-            novidades dos empreendimentos da MPEN Incorporadora.
-          </p>
+          <p>{t.lede}</p>
         </div>
       </section>
       <section className="section blog-index">
@@ -58,14 +60,14 @@ export default async function BlogPage({
             <div className="empty">
               <p>
                 {category
-                  ? `Nenhum artigo em ${category} ainda. Veja todas as categorias.`
+                  ? `${t.emptyCategory} ${categoryName} ${t.emptyCategoryAfter}`
                   : q
-                    ? "Nenhum artigo encontrado. Tente outra palavra-chave."
-                    : "Nenhum artigo publicado ainda."}
+                    ? t.emptyQuery
+                    : t.empty}
               </p>
               {category ? (
                 <p>
-                  <Link href={blogHref(q)}>Ver todos os artigos</Link>
+                  <Link href={blogHref(q)}>{t.seeAll}</Link>
                 </p>
               ) : null}
             </div>
@@ -83,7 +85,7 @@ export default async function BlogPage({
           {rest.length > 2 ? (
             <>
               <h2 className="section-title" style={{ marginTop: 48 }}>
-                Últimas do blog
+                {t.latest}
               </h2>
               <div className="post-grid">
                 {rest.slice(2).map((post) => (
@@ -94,8 +96,8 @@ export default async function BlogPage({
           ) : null}
 
           <div className="newsletter-band">
-            <h2>Novidades do blog</h2>
-            <p>Deixe seu e-mail para receber os próximos artigos da MPEN.</p>
+            <h2>{t.newsTitle}</h2>
+            <p>{t.newsText}</p>
             <ContactForm source="newsletter" variant="newsletter" />
           </div>
         </div>

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useI18n } from "@/components/I18nProvider";
 
 const minScale = 1;
 const maxScale = 3;
@@ -15,6 +16,7 @@ function Chevron({ direction }: { direction: "left" | "right" }) {
 }
 
 export function ProjectGallery({ images, name }: { images: string[]; name: string }) {
+  const { t } = useI18n();
   const [index, setIndex] = useState(0);
   const [open, setOpen] = useState(false);
   const [scale, setScale] = useState(1);
@@ -79,15 +81,15 @@ export function ProjectGallery({ images, name }: { images: string[]; name: strin
 
   if (!current) return null;
 
-  const caption = `${name}, foto ${index + 1} de ${count}`;
+  const caption = `${name}, ${t.project.photoOf} ${index + 1} ${t.project.of} ${count}`;
 
   const lightbox = (
-    <div className="lightbox" role="dialog" aria-modal="true" aria-label={`Fotos de ${name}`}>
+    <div className="lightbox" role="dialog" aria-modal="true" aria-label={`${t.project.photosOf} ${name}`}>
       <button className="lightbox-close" type="button" onClick={() => setOpen(false)}>
-        Fechar
+        {t.project.close}
       </button>
       {count > 1 ? (
-        <button className="lightbox-nav prev" type="button" onClick={() => go(index - 1)} aria-label="Foto anterior">
+        <button className="lightbox-nav prev" type="button" onClick={() => go(index - 1)} aria-label={t.project.prevPhoto}>
           <Chevron direction="left" />
         </button>
       ) : null}
@@ -127,19 +129,19 @@ export function ProjectGallery({ images, name }: { images: string[]; name: strin
         />
       </div>
       {count > 1 ? (
-        <button className="lightbox-nav next" type="button" onClick={() => go(index + 1)} aria-label="Próxima foto">
+        <button className="lightbox-nav next" type="button" onClick={() => go(index + 1)} aria-label={t.project.nextPhoto}>
           <Chevron direction="right" />
         </button>
       ) : null}
       <div className="lightbox-tools">
         <button type="button" onClick={() => changeScale(scale - 0.5)} disabled={scale <= minScale}>
-          Diminuir
+          {t.project.zoomOut}
         </button>
         <span>
           {index + 1} / {count}
         </span>
         <button type="button" onClick={() => changeScale(scale + 0.5)} disabled={scale >= maxScale}>
-          Aumentar
+          {t.project.zoomIn}
         </button>
       </div>
     </div>
@@ -157,14 +159,14 @@ export function ProjectGallery({ images, name }: { images: string[]; name: strin
           }}
         >
           <img src={current} alt={caption} />
-          <span>Ampliar</span>
+          <span>{t.project.zoom}</span>
         </button>
         {count > 1 ? (
           <>
-            <button className="viewer-nav prev" type="button" onClick={() => go(index - 1)} aria-label="Foto anterior">
+            <button className="viewer-nav prev" type="button" onClick={() => go(index - 1)} aria-label={t.project.prevPhoto}>
               <Chevron direction="left" />
             </button>
-            <button className="viewer-nav next" type="button" onClick={() => go(index + 1)} aria-label="Próxima foto">
+            <button className="viewer-nav next" type="button" onClick={() => go(index + 1)} aria-label={t.project.nextPhoto}>
               <Chevron direction="right" />
             </button>
           </>
@@ -176,7 +178,7 @@ export function ProjectGallery({ images, name }: { images: string[]; name: strin
             <span>
               {index + 1} / {count}
             </span>
-            Clique na foto para ampliar e dar zoom
+            {t.project.clickZoom}
           </p>
           <div className="viewer-thumbs">
             {images.map((src, photo) => (
@@ -184,14 +186,14 @@ export function ProjectGallery({ images, name }: { images: string[]; name: strin
                 key={src}
                 type="button"
                 className={photo === index ? "is-active" : undefined}
-                aria-label={`Foto ${photo + 1}`}
+                aria-label={`${t.project.photo} ${photo + 1}`}
                 aria-current={photo === index ? "true" : undefined}
                 onClick={(event) => {
                   go(photo);
                   event.currentTarget.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
                 }}
               >
-                <img src={src} alt={`${name}, foto ${photo + 1} de ${count}`} />
+                <img src={src} alt={`${name}, ${t.project.photoOf} ${photo + 1} ${t.project.of} ${count}`} />
               </button>
             ))}
           </div>

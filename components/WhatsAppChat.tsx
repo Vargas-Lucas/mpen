@@ -1,27 +1,14 @@
 "use client";
 
 import { useEffect, useId, useState } from "react";
-import { contactChannel } from "@/lib/contacts";
+import { useI18n } from "@/components/I18nProvider";
+import { channelLabel } from "@/lib/copy/ui";
+import { contactChannels, type ContactChannel } from "@/lib/contacts";
 
-const DEFAULT_TEXT = "Olá, vim pelo site da MPEN e gostaria de mais informações.";
+const AREAS = contactChannels.filter((channel) => channel.whatsapp);
 
-const TOPICS = [
-  {
-    label: "Empreendimentos",
-    text: "Olá, vim pelo site da MPEN e quero conhecer os empreendimentos no Sul da Ilha.",
-  },
-  {
-    label: "Falar com comercial",
-    text: "Olá, vim pelo site da MPEN e gostaria de falar com o comercial.",
-  },
-  {
-    label: "Agendar visita",
-    text: "Olá, vim pelo site da MPEN e gostaria de agendar uma visita.",
-  },
-] as const;
-
-function whatsappUrl(phone: string, text: string) {
-  const message = text.trim() || DEFAULT_TEXT;
+function whatsappUrl(phone: string, text: string, fallback: string) {
+  const message = text.trim() || fallback;
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 }
 
@@ -35,12 +22,13 @@ const WA_ICON = (
 );
 
 export function WhatsAppChat() {
+  const { locale, t } = useI18n();
   const titleId = useId();
   const cardId = `${titleId}-card`;
-  const phone = contactChannel("comercial")?.whatsapp || "5548991050594";
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
-  const [topic, setTopic] = useState<string | null>(null);
+  const [areaId, setAreaId] = useState<string | null>(null);
+  const [customText, setCustomText] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -51,16 +39,24 @@ export function WhatsAppChat() {
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
 
-  function chooseTopic(label: string, message: string) {
-    setTopic(label);
-    setText(message);
+  function areaMessage(channel: ContactChannel) {
+    return `${t.whatsapp.sector} ${channelLabel(channel.id, locale)}.`;
+  }
+
+  function chooseArea(channel: ContactChannel) {
+    setAreaId(channel.id);
+    if (!customText) setText(areaMessage(channel));
   }
 
   function send(message: string) {
-    window.open(whatsappUrl(phone, message), "_blank", "noopener,noreferrer");
+    const area = AREAS.find((channel) => channel.id === areaId) ?? AREAS[0];
+    const phone = area?.whatsapp;
+    if (!phone) return;
+    window.open(whatsappUrl(phone, message, t.whatsapp.fallback), "_blank", "noopener,noreferrer");
     setOpen(false);
     setText("");
-    setTopic(null);
+    setAreaId(null);
+    setCustomText(false);
   }
 
   return (
@@ -69,30 +65,30 @@ export function WhatsAppChat() {
         <section id={cardId} className="wa-card" role="dialog" aria-modal="false" aria-labelledby={titleId}>
           <header className="wa-card-head">
             <span className="wa-avatar">
-              <img src="/images/whatsapp-atendente.jpg" alt="Atendente da MPEN" width={48} height={48} />
+              <img src="/images/whatsapp-mascote.jpg" alt={t.whatsapp.attendant} width={48} height={48} />
               <span className="wa-online" aria-hidden="true" />
             </span>
             <div className="wa-card-id">
-              <strong id={titleId}>Atendimento</strong>
-              <span>Online</span>
+              <strong id={titleId}>{t.whatsapp.title}</strong>
+              <span>{t.whatsapp.online}</span>
             </div>
             <img className="wa-brand" src="/logo.png" alt="MPEN" />
           </header>
 
           <div className="wa-body">
             <p className="wa-from">MPEN</p>
-            <p className="wa-bubble">Olá! Que bom ter você por aqui. Como posso ajudar?</p>
-            <p className="wa-bubble">Escolha um assunto ou escreva abaixo. A conversa segue no WhatsApp.</p>
-            <div className="wa-topics">
-              {TOPICS.map((item) => (
+            <p className="wa-bubble">{t.whatsapp.hello}</p>
+            <p className="wa-bubble">{t.whatsapp.choose}</p>
+            <div className="wa-choices" role="list">
+              {AREAS.map((channel) => (
                 <button
-                  key={item.label}
+                  key={channel.id}
                   type="button"
-                  className={topic === item.label ? "wa-topic is-on" : "wa-topic"}
-                  aria-pressed={topic === item.label}
-                  onClick={() => chooseTopic(item.label, item.text)}
+                  className={areaId === channel.id ? "wa-choice is-on" : "wa-choice"}
+                  aria-pressed={areaId === channel.id}
+                  onClick={() => chooseArea(channel)}
                 >
-                  {item.label}
+                  {channelLabel(channel.id, locale)}
                 </button>
               ))}
             </div>
@@ -106,21 +102,21 @@ export function WhatsAppChat() {
             }}
           >
             <label className="sr-only" htmlFor={`${titleId}-message`}>
-              Mensagem para o WhatsApp
+              {t.whatsapp.messageLabel}
             </label>
             <input
               id={`${titleId}-message`}
               name="message"
               type="text"
               autoComplete="off"
-              placeholder="Escreva sua mensagem"
+              placeholder={t.whatsapp.placeholder}
               value={text}
               onChange={(event) => {
                 setText(event.target.value);
-                setTopic(null);
+                setCustomText(true);
               }}
             />
-            <button type="submit" className="wa-send" aria-label="Enviar no WhatsApp">
+            <button type="submit" className="wa-send" aria-label={t.whatsapp.send}>
               {WA_ICON}
             </button>
           </form>
@@ -130,7 +126,7 @@ export function WhatsAppChat() {
       <button
         type="button"
         className="float-contact"
-        aria-label={open ? "Fechar WhatsApp" : "Abrir WhatsApp"}
+        aria-label={open ? t.whatsapp.close : t.whatsapp.open}
         aria-expanded={open}
         aria-controls={open ? cardId : undefined}
         onClick={() => setOpen((current) => !current)}

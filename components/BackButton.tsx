@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useI18n } from "@/components/I18nProvider";
 
 const returnKey = "mpen-return";
 const freshKey = "mpen-return-fresh";
@@ -16,6 +17,7 @@ export function rememberReturn() {
 
 export function BackButton() {
   const router = useRouter();
+  const { t } = useI18n();
 
   function onClick() {
     let stored = "";
@@ -48,7 +50,7 @@ export function BackButton() {
           strokeLinejoin="round"
         />
       </svg>
-      Voltar
+      {t.project.back}
     </button>
   );
 }

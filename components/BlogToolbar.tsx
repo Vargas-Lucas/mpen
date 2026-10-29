@@ -1,6 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useI18n } from "@/components/I18nProvider";
+import { categoryLabel } from "@/lib/copy/ui";
 import type { Category } from "@/lib/types";
 
 function blogHref(q: string, category = "") {
@@ -21,34 +23,35 @@ export function BlogToolbar({
   categories: Category[];
 }) {
   const router = useRouter();
+  const { t, locale } = useI18n();
 
   return (
     <form className="blog-toolbar" action="/blog" method="get">
       <label className="blog-toolbar-search">
-        <span className="sr-only">Buscar artigos</span>
-        <input name="q" defaultValue={q} placeholder="Buscar artigos" />
+        <span className="sr-only">{t.blog.searchLabel}</span>
+        <input name="q" defaultValue={q} placeholder={t.blog.searchPlaceholder} />
       </label>
       <label className="blog-toolbar-category">
-        <span className="sr-only">Categoria</span>
+        <span className="sr-only">{t.blog.category}</span>
         <select
           name="categoria"
           defaultValue={category}
-          aria-label="Filtrar por categoria"
+          aria-label={t.blog.filterCategory}
           onChange={(event) => {
             const form = event.currentTarget.form;
             const nextQ = String(form ? new FormData(form).get("q") : q).trim();
             router.push(blogHref(nextQ, event.currentTarget.value));
           }}
         >
-          <option value="">Todas as categorias</option>
+          <option value="">{t.blog.allCategories}</option>
           {categories.map((item) => (
             <option key={item.id} value={item.name}>
-              {item.name}
+              {categoryLabel(item.name, locale)}
             </option>
           ))}
         </select>
       </label>
-      <button type="submit">Buscar</button>
+      <button type="submit">{t.blog.search}</button>
     </form>
   );
 }

@@ -5,6 +5,7 @@ import { ensureCategory } from "@/actions/categories";
 import { requireEditor } from "@/lib/auth";
 import { query } from "@/lib/db";
 import { dbErrorMessage, ensureBlogSchema } from "@/lib/ensure-schema";
+import { translationFromForm } from "@/lib/post-i18n";
 import { saveBlogImage } from "@/lib/media";
 import { slugify } from "@/lib/slug";
 import type { Post } from "@/lib/types";
@@ -97,6 +98,10 @@ export async function savePost(_prev: PostState, formData: FormData): Promise<Po
     const seoDescription = read(formData, "seo_description");
     const seoKeyword = read(formData, "seo_keyword");
     const coverAlt = read(formData, "cover_alt");
+    const translations = {
+      en: translationFromForm(formData, "en"),
+      es: translationFromForm(formData, "es"),
+    };
     const coverFile = formData.get("cover");
 
     if (title.length < 3) {
@@ -141,8 +146,9 @@ export async function savePost(_prev: PostState, formData: FormData): Promise<Po
       await query(
         `UPDATE posts
          SET title = $1, slug = $2, excerpt = $3, body = $4, category = $5, cover = $6, cover_alt = $7,
-             seo_title = $8, seo_description = $9, seo_keyword = $10, published_at = $11, featured = $12
-         WHERE id = $13`,
+             seo_title = $8, seo_description = $9, seo_keyword = $10, published_at = $11, featured = $12,
+             translations = $13::jsonb
+         WHERE id = $14`,
         [
           title,
           slug,
@@ -156,14 +162,15 @@ export async function savePost(_prev: PostState, formData: FormData): Promise<Po
           seoKeyword,
           publishedAt,
           featured,
+          JSON.stringify(translations),
           current.id,
         ],
       );
     } else {
       const created = await query<{ id: number }>(
         `INSERT INTO posts
-           (title, slug, excerpt, body, category, cover, cover_alt, seo_title, seo_description, seo_keyword, published_at, featured)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+           (title, slug, excerpt, body, category, cover, cover_alt, seo_title, seo_description, seo_keyword, published_at, featured, translations)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13::jsonb)
          RETURNING id`,
         [
           title,
@@ -178,6 +185,7 @@ export async function savePost(_prev: PostState, formData: FormData): Promise<Po
           seoKeyword,
           publishedAt,
           featured,
+          JSON.stringify(translations),
         ],
       );
       savedId = created[0]?.id ?? 0;

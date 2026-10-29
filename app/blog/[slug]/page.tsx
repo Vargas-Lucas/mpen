@@ -2,6 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getEditorSession } from "@/lib/auth";
 import { getPost, getPostBySlug, getRelatedPosts } from "@/lib/data";
+import { categoryLabel, ui } from "@/lib/copy/ui";
+import { getLocale } from "@/lib/i18n-server";
+import { localizePost, localizePosts } from "@/lib/post-i18n";
 import { dateTimeAttr, formatDate, readingMinutes } from "@/lib/format";
 import { blogImageSrc } from "@/lib/blog-image";
 import { ArticleBody } from "@/lib/markdown";
@@ -23,9 +26,11 @@ export async function generateMetadata({
 }) {
   const { slug } = await params;
   const { preview } = await searchParams;
-  const { post, isPreview } = await loadArticle(slug, preview);
-  if (!post) return { title: "Artigo" };
-  const meta = articleMetadata(post);
+  const { post: stored, isPreview } = await loadArticle(slug, preview);
+  if (!stored) return { title: ui(await getLocale()).blog.article };
+  const locale = await getLocale();
+  const post = localizePost(stored, locale);
+  const meta = articleMetadata(post, ui(locale).blog.seoAbout);
   if (isPreview) {
     return { ...meta, robots: { index: false, follow: false } };
   }
@@ -41,29 +46,30 @@ export default async function PostPage({
 }) {
   const { slug } = await params;
   const { preview } = await searchParams;
-  const { post, isPreview } = await loadArticle(slug, preview);
-  if (!post) notFound();
-  const related = await getRelatedPosts(post);
+  const { post: stored, isPreview } = await loadArticle(slug, preview);
+  if (!stored) notFound();
+  const locale = await getLocale();
+  const t = ui(locale).blog;
+  const post = localizePost(stored, locale);
+  const related = localizePosts(await getRelatedPosts(post), locale);
   const minutes = readingMinutes(post.body);
   const cover = blogImageSrc(post.cover);
   const coverAlt = post.cover_alt?.trim() || post.title;
-  const dateLabel = post.published_at ? formatDate(post.published_at) : "Prévia";
+  const dateLabel = post.published_at ? formatDate(post.published_at, locale) : t.previewDate;
   const lede = post.excerpt.trim() && post.excerpt.trim() !== post.title.trim() ? post.excerpt.trim() : "";
 
   return (
     <>
       {post.published_at && !isPreview ? (
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd(post)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd(post, t.seoAbout)) }} />
       ) : null}
       {isPreview ? (
         <div className="article-preview-bar">
           <div className="container article-preview-inner">
             <p>
-              {post.published_at
-                ? "Prévia de como o artigo aparece no site."
-                : "Prévia — este artigo ainda não está no ar."}
+              {post.published_at ? t.previewLive : t.previewDraft}
             </p>
-            <Link href={`/admin/artigos/${post.id}`}>Voltar a editar</Link>
+            <Link href={`/admin/artigos/${post.id}`}>{t.edit}</Link>
           </div>
         </div>
       ) : null}
@@ -82,15 +88,17 @@ export default async function PostPage({
                   strokeLinejoin="round"
                 />
               </svg>
-              Voltar ao blog
+              {t.back}
             </Link>
             <h1>{post.title}</h1>
             <p className="story-meta">
-              <Link href={`/blog?categoria=${encodeURIComponent(post.category)}`}>{post.category}</Link>
+              <Link href={`/blog?categoria=${encodeURIComponent(post.category)}`}>{categoryLabel(post.category, locale)}</Link>
               <span aria-hidden="true">·</span>
               <time dateTime={dateTimeAttr(post.published_at)}>{dateLabel}</time>
               <span aria-hidden="true">·</span>
-              <span>{minutes} min de leitura</span>
+              <span>
+                {minutes} {t.minutes}
+              </span>
             </p>
           </div>
         </header>
@@ -110,22 +118,22 @@ export default async function PostPage({
         <div className="container story-col">
           <div className="story-cta">
             <div className="story-cta-copy">
-              <h2>Conheça os imóveis da MPEN no Sul da Ilha</h2>
-              <p>Residencial com arquitetura e qualidade construtiva, a poucos minutos do mar.</p>
+              <h2>{t.ctaTitle}</h2>
+              <p>{t.ctaText}</p>
             </div>
             <div className="story-cta-actions">
               <Link className="btn btn-solid" href="/empreendimentos">
-                Ver empreendimentos
+                {t.seeDev}
               </Link>
               <Link className="btn btn-ghost" href="/contato">
-                Fale com a MPEN
+                {t.talk}
               </Link>
             </div>
           </div>
 
           {related.length > 0 ? (
             <div className="story-related">
-              <h2>Continue lendo</h2>
+              <h2>{t.keepReading}</h2>
               <ul>
                 {related.map((item) => {
                   const relatedCover = blogImageSrc(item.cover);
@@ -138,9 +146,9 @@ export default async function PostPage({
                           <span className="story-related-ph" aria-hidden="true" />
                         )}
                         <span>
-                          <em>{item.category}</em>
+                          <em>{categoryLabel(item.category, locale)}</em>
                           <strong>{item.title}</strong>
-                          {item.published_at ? <time dateTime={dateTimeAttr(item.published_at)}>{formatDate(item.published_at)}</time> : null}
+                          {item.published_at ? <time dateTime={dateTimeAttr(item.published_at)}>{formatDate(item.published_at, locale)}</time> : null}
                         </span>
                       </Link>
                     </li>

@@ -3,21 +3,25 @@
 import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import { channelLabel } from "@/lib/copy/ui";
+import { useI18n } from "@/components/I18nProvider";
 import { ContactForm } from "@/components/ContactForm";
 import { contactChannels, type ContactChannel } from "@/lib/contacts";
 
 function ChannelPanel({ channel }: { channel: ContactChannel }) {
+  const { locale, t } = useI18n();
+  const label = channelLabel(channel.id, locale);
   return (
     <div className="talk-panel">
       <div className="talk-panel-head">
-        <h3>{channel.label}</h3>
+        <h3>{label}</h3>
         {channel.whatsapp ? (
           <a
             className="talk-whatsapp"
             href={`https://wa.me/${channel.whatsapp}`}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={`WhatsApp ${channel.label}`}
+            aria-label={`${t.contact.whatsapp} ${label}`}
           >
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path
@@ -30,7 +34,7 @@ function ChannelPanel({ channel }: { channel: ContactChannel }) {
       </div>
       <ContactForm source={`fale-${channel.id}`} fields={channel.details === "aftersales" ? "aftersales" : "contact"} />
       <p className="form-privacy">
-        <Link href="/politica-de-privacidade">Política de privacidade</Link>
+        <Link href="/politica-de-privacidade">{t.contact.privacy}</Link>
       </p>
     </div>
   );
@@ -62,6 +66,7 @@ function Chooser({
   activeId: string | null;
   onSelect: (id: string) => void;
 }) {
+  const { locale } = useI18n();
   const main = contactChannels.filter((channel) => channel.details !== "aftersales");
   const quiet = contactChannels.filter((channel) => channel.details === "aftersales");
 
@@ -76,7 +81,7 @@ function Chooser({
             aria-pressed={activeId === channel.id}
             onClick={() => onSelect(channel.id)}
           >
-            {channel.label}
+            {channelLabel(channel.id, locale)}
           </button>
         ))}
       </div>
@@ -88,7 +93,7 @@ function Chooser({
           aria-pressed={activeId === channel.id}
           onClick={() => onSelect(channel.id)}
         >
-          {channel.label}
+          {channelLabel(channel.id, locale)}
         </button>
       ))}
     </div>
@@ -96,6 +101,7 @@ function Chooser({
 }
 
 export function TalkToUs({ mode = "button" }: { mode?: "button" | "page" }) {
+  const { t } = useI18n();
   const titleId = useId();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -144,7 +150,7 @@ export function TalkToUs({ mode = "button" }: { mode?: "button" | "page" }) {
         aria-expanded={open}
         onClick={() => setOpen(true)}
       >
-        Fale conosco
+        {t.contact.title}
       </button>
       {open && mounted
         ? createPortal(
@@ -157,8 +163,8 @@ export function TalkToUs({ mode = "button" }: { mode?: "button" | "page" }) {
                 onClick={(event) => event.stopPropagation()}
               >
                 <div className="talk-dialog-head">
-                  <h2 id={titleId}>Fale conosco</h2>
-                  <button type="button" className="talk-close" onClick={() => setOpen(false)} aria-label="Fechar">
+                  <h2 id={titleId}>{t.contact.title}</h2>
+                  <button type="button" className="talk-close" onClick={() => setOpen(false)} aria-label={t.contact.close}>
                     ×
                   </button>
                 </div>

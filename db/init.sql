@@ -26,7 +26,8 @@ CREATE TABLE posts (
   seo_description TEXT NOT NULL DEFAULT '',
   seo_keyword TEXT NOT NULL DEFAULT '',
   published_at TIMESTAMPTZ,
-  featured BOOLEAN NOT NULL DEFAULT FALSE
+  featured BOOLEAN NOT NULL DEFAULT FALSE,
+  translations JSONB NOT NULL DEFAULT '{}'::jsonb
 );
 
 CREATE TABLE categories (

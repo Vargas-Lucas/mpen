@@ -1,13 +1,16 @@
 "use client";
 
+import { useI18n } from "@/components/I18nProvider";
+
 export default function ErrorPage({ reset }: { error: Error; reset: () => void }) {
+  const { t } = useI18n();
   return (
     <section className="section">
       <div className="container empty">
-        <h1>Não foi possível abrir esta página</h1>
-        <p>O servidor ou o banco ainda pode estar subindo. Tente de novo.</p>
+        <h1>{t.error.title}</h1>
+        <p>{t.error.text}</p>
         <button className="btn btn-solid" type="button" onClick={() => reset()}>
-          Tentar de novo
+          {t.error.retry}
         </button>
       </div>
     </section>

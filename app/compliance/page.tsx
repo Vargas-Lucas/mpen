@@ -1,25 +1,8 @@
 import { statSync } from "node:fs";
 import path from "node:path";
 import { PageHeader } from "@/components/PageHeader";
-
-export const metadata = { title: "Políticas de compliance" };
-
-const documents = [
-  {
-    title: "Regulamento de privacidade",
-    kicker: "Lei Geral de Proteção de Dados",
-    text: "Documento da MPEN sobre o tratamento de dados pessoais.",
-    href: "/docs/regulamento-de-privacidade.pdf",
-    filename: "Regulamento de privacidade MPEN.pdf",
-  },
-  {
-    title: "Código de ética e conduta",
-    kicker: "Ética e conduta",
-    text: "O código de ética e de conduta da MPEN.",
-    href: "/docs/codigo-de-etica-e-conduta.pdf",
-    filename: "Codigo de etica e conduta MPEN.pdf",
-  },
-];
+import { ui } from "@/lib/copy/ui";
+import { getLocale } from "@/lib/i18n-server";
 
 function fileSize(href: string) {
   const bytes = statSync(path.join(process.cwd(), "public", href)).size;
@@ -36,14 +19,32 @@ function DocIcon() {
   );
 }
 
-export default function CompliancePage() {
+export async function generateMetadata() {
+  return { title: ui(await getLocale()).compliance.title };
+}
+
+export default async function CompliancePage() {
+  const t = ui(await getLocale()).compliance;
+  const documents = [
+    {
+      title: t.privacyTitle,
+      kicker: t.privacyKicker,
+      text: t.privacyText,
+      href: "/docs/regulamento-de-privacidade.pdf",
+      filename: "Regulamento de privacidade MPEN.pdf",
+    },
+    {
+      title: t.ethicsTitle,
+      kicker: t.ethicsKicker,
+      text: t.ethicsText,
+      href: "/docs/codigo-de-etica-e-conduta.pdf",
+      filename: "Codigo de etica e conduta MPEN.pdf",
+    },
+  ];
+
   return (
     <>
-      <PageHeader
-        compact
-        title="Políticas de compliance"
-        lede="Os documentos oficiais da MPEN, para abrir no navegador ou salvar no computador."
-      />
+      <PageHeader compact title={t.title} lede={t.lede} />
       <section className="docs-section">
         <div className="container">
           <ul className="docs-grid">
@@ -60,11 +61,11 @@ export default function CompliancePage() {
                 <p className="doc-meta">PDF · {fileSize(doc.href)}</p>
                 <div className="doc-actions">
                   <a className="doc-open" href={doc.href} target="_blank" rel="noreferrer">
-                    Abrir
+                    {t.open}
                     <span className="sr-only"> {doc.title}</span>
                   </a>
                   <a className="doc-save" href={doc.href} download={doc.filename}>
-                    Baixar
+                    {t.download}
                     <span className="sr-only"> {doc.title}</span>
                   </a>
                 </div>

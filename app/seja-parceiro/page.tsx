@@ -1,92 +1,75 @@
 import { ContactForm } from "@/components/ContactForm";
 import { PageHeader } from "@/components/PageHeader";
+import { ui } from "@/lib/copy/ui";
 import { contactChannel } from "@/lib/contacts";
 import { getDevelopments } from "@/lib/data";
+import { getLocale } from "@/lib/i18n-server";
 
-export const metadata = { title: "Seja parceiro da MPEN" };
-
-const steps = [
-  {
-    title: "Envie o cadastro",
-    text: "Nome, contato e uma mensagem sobre a sua atuação como corretor.",
-  },
-  {
-    title: "Fale com o comercial",
-    text: "A equipe recebe o cadastro e retorna para alinhar a parceria.",
-  },
-  {
-    title: "Apresente os empreendimentos",
-    text: "Você passa a oferecer os projetos residenciais da MPEN.",
-  },
-];
+export async function generateMetadata() {
+  return { title: ui(await getLocale()).partner.title };
+}
 
 export default async function PartnerPage() {
+  const copy = ui(await getLocale());
+  const t = copy.partner;
   const total = (await getDevelopments()).length;
   const comercial = contactChannel("comercial");
+  const steps = [
+    { title: t.step1, text: t.step1Text },
+    { title: t.step2, text: t.step2Text },
+    { title: t.step3, text: t.step3Text },
+  ];
 
   return (
     <>
-      <PageHeader
-        compact
-        className="copy-justified"
-        title="Seja parceiro da MPEN"
-        lede="Seja um corretor ou uma imobiliária parceira da MPEN Incorporadora e conheça nossos empreendimentos no Sul da Ilha de Florianópolis."
-      />
+      <PageHeader compact className="copy-justified" title={t.title} lede={t.lede} />
 
       <section className="partner-intro">
         <div className="container partner-layout">
           <div className="partner-copy">
-            <p className="kicker">Parceria comercial</p>
-            <h2>Vamos construir boas oportunidades juntos?</h2>
-            <p>
-              A MPEN Incorporadora atua desde 2003 no mercado imobiliário do Sul da Ilha de
-              Florianópolis, desenvolvendo empreendimentos residenciais que valorizam a localização,
-              a arquitetura e a qualidade construtiva.
-            </p>
-            <p>
-              Se você é corretor de imóveis ou representa uma imobiliária e deseja conhecer nossas
-              oportunidades comerciais, queremos conversar com você.
-            </p>
-            <p>
-              Preencha o formulário e entre em contato com nossa equipe comercial para saber mais
-              sobre as possibilidades de parceria.
-            </p>
+            <p className="kicker">{t.kicker}</p>
+            <h2>{t.h2}</h2>
+            <p>{t.p1}</p>
+            <p>{t.p2}</p>
+            <p>{t.p3}</p>
             <ul className="partner-points">
               <li>
-                <strong>{total} empreendimentos</strong>
-                <span>Portfólio residencial concentrado na região.</span>
+                <strong>
+                  {total} {copy.listing.manyDev}
+                </strong>
+                <span>{t.portfolio}</span>
               </li>
               <li>
-                <strong>Desde 2003</strong>
-                <span>Mais de duas décadas de obras no sul da Ilha.</span>
+                <strong>{t.since}</strong>
+                <span>{t.sinceText}</span>
               </li>
               <li>
-                <strong>Contato direto</strong>
-                <span>O comercial recebe o cadastro e retorna o contato.</span>
+                <strong>{t.direct}</strong>
+                <span>{t.directText}</span>
               </li>
             </ul>
             {comercial ? (
               <p className="partner-alt">
-                Prefere falar agora?{" "}
+                {t.prefer}{" "}
                 <a href={`https://wa.me/${comercial.whatsapp}`} target="_blank" rel="noreferrer">
-                  WhatsApp do comercial
+                  {t.whatsapp}
                 </a>
               </p>
             ) : null}
           </div>
 
           <aside className="partner-card">
-            <h2>Quero ser parceiro da MPEN</h2>
-            <p>Preencha seus dados e nossa equipe comercial entrará em contato para conversar sobre as possibilidades de parceria.</p>
-            <ContactForm source="parceiro" fields="partner" submitLabel="Quero ser parceiro" />
+            <h2>{t.cardTitle}</h2>
+            <p>{t.cardText}</p>
+            <ContactForm source="parceiro" fields="partner" submitLabel={t.submit} />
           </aside>
         </div>
       </section>
 
       <section className="partner-steps">
         <div className="container">
-          <p className="kicker">Como funciona</p>
-          <h2>Do cadastro ao retorno do comercial.</h2>
+          <p className="kicker">{t.how}</p>
+          <h2>{t.howTitle}</h2>
           <ol className="partner-steps-grid">
             {steps.map((step, index) => (
               <li key={step.title}>

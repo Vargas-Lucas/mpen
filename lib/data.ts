@@ -96,6 +96,7 @@ export async function getAdminCategories() {
 }
 
 export async function getPosts(filters: { q?: string; category?: string; limit?: number } = {}) {
+  await ensureBlogSchema();
   const where = ["published_at IS NOT NULL"];
   const params: unknown[] = [];
 
@@ -107,7 +108,7 @@ export async function getPosts(filters: { q?: string; category?: string; limit?:
   if (filters.q) {
     params.push(`%${filters.q}%`);
     where.push(
-      `(title ILIKE $${params.length} OR excerpt ILIKE $${params.length} OR body ILIKE $${params.length} OR category ILIKE $${params.length})`,
+      `(title ILIKE $${params.length} OR excerpt ILIKE $${params.length} OR body ILIKE $${params.length} OR category ILIKE $${params.length} OR translations::text ILIKE $${params.length})`,
     );
   }
 
@@ -126,6 +127,7 @@ export async function getPosts(filters: { q?: string; category?: string; limit?:
 }
 
 export async function getPost(slug: string) {
+  await ensureBlogSchema();
   const rows = await query<Post>(
     "SELECT * FROM posts WHERE slug = $1 AND published_at IS NOT NULL",
     [slug],
@@ -134,6 +136,7 @@ export async function getPost(slug: string) {
 }
 
 export async function getPostBySlug(slug: string) {
+  await ensureBlogSchema();
   const rows = await query<Post>("SELECT * FROM posts WHERE slug = $1", [slug]);
   return rows[0] ?? null;
 }

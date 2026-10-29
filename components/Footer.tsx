@@ -1,29 +1,31 @@
+"use client";
+
 import Link from "next/link";
 import { FooterLogo } from "@/components/FooterLogo";
 import { TalkToUs } from "@/components/TalkToUs";
+import { useI18n } from "@/components/I18nProvider";
 
 export function Footer() {
+  const { t } = useI18n();
+
   return (
     <footer className="footer">
       <div className="container footer-grid">
         <div>
           <FooterLogo />
-          <p className="footer-about">
-            Há mais de 20 anos desenvolvendo empreendimentos residenciais no Sul da Ilha de
-            Florianópolis, com qualidade construtiva, arquitetura e compromisso com cada projeto.
-          </p>
+          <p className="footer-about">{t.footer.about}</p>
         </div>
         <div>
-          <Link href="/quem-somos">Quem somos</Link>
-          <Link href="/empreendimentos">Empreendimentos</Link>
-          <Link href="/blog">Blog</Link>
-          <Link href="/seja-parceiro">Seja parceiro</Link>
+          <Link href="/quem-somos">{t.footer.who}</Link>
+          <Link href="/empreendimentos">{t.footer.developments}</Link>
+          <Link href="/blog">{t.footer.blog}</Link>
+          <Link href="/seja-parceiro">{t.footer.partner}</Link>
         </div>
         <div>
-          <Link href="/faq">FAQ</Link>
-          <Link href="/compliance">Compliance</Link>
-          <Link href="/politica-de-privacidade">Política de privacidade</Link>
-          <Link href="/termos-de-uso">Termos de uso</Link>
+          <Link href="/faq">{t.footer.faq}</Link>
+          <Link href="/compliance">{t.footer.compliance}</Link>
+          <Link href="/politica-de-privacidade">{t.footer.privacy}</Link>
+          <Link href="/termos-de-uso">{t.footer.terms}</Link>
         </div>
         <div className="footer-contact">
           <TalkToUs />

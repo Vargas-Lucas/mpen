@@ -10,12 +10,10 @@ const DEFAULT_IMAGE = "/images/sobre/capa.png";
 
 export function articleSeo(
   post: Pick<Post, "title" | "slug" | "excerpt" | "cover" | "cover_alt" | "seo_title" | "seo_description">,
+  about = "no blog da MPEN Incorporadora.",
 ) {
   const title = post.seo_title.trim() || (post.title.trim() ? `${post.title.trim()} — MPEN` : TITLE_FALLBACK);
-  const description =
-    post.seo_description.trim() ||
-    post.excerpt.trim() ||
-    `${post.title} no blog da MPEN Incorporadora.`;
+  const description = post.seo_description.trim() || post.excerpt.trim() || `${post.title} ${about}`;
   const path = `/blog/${post.slug}`;
   const image = blogImageSrc(post.cover) || DEFAULT_IMAGE;
   const imageAlt = post.cover_alt?.trim() || post.title;
@@ -29,8 +27,8 @@ function isoDate(value: string | Date | null) {
   return date.toISOString();
 }
 
-export function articleMetadata(post: Post): Metadata {
-  const seo = articleSeo(post);
+export function articleMetadata(post: Post, about?: string): Metadata {
+  const seo = articleSeo(post, about);
   return {
     title: { absolute: seo.title },
     description: seo.description,
@@ -54,8 +52,8 @@ export function articleMetadata(post: Post): Metadata {
   };
 }
 
-export function articleJsonLd(post: Post) {
-  const seo = articleSeo(post);
+export function articleJsonLd(post: Post, about?: string) {
+  const seo = articleSeo(post, about);
   return {
     "@context": "https://schema.org",
     "@type": "Article",

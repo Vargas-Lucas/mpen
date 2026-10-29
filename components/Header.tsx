@@ -3,18 +3,20 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-
-const links = [
-  { href: "/quem-somos", label: "Conheça a MPEN" },
-  { href: "/empreendimentos", label: "Empreendimentos" },
-  { href: "/blog", label: "Blog" },
-];
+import { LanguageSwitch } from "@/components/LanguageSwitch";
+import { useI18n } from "@/components/I18nProvider";
 
 export function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const { t } = useI18n();
   const isHome = pathname === "/";
+  const links = [
+    { href: "/quem-somos", label: t.nav.about },
+    { href: "/empreendimentos", label: t.nav.developments },
+    { href: "/blog", label: t.nav.blog },
+  ];
 
   useEffect(() => {
     setOpen(false);
@@ -44,14 +46,14 @@ export function Header() {
     <header className={className}>
       <div className="container header-inner">
         <Link href="/" className="brand" aria-label="MPEN">
-          <img src="/logo.png" alt="MPEN, construtora no Sul da Ilha de Florianópolis" />
+          <img src="/logo.png" alt={t.logoAlt} />
         </Link>
 
         <button
           className="menu"
           type="button"
           aria-expanded={open}
-          aria-label={open ? "Fechar menu" : "Abrir menu"}
+          aria-label={open ? t.nav.menuClose : t.nav.menuOpen}
           onClick={() => setOpen((value) => !value)}
         >
           <span />
@@ -60,7 +62,7 @@ export function Header() {
         </button>
 
         <div className={open ? "header-panel open" : "header-panel"}>
-          <nav className="nav" aria-label="Principal">
+          <nav className="nav" aria-label={t.nav.main}>
             {links.map((link) => (
               <Link key={link.href} href={link.href}>
                 {link.label}
@@ -69,10 +71,11 @@ export function Header() {
           </nav>
           <div className="header-actions">
             <a href="https://portaldocliente.expertsystem.com.br/entrar/mpen" target="_blank" rel="noopener noreferrer">
-              Área do cliente
+              {t.nav.client}
             </a>
-            <Link href="/contato">Contato</Link>
-            <Link href="/seja-parceiro">Seja parceiro</Link>
+            <Link href="/contato">{t.nav.contact}</Link>
+            <Link href="/seja-parceiro">{t.nav.partner}</Link>
+            <LanguageSwitch />
           </div>
         </div>
       </div>

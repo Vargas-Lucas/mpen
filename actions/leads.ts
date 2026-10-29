@@ -1,5 +1,7 @@
 "use server";
 
+import { isLocale, type Locale } from "@/lib/i18n";
+import { channelLabel, ui } from "@/lib/copy/ui";
 import { contactChannel } from "@/lib/contacts";
 import { query } from "@/lib/db";
 import { sendContactEmail } from "@/lib/mail";
@@ -15,13 +17,16 @@ function validEmail(email: string) {
 }
 
 export async function createLead(_prev: LeadState, formData: FormData): Promise<LeadState> {
+  const rawLocale = read(formData, "locale");
+  const locale: Locale = isLocale(rawLocale) ? rawLocale : "pt";
+  const copy = ui(locale).lead;
   const variant = read(formData, "variant") || "contact";
   const email = read(formData, "email");
   const source = read(formData, "source") || (variant === "newsletter" ? "newsletter" : "contato");
   const developmentSlug = read(formData, "development");
 
   if (!validEmail(email)) {
-    return { ok: false, message: "Informe um e-mail válido." };
+    return { ok: false, message: copy.invalidEmail };
   }
 
   let name = read(formData, "name");
@@ -35,15 +40,15 @@ export async function createLead(_prev: LeadState, formData: FormData): Promise<
   const channel = channelId ? contactChannel(channelId) : undefined;
 
   if (channel?.details === "aftersales") {
-    if (phone.length < 8) return { ok: false, message: "Informe o telefone." };
-    if (developmentName.length < 2) return { ok: false, message: "Informe o empreendimento." };
-    if (!unit) return { ok: false, message: "Informe a unidade." };
+    if (phone.length < 8) return { ok: false, message: copy.phone };
+    if (developmentName.length < 2) return { ok: false, message: copy.development };
+    if (!unit) return { ok: false, message: copy.unit };
   }
 
   if (variant === "newsletter") {
-    name = name || "Assinante";
+    name = name || copy.subscriber;
   } else if (name.length < 2) {
-    return { ok: false, message: "Informe seu nome." };
+    return { ok: false, message: copy.name };
   }
 
   const storedMessage = [
@@ -63,24 +68,24 @@ export async function createLead(_prev: LeadState, formData: FormData): Promise<
       [name, email, phone, storedMessage, source, developmentSlug || null],
     );
   } catch {
-    return { ok: false, message: "Não foi possível enviar agora. Tente de novo em instantes." };
+    return { ok: false, message: copy.fail };
   }
 
   if (variant === "newsletter") {
-    return { ok: true, message: "Inscrição recebida. Você vai receber as novidades da MPEN." };
+    return { ok: true, message: copy.newsletter };
   }
 
   if (channel) {
     const comercial = contactChannel("comercial");
     const recipients = channel.emails?.length ? channel.emails : [channel.email];
-    const copy =
+    const cc =
       !channel.emails && comercial && !recipients.some((item) => item.toLowerCase() === comercial.email.toLowerCase())
         ? comercial.email
         : undefined;
     try {
       await sendContactEmail({
         to: recipients,
-        cc: copy,
+        cc,
         sector: channel.label,
         name,
         email,
@@ -93,10 +98,10 @@ export async function createLead(_prev: LeadState, formData: FormData): Promise<
       return {
         ok: false,
         received: true,
-        message: "A mensagem foi registrada, mas o e-mail não saiu. Tente de novo em instantes.",
+        message: copy.emailFail,
       };
     }
-    return { ok: true, received: true, message: `Mensagem enviada para ${channel.label}.` };
+    return { ok: true, received: true, message: `${copy.sentTo} ${channelLabel(channel.id, locale)}.` };
   }
 
   if (source === "parceiro") {
@@ -117,16 +122,16 @@ export async function createLead(_prev: LeadState, formData: FormData): Promise<
         return {
           ok: false,
           received: true,
-          message: "A mensagem foi registrada, mas o e-mail não saiu. Tente de novo em instantes.",
+          message: copy.emailFail,
         };
       }
       return {
         ok: true,
         received: true,
-        message: "Nossa equipe comercial entrará em contato para conversar sobre as possibilidades de parceria.",
+        message: copy.partnerOk,
       };
     }
   }
 
-  return { ok: true, message: "Mensagem recebida. Em breve a equipe da MPEN retorna o contato." };
+  return { ok: true, message: copy.received };
 }

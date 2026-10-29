@@ -1,26 +1,40 @@
+import { intlLocale, type Locale } from "@/lib/i18n";
+import { ui } from "@/lib/copy/ui";
 import type { Development } from "@/lib/types";
 
-export function developmentAlt(item: Pick<Development, "name" | "neighborhood">) {
+export function developmentAlt(item: Pick<Development, "name" | "neighborhood">, locale: Locale = "pt") {
   const place = item.neighborhood.split(" - ").pop()?.trim() || item.neighborhood;
-  return `${item.name} no ${place} - MPEN`;
+  const link = ui(locale).status.inPlace;
+  return `${item.name} ${link} ${place} - MPEN`;
 }
 
-export function statusLabel(status: string) {
-  if (status === "lancamento") return "Lançamento";
-  if (status === "construcao") return "Em construção";
-  if (status === "entregue") return "Entregue";
+export function statusLabel(status: string, locale: Locale = "pt") {
+  const labels = ui(locale).status;
+  if (status === "lancamento") return labels.launch;
+  if (status === "construcao") return labels.building;
+  if (status === "entregue") return labels.delivered;
   return status;
 }
 
-export function deliveryLabel(item: Pick<Development, "status" | "delivery">) {
+export function deliveryLabel(item: Pick<Development, "status" | "delivery">, locale: Locale = "pt") {
   if (!item.delivery) return "";
-  if (item.status === "entregue") return `Entregue em ${item.delivery}`;
-  if (item.delivery === "2029") return `Em construção - entrega em ${item.delivery}`;
-  return `Entrega em ${item.delivery}`;
+  const labels = ui(locale).status;
+  if (item.status === "entregue") return `${labels.deliveredIn} ${item.delivery}`;
+  if (item.delivery === "2029") return `${labels.buildingDelivery} ${item.delivery}`;
+  return `${labels.deliveryIn} ${item.delivery}`;
 }
 
-export function formatDate(value: string | Date) {
-  return new Intl.DateTimeFormat("pt-BR", {
+export function placeLabel(neighborhood: string, locale: Locale = "pt") {
+  const labels = ui(locale).status;
+  if (neighborhood.startsWith("Loteamento")) {
+    const rest = neighborhood.slice("Loteamento".length).trim();
+    return `${labels.subdivision} ${rest}`;
+  }
+  return `${labels.neighborhood} ${neighborhood}`;
+}
+
+export function formatDate(value: string | Date, locale: Locale = "pt") {
+  return new Intl.DateTimeFormat(intlLocale(locale), {
     timeZone: "America/Sao_Paulo",
     day: "2-digit",
     month: "long",

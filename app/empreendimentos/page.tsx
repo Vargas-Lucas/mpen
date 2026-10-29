@@ -1,16 +1,9 @@
 import Link from "next/link";
 import { DevelopmentCard } from "@/components/DevelopmentCard";
 import { PageHeader } from "@/components/PageHeader";
+import { ui, type Ui } from "@/lib/copy/ui";
 import { getDevelopments } from "@/lib/data";
-
-export const metadata = { title: "Empreendimentos" };
-
-const filters = [
-  { key: "", label: "Todos" },
-  { key: "lancamento", label: "Lançamentos" },
-  { key: "construcao", label: "Em construção" },
-  { key: "entregue", label: "Entregues" },
-];
+import { getLocale } from "@/lib/i18n-server";
 
 function listingHref(status: string, q: string) {
   const params = new URLSearchParams();
@@ -20,23 +13,27 @@ function listingHref(status: string, q: string) {
   return query ? `/empreendimentos?${query}` : "/empreendimentos";
 }
 
-function resultLabel(count: number, status: string, q: string) {
+function resultLabel(count: number, status: string, q: string, listing: Ui["listing"]) {
   const noun =
     status === "lancamento"
       ? count === 1
-        ? "lançamento"
-        : "lançamentos"
+        ? listing.oneLaunch
+        : listing.manyLaunch
       : status === "construcao"
-        ? "em construção"
+        ? listing.building
         : status === "entregue"
           ? count === 1
-            ? "entregue"
-            : "entregues"
+            ? listing.oneDelivered
+            : listing.manyDelivered
           : count === 1
-            ? "empreendimento"
-            : "empreendimentos";
+            ? listing.oneDev
+            : listing.manyDev;
   const base = `${count} ${noun}`;
-  return q ? `${base} para “${q}”` : base;
+  return q ? `${base} ${listing.forQuery} “${q}”` : base;
+}
+
+export async function generateMetadata() {
+  return { title: ui(await getLocale()).listing.title };
 }
 
 export default async function DevelopmentsPage({
@@ -44,28 +41,32 @@ export default async function DevelopmentsPage({
 }: {
   searchParams: Promise<{ q?: string; status?: string; cidade?: string }>;
 }) {
+  const locale = await getLocale();
+  const t = ui(locale);
   const params = await searchParams;
   const q = params.q?.trim() || "";
   const status = params.status || "";
   const city = params.cidade || "";
   const items = await getDevelopments({ q, status, city });
+  const filters = [
+    { key: "", label: t.listing.all },
+    { key: "lancamento", label: t.home.launches },
+    { key: "construcao", label: t.home.building },
+    { key: "entregue", label: t.home.delivered },
+  ];
 
   return (
     <>
-      <PageHeader
-        compact
-        title="Empreendimentos"
-        lede="Lançamentos, obras e entregas da MPEN no sul da Ilha de Florianópolis."
-      />
+      <PageHeader compact title={t.listing.title} lede={t.listing.lede} />
       <section className="listing">
         <div className="container">
           <div className="listing-bar">
             <form className="listing-search" action="/empreendimentos" method="get">
               {status ? <input type="hidden" name="status" value={status} /> : null}
-              <input name="q" defaultValue={q} placeholder="Busque por bairro ou empreendimento" />
-              <button type="submit">Buscar</button>
+              <input name="q" defaultValue={q} placeholder={t.listing.searchPlaceholder} />
+              <button type="submit">{t.listing.search}</button>
             </form>
-            <nav className="home-paths" aria-label="Filtrar empreendimentos">
+            <nav className="home-paths" aria-label={t.home.filterAria}>
               {filters.map((filter) => (
                 <Link
                   key={filter.key || "todos"}
@@ -81,8 +82,8 @@ export default async function DevelopmentsPage({
           {items.length > 0 ? (
             <>
               <p className="listing-meta">
-                {resultLabel(items.length, status, q)}
-                {q || status ? <Link href="/empreendimentos">Limpar filtros</Link> : null}
+                {resultLabel(items.length, status, q, t.listing)}
+                {q || status ? <Link href="/empreendimentos">{t.listing.clear}</Link> : null}
               </p>
               <div className="dev-grid">
                 {items.map((item, index) => (
@@ -92,8 +93,10 @@ export default async function DevelopmentsPage({
             </>
           ) : (
             <div className="empty">
-              <p>{q ? `Nenhum empreendimento encontrado para “${q}”.` : "Nenhum empreendimento encontrado com esses filtros."}</p>
-              <Link href="/empreendimentos">Ver todos os empreendimentos</Link>
+              <p>
+                {q ? `${t.listing.emptyQuery} “${q}”.` : t.listing.emptyFilters}
+              </p>
+              <Link href="/empreendimentos">{t.listing.seeAll}</Link>
             </div>
           )}
         </div>
