@@ -18,6 +18,7 @@ import { articleSeoChecks } from "@/lib/seo-check";
 import { SITE_URL } from "@/lib/seo";
 import { slugify } from "@/lib/slug";
 import { toDatetimeLocal } from "@/lib/format";
+import { shrinkImage } from "@/lib/shrink-image";
 import type { Category, Post } from "@/lib/types";
 
 const initial: PostState = { ok: false, message: "" };
@@ -28,18 +29,18 @@ function markIntent(event: React.MouseEvent<HTMLButtonElement>) {
   if (field instanceof HTMLInputElement) field.value = event.currentTarget.value;
 }
 
-function Actions({ published }: { published?: boolean }) {
+function Actions({ published, disabled }: { published?: boolean; disabled?: boolean }) {
   const { pending, data } = useFormStatus();
   const intent = pending ? String(data?.get("intent") || "") : "";
   return (
     <div className={pending ? "admin-publish is-pending" : "admin-publish"}>
-      <button className="admin-submit is-publish" type="submit" value="publish" onClick={markIntent}>
+      <button className="admin-submit is-publish" type="submit" value="publish" disabled={disabled} onClick={markIntent}>
         {intent === "publish" ? "Publicando..." : published ? "Atualizar" : "Publicar"}
       </button>
-      <button className="admin-secondary is-preview" type="submit" value="preview" onClick={markIntent}>
+      <button className="admin-secondary is-preview" type="submit" value="preview" disabled={disabled} onClick={markIntent}>
         {intent === "preview" ? "Abrindo prévia..." : "Ver como"}
       </button>
-      <button className="admin-secondary is-draft" type="submit" value="draft" onClick={markIntent}>
+      <button className="admin-secondary is-draft" type="submit" value="draft" disabled={disabled} onClick={markIntent}>
         {intent === "draft" ? "Salvando..." : published ? "Voltar para rascunho" : "Salvar rascunho"}
       </button>
     </div>
@@ -162,6 +163,9 @@ export function PostForm({
   const [seoKeyword, setSeoKeyword] = useState(post?.seo_keyword ?? "");
   const [preview, setPreview] = useState(post?.cover || "");
   const [removeCover, setRemoveCover] = useState(false);
+  const [coverUrl, setCoverUrl] = useState("");
+  const [coverNote, setCoverNote] = useState("");
+  const [coverBusy, setCoverBusy] = useState(false);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const [editorKey, setEditorKey] = useState(0);
 
@@ -444,7 +448,7 @@ export function PostForm({
         <aside className="admin-side">
           <div className="admin-box">
             <h3>Publicar</h3>
-            <Actions published={Boolean(post?.published_at)} />
+            <Actions published={Boolean(post?.published_at)} disabled={coverBusy} />
             {state.message ? (
               <p className="err" role="status">
                 {state.message}
@@ -502,6 +506,7 @@ export function PostForm({
           <div className="admin-box">
             <h3>Imagem de capa</h3>
             {removeCover ? <input type="hidden" name="remove_cover" value="on" /> : null}
+            {coverUrl ? <input type="hidden" name="cover_url" value={coverUrl} /> : null}
             <label>
               <span className="sr-only">Capa</span>
               <input
@@ -509,15 +514,43 @@ export function PostForm({
                 name="cover"
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
-                onChange={(event) => {
-                  const file = event.target.files?.[0];
+                disabled={coverBusy}
+                onChange={async (event) => {
+                  const input = event.target;
+                  const file = input.files?.[0];
                   if (!file) return;
-                  setRemoveCover(false);
-                  setPreview(URL.createObjectURL(file));
+                  setCoverBusy(true);
+                  setCoverNote("");
+                  try {
+                    const next = await shrinkImage(file);
+                    const data = new FormData();
+                    data.set("image", next);
+                    data.set("slug", slug || "artigo");
+                    const result = await uploadPostImage(data);
+                    input.value = "";
+                    if (!result.ok || !result.url) {
+                      setCoverNote(result.message || "Não foi possível guardar a imagem.");
+                      return;
+                    }
+                    setCoverUrl(result.url);
+                    setRemoveCover(false);
+                    setPreview((current) => {
+                      if (current.startsWith("blob:")) URL.revokeObjectURL(current);
+                      return result.url || "";
+                    });
+                  } catch (error) {
+                    input.value = "";
+                    setCoverNote(error instanceof Error ? error.message : "Não foi possível ler essa imagem.");
+                  } finally {
+                    setCoverBusy(false);
+                  }
                 }}
               />
-              <span className="admin-hint">JPG, PNG ou WebP, até 5 MB.</span>
+              <span className="admin-hint">
+                {coverBusy ? "Ajustando a imagem..." : "JPG, PNG ou WebP. Fotos grandes são reduzidas antes de salvar."}
+              </span>
             </label>
+            {coverNote ? <p className="err">{coverNote}</p> : null}
             {preview ? (
               <div className="admin-cover-preview">
                 <img src={preview.startsWith("blob:") ? preview : blogImageSrc(preview)} alt="" />
@@ -525,7 +558,12 @@ export function PostForm({
                   className="admin-tool admin-tool-danger"
                   type="button"
                   onClick={() => {
-                    setPreview("");
+                    setPreview((current) => {
+                      if (current.startsWith("blob:")) URL.revokeObjectURL(current);
+                      return "";
+                    });
+                    setCoverUrl("");
+                    setCoverNote("");
                     setRemoveCover(true);
                     if (coverInputRef.current) coverInputRef.current.value = "";
                   }}

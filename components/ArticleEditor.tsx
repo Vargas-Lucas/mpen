@@ -6,6 +6,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { jsonToMarkdown, markdownToHtml, normalizeHref } from "@/lib/editor-markdown";
+import { shrinkImage } from "@/lib/shrink-image";
 
 const ArticleImage = Image.extend({
   addNodeView() {
@@ -129,7 +130,15 @@ export function ArticleEditor({ value, onChange, uploadImage }: Props) {
     if (!file || !editor) return;
     setUploading(true);
     setImageMessage("");
-    const result = await uploadImage(file);
+    let prepared = file;
+    try {
+      prepared = await shrinkImage(file);
+    } catch (error) {
+      setUploading(false);
+      setImageMessage(error instanceof Error ? error.message : "Não foi possível ler essa imagem.");
+      return;
+    }
+    const result = await uploadImage(prepared);
     setUploading(false);
     if (!result.ok || !result.url) {
       setImageMessage(result.message || "Não foi possível guardar a imagem.");

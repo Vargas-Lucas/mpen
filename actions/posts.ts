@@ -103,6 +103,7 @@ export async function savePost(_prev: PostState, formData: FormData): Promise<Po
       es: translationFromForm(formData, "es"),
     };
     const coverFile = formData.get("cover");
+    const coverUrl = read(formData, "cover_url");
 
     if (title.length < 3) {
       return { ok: false, message: "Informe um título com pelo menos 3 caracteres." };
@@ -125,6 +126,7 @@ export async function savePost(_prev: PostState, formData: FormData): Promise<Po
     const slug = await uniqueSlug(slugify(slugInput || title), id || undefined);
     let cover = current?.cover || "";
     if (removeCover) cover = "";
+    if (coverUrl.startsWith("/api/media/") || coverUrl.startsWith("/images/")) cover = coverUrl;
 
     if (coverFile instanceof File && coverFile.size > 0) {
       try {
