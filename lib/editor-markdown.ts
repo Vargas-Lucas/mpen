@@ -59,7 +59,8 @@ function inlineToHtml(text: string) {
 }
 
 export function markdownToHtml(body: string) {
-  const lines = body.replace(/\r\n/g, "\n").split("\n");
+  const source = typeof body === "string" ? body : "";
+  const lines = source.replace(/\r\n/g, "\n").split("\n");
   const html: string[] = [];
   let paragraph: string[] = [];
 

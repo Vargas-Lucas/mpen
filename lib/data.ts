@@ -170,7 +170,59 @@ export async function getAdminPosts() {
   `);
 }
 
+function textField(value: unknown) {
+  return typeof value === "string" ? value : "";
+}
+
+export function plainPost(row: Post): Post {
+  let translations: Post["translations"] = {};
+  try {
+    const stored: unknown = row.translations;
+    const raw = typeof stored === "string" ? JSON.parse(stored) : stored;
+    if (raw && typeof raw === "object") {
+      for (const code of ["en", "es"] as const) {
+        const item = (raw as Post["translations"])[code];
+        if (!item || typeof item !== "object") continue;
+        translations[code] = {
+          title: textField(item.title),
+          excerpt: textField(item.excerpt),
+          body: textField(item.body),
+          cover_alt: textField(item.cover_alt),
+          seo_title: textField(item.seo_title),
+          seo_description: textField(item.seo_description),
+        };
+      }
+    }
+  } catch {
+    translations = {};
+  }
+
+  const published = row.published_at ? new Date(row.published_at) : null;
+  return {
+    id: Number(row.id),
+    title: textField(row.title),
+    slug: textField(row.slug),
+    excerpt: textField(row.excerpt),
+    body: textField(row.body),
+    category: textField(row.category),
+    cover: textField(row.cover),
+    cover_alt: textField(row.cover_alt),
+    seo_title: textField(row.seo_title),
+    seo_description: textField(row.seo_description),
+    seo_keyword: textField(row.seo_keyword),
+    published_at: published && !Number.isNaN(published.getTime()) ? published.toISOString() : null,
+    featured: row.featured === true,
+    translations,
+  };
+}
+
 export async function getAdminPost(id: number) {
+  if (!Number.isInteger(id) || id < 1) return null;
+  try {
+    await ensureBlogSchema();
+  } catch {
+    // The article still opens when the extra columns are already there.
+  }
   const rows = await query<Post>("SELECT * FROM posts WHERE id = $1", [id]);
-  return rows[0] ?? null;
+  return rows[0] ? plainPost(rows[0]) : null;
 }

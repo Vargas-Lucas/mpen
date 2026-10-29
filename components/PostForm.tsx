@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useActionState, useEffect, useRef, useState, useTransition } from "react";
+import { Component, useActionState, useEffect, useRef, useState, useTransition, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 import { createCategory, type CategoryState } from "@/actions/categories";
 import { savePost, uploadPostImage, type PostState } from "@/actions/posts";
@@ -58,6 +58,18 @@ function SeoMeter({ length, min, max }: { length: number; min: number; max: numb
 
 const categoryInitial: CategoryState = { ok: false, message: "" };
 const DRAFT_KEY = "mpen-draft-novo";
+
+class EditorBoundary extends Component<{ children: ReactNode; fallback: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  render() {
+    return this.state.failed ? this.props.fallback : this.props.children;
+  }
+}
 
 function TranslationFields({ post }: { post?: Post }) {
   const languages = [
@@ -321,17 +333,26 @@ export function PostForm({
 
           <input name="body" type="hidden" value={body} />
           {draftReady ? (
-            <ArticleEditor
-              key={editorKey}
-              value={body}
-              onChange={setBody}
-              uploadImage={async (file) => {
-                const data = new FormData();
-                data.set("image", file);
-                data.set("slug", slug || "artigo");
-                return uploadPostImage(data);
-              }}
-            />
+            <EditorBoundary
+              fallback={
+                <label>
+                  Texto
+                  <textarea rows={16} value={body} onChange={(event) => setBody(event.target.value)} />
+                </label>
+              }
+            >
+              <ArticleEditor
+                key={editorKey}
+                value={body}
+                onChange={setBody}
+                uploadImage={async (file) => {
+                  const data = new FormData();
+                  data.set("image", file);
+                  data.set("slug", slug || "artigo");
+                  return uploadPostImage(data);
+                }}
+              />
+            </EditorBoundary>
           ) : (
             <div className="admin-visual" aria-hidden="true" />
           )}

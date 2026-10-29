@@ -20,11 +20,16 @@ export async function ensureBlogSchema() {
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
   `);
-  await query(`ALTER TABLE posts ADD COLUMN IF NOT EXISTS cover_alt TEXT NOT NULL DEFAULT ''`);
-  await query(`ALTER TABLE posts ADD COLUMN IF NOT EXISTS seo_title TEXT NOT NULL DEFAULT ''`);
-  await query(`ALTER TABLE posts ADD COLUMN IF NOT EXISTS seo_description TEXT NOT NULL DEFAULT ''`);
-  await query(`ALTER TABLE posts ADD COLUMN IF NOT EXISTS seo_keyword TEXT NOT NULL DEFAULT ''`);
-  await query(`ALTER TABLE posts ADD COLUMN IF NOT EXISTS translations JSONB NOT NULL DEFAULT '{}'::jsonb`);
+  await query(`ALTER TABLE posts ADD COLUMN IF NOT EXISTS cover_alt TEXT NOT NULL DEFAULT ''`).catch(() => undefined);
+  await query(`ALTER TABLE posts ADD COLUMN IF NOT EXISTS seo_title TEXT NOT NULL DEFAULT ''`).catch(() => undefined);
+  await query(`ALTER TABLE posts ADD COLUMN IF NOT EXISTS seo_description TEXT NOT NULL DEFAULT ''`).catch(() => undefined);
+  await query(`ALTER TABLE posts ADD COLUMN IF NOT EXISTS seo_keyword TEXT NOT NULL DEFAULT ''`).catch(() => undefined);
+  let translationsOk = true;
+  try {
+    await query(`ALTER TABLE posts ADD COLUMN IF NOT EXISTS translations JSONB NOT NULL DEFAULT '{}'::jsonb`);
+  } catch {
+    translationsOk = false;
+  }
   await query(`
     CREATE TABLE IF NOT EXISTS media (
       id SERIAL PRIMARY KEY,
@@ -43,7 +48,7 @@ export async function ensureBlogSchema() {
       [name, slug],
     );
   }
-  schemaReady = true;
+  if (translationsOk) schemaReady = true;
 }
 
 export function dbErrorMessage(error: unknown, fallback: string) {

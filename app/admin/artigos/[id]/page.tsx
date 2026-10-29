@@ -15,7 +15,22 @@ export default async function EditPostPage({
   await requireEditor();
   const { id } = await params;
   const { salvo, publicado, rascunho } = await searchParams;
-  const [post, categories] = await Promise.all([getAdminPost(Number(id)), getCategories()]);
+  let post: Awaited<ReturnType<typeof getAdminPost>> = null;
+  let categories: Awaited<ReturnType<typeof getCategories>> = [];
+  try {
+    [post, categories] = await Promise.all([getAdminPost(Number(id)), getCategories()]);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Não foi possível ler o artigo.";
+    return (
+      <section className="admin-panel">
+        <h1>Não foi possível abrir o artigo</h1>
+        <p>{message}</p>
+        <p className="admin-back">
+          <Link href="/admin">Voltar aos artigos</Link>
+        </p>
+      </section>
+    );
+  }
   if (!post) notFound();
   const saved = Boolean(salvo || publicado || rascunho);
   const status = publicado

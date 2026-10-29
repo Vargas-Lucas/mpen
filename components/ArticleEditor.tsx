@@ -3,28 +3,37 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
-import { EditorContent, NodeViewWrapper, ReactNodeViewRenderer, useEditor, type NodeViewProps } from "@tiptap/react";
+import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { jsonToMarkdown, markdownToHtml, normalizeHref } from "@/lib/editor-markdown";
 
 const ArticleImage = Image.extend({
   addNodeView() {
-    return ReactNodeViewRenderer(ArticleImageView);
+    return ({ node, getPos, editor }) => {
+      const dom = document.createElement("div");
+      dom.className = "admin-editor-image";
+      const img = document.createElement("img");
+      img.src = String(node.attrs.src || "");
+      img.alt = String(node.attrs.alt || "");
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "admin-tool admin-tool-danger";
+      button.textContent = "Excluir imagem";
+      button.addEventListener("mousedown", (event) => event.preventDefault());
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+        const pos = getPos();
+        if (typeof pos !== "number") return;
+        editor.chain().focus().deleteRange({ from: pos, to: pos + node.nodeSize }).run();
+      });
+      dom.append(img, button);
+      return {
+        dom,
+        stopEvent: (event: Event) => event.target instanceof Element && Boolean(event.target.closest("button")),
+      };
+    };
   },
 });
-
-function ArticleImageView({ node, deleteNode }: NodeViewProps) {
-  const src = String(node.attrs.src || "");
-  const alt = String(node.attrs.alt || "");
-  return (
-    <NodeViewWrapper className="admin-editor-image">
-      <img src={src} alt={alt} />
-      <button type="button" className="admin-tool admin-tool-danger" contentEditable={false} onClick={deleteNode}>
-        Excluir imagem
-      </button>
-    </NodeViewWrapper>
-  );
-}
 
 type Props = {
   value: string;
@@ -49,7 +58,7 @@ export function ArticleEditor({ value, onChange, uploadImage }: Props) {
     shouldRerenderOnTransaction: true,
     extensions: [
       StarterKit.configure({
-        heading: { levels: [2] },
+        heading: { levels: [2, 3] },
         code: false,
         codeBlock: false,
         blockquote: false,
@@ -76,7 +85,8 @@ export function ArticleEditor({ value, onChange, uploadImage }: Props) {
       attributes: { class: "admin-visual-area" },
     },
     onUpdate: ({ editor: current }) => {
-      onChange(jsonToMarkdown(current.getJSON()));
+      const markdown = jsonToMarkdown(current.getJSON());
+      queueMicrotask(() => onChange(markdown));
     },
   });
 
