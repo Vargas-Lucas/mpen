@@ -284,7 +284,7 @@ button, input, select, textarea { font: inherit; }
 }
 
 .hero-slide.is-on .hero-photo {
-  animation: hero-drift 16s ease-out both;
+  animation: hero-drift 16s 1.2s ease-out forwards;
 }
 
 .hero.has-moved .hero-slide.is-on .hero-copy {
@@ -669,6 +669,10 @@ button, input, select, textarea { font: inherit; }
   object-fit: cover;
   display: block;
   transition: transform 1s cubic-bezier(0.22, 0.8, 0.2, 1);
+}
+
+.dev-card[data-slug="riozinho-o2"] .dev-media img {
+  object-position: center 62%;
 }
 
 .dev-card:hover .dev-media img,

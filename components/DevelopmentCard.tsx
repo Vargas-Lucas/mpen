@@ -6,13 +6,25 @@ import { deliveryLabel, developmentAlt, statusLabel } from "@/lib/format";
 import { coverImage } from "@/lib/images";
 import type { Development } from "@/lib/types";
 
-export function DevelopmentCard({ item }: { item: Development }) {
+export function DevelopmentCard({ item, priority = false }: { item: Development; priority?: boolean }) {
   const image = coverImage(item.slug);
 
   return (
-    <article className={`dev-card status-${item.status}`}>
+    <article className={`dev-card status-${item.status}`} data-slug={item.slug}>
       <Link href={`/empreendimentos/${item.slug}`} onClick={rememberReturn}>
-        <div className="dev-media">{image ? <img src={image} alt={developmentAlt(item)} /> : null}</div>
+        <div className="dev-media">
+          {image ? (
+            <img
+              src={image}
+              alt={developmentAlt(item)}
+              width={800}
+              height={500}
+              loading={priority ? "eager" : "lazy"}
+              fetchPriority={priority ? "high" : "low"}
+              decoding="async"
+            />
+          ) : null}
+        </div>
         <div className="dev-body">
           <p className="dev-status">{statusLabel(item.status)}</p>
           <h3>{item.name}</h3>

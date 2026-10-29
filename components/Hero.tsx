@@ -58,13 +58,30 @@ export function Hero({ slides }: { slides: Development[] }) {
             aria-hidden={slideIndex !== index}
             inert={slideIndex !== index}
           >
-            {image ? <img className="hero-photo" src={image} alt={developmentAlt(item)} /> : null}
+            {image ? (
+              <img
+                className="hero-photo"
+                src={image}
+                alt={developmentAlt(item)}
+                width={1600}
+                height={1000}
+                fetchPriority={slideIndex === 0 ? "high" : "low"}
+                loading={slideIndex === 0 ? "eager" : "lazy"}
+                decoding="async"
+              />
+            ) : null}
             <div className="hero-shade" />
             <div className="hero-copy">
               {logo && item.slug === "sunset-village" ? (
                 <>
                   <a className="hero-logo-link" href="https://sunsetvillage.com.br/">
-                    <img className="hero-logo wide" src={logo} alt={item.name} />
+                    <img
+                      className="hero-logo wide"
+                      src={logo}
+                      alt={item.name}
+                      loading={slideIndex === 0 ? "eager" : "lazy"}
+                      decoding="async"
+                    />
                   </a>
                   {item.summary ? (
                     <Link href={`/empreendimentos/${item.slug}`} onClick={rememberReturn}>
@@ -85,6 +102,8 @@ export function Hero({ slides }: { slides: Development[] }) {
                       }
                       src={logo}
                       alt={item.name}
+                      loading={slideIndex === 0 ? "eager" : "lazy"}
+                      decoding="async"
                     />
                   ) : (
                     <>

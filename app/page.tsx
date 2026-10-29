@@ -3,6 +3,7 @@ import { DevelopmentCard } from "@/components/DevelopmentCard";
 import { HomeFacts } from "@/components/HomeFacts";
 import { Hero } from "@/components/Hero";
 import { PostCard } from "@/components/PostCard";
+import { heroImage } from "@/lib/images";
 import { getDevelopments, getPosts, getSpotlightDevelopments } from "@/lib/data";
 
 export default async function HomePage() {
@@ -11,9 +12,11 @@ export default async function HomePage() {
     getSpotlightDevelopments(),
     getPosts({ limit: 3 }),
   ]);
+  const lcpImage = slides[0] ? heroImage(slides[0].slug) : "";
 
   return (
     <>
+      {lcpImage ? <link rel="preload" as="image" href={lcpImage} fetchPriority="high" /> : null}
       <h1 className="sr-only">MPEN | Construtora e Incorporadora no Sul da Ilha de Florianópolis</h1>
       <Hero slides={slides} />
 

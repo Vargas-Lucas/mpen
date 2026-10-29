@@ -1,5 +1,5 @@
 const covers: Record<string, string> = {
-  "sunset-village": "/images/sunset-village.png",
+  "sunset-village": "/images/sunset-village.jpg",
   "village-du-soleil": "/images/village-du-soleil-aerea.jpg",
   iconic: "/images/iconic.jpg",
   "chez-soleil": "/images/chez-soleil-aerea-2.jpg",

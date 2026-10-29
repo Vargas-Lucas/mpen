@@ -85,8 +85,8 @@ export default async function DevelopmentsPage({
                 {q || status ? <Link href="/empreendimentos">Limpar filtros</Link> : null}
               </p>
               <div className="dev-grid">
-                {items.map((item) => (
-                  <DevelopmentCard key={item.id} item={item} />
+                {items.map((item, index) => (
+                  <DevelopmentCard key={item.id} item={item} priority={index === 0} />
                 ))}
               </div>
             </>
