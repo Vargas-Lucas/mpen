@@ -13,6 +13,7 @@ const ArticleEditor = dynamic(
     loading: () => <div className="admin-visual" aria-hidden="true" />,
   },
 );
+import { blogImageSrc } from "@/lib/blog-image";
 import { articleSeoChecks } from "@/lib/seo-check";
 import { SITE_URL } from "@/lib/seo";
 import { slugify } from "@/lib/slug";
@@ -480,7 +481,7 @@ export function PostForm({
             </label>
             {preview ? (
               <div className="admin-cover-preview">
-                <img src={preview} alt="" />
+                <img src={preview.startsWith("blob:") ? preview : blogImageSrc(preview)} alt="" />
                 {post?.cover ? (
                   <label className="admin-check">
                     <input name="remove_cover" type="checkbox" />

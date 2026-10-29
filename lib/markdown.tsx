@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { blogImageSrc } from "@/lib/blog-image";
 
 type Block =
   | { type: "h2"; text: string }
@@ -24,7 +25,7 @@ function safeHref(value: string) {
 }
 
 function safeImage(src: string) {
-  return src.startsWith("/images/") ? src : "";
+  return blogImageSrc(src);
 }
 
 function trimUrl(value: string) {

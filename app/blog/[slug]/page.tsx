@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getEditorSession } from "@/lib/auth";
 import { getPost, getPostBySlug, getRelatedPosts } from "@/lib/data";
 import { dateTimeAttr, formatDate, readingMinutes } from "@/lib/format";
+import { blogImageSrc } from "@/lib/blog-image";
 import { ArticleBody } from "@/lib/markdown";
 import { articleJsonLd, articleMetadata } from "@/lib/seo";
 
@@ -44,7 +45,7 @@ export default async function PostPage({
   if (!post) notFound();
   const related = await getRelatedPosts(post);
   const minutes = readingMinutes(post.body);
-  const cover = post.cover.startsWith("/images/") ? post.cover : "";
+  const cover = blogImageSrc(post.cover);
   const coverAlt = post.cover_alt?.trim() || post.title;
   const dateLabel = post.published_at ? formatDate(post.published_at) : "Prévia";
   const lede = post.excerpt.trim() && post.excerpt.trim() !== post.title.trim() ? post.excerpt.trim() : "";
@@ -127,7 +128,7 @@ export default async function PostPage({
               <h2>Continue lendo</h2>
               <ul>
                 {related.map((item) => {
-                  const relatedCover = item.cover.startsWith("/images/") ? item.cover : "";
+                  const relatedCover = blogImageSrc(item.cover);
                   return (
                     <li key={item.id}>
                       <Link href={`/blog/${item.slug}`}>

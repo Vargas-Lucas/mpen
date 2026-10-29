@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { blogImageSrc } from "@/lib/blog-image";
 import type { Post } from "@/lib/types";
 
 export const SITE_URL = "https://teste.mpen.com.br";
@@ -16,7 +17,7 @@ export function articleSeo(
     post.excerpt.trim() ||
     `${post.title} no blog da MPEN Incorporadora.`;
   const path = `/blog/${post.slug}`;
-  const image = post.cover.startsWith("/images/") ? post.cover : DEFAULT_IMAGE;
+  const image = blogImageSrc(post.cover) || DEFAULT_IMAGE;
   const imageAlt = post.cover_alt?.trim() || post.title;
   return { title, description, path, image, imageAlt };
 }

@@ -1,3 +1,5 @@
+import { blogImageSrc } from "@/lib/blog-image";
+
 type JSONContent = {
   type?: string;
   text?: string;
@@ -86,7 +88,8 @@ export function markdownToHtml(body: string) {
     const image = text.match(/^!\[([^\]]*)\]\(\s*([^)]+)\)$/);
     if (image) {
       flush();
-      html.push(`<img src="${escapeHtml(image[2].trim())}" alt="${escapeHtml(image[1])}">`);
+      const src = blogImageSrc(image[2].trim()) || image[2].trim();
+      html.push(`<img src="${escapeHtml(src)}" alt="${escapeHtml(image[1])}">`);
       continue;
     }
     paragraph.push(text);

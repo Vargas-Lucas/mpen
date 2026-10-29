@@ -1,9 +1,10 @@
 import Link from "next/link";
+import { blogImageSrc } from "@/lib/blog-image";
 import { dateTimeAttr, formatDate } from "@/lib/format";
 import type { Post } from "@/lib/types";
 
 export function PostCard({ post, large = false }: { post: Post; large?: boolean }) {
-  const cover = post.cover?.startsWith("/images/") ? post.cover : "";
+  const cover = blogImageSrc(post.cover);
   return (
     <Link
       href={`/blog/${post.slug}`}
