@@ -1,11 +1,23 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { createLead, type LeadState } from "@/actions/leads";
 import { useI18n } from "@/components/I18nProvider";
 
 const initial: LeadState = { ok: false, message: "" };
+
+function Consent() {
+  const { t } = useI18n();
+  return (
+    <p className="form-consent">
+      {t.form.consentBefore}
+      <Link href="/politica-de-privacidade">{t.form.consentLink}</Link>
+      {t.form.consentAfter}
+    </p>
+  );
+}
 
 function Submit({ label, pendingLabel }: { label: string; pendingLabel: string }) {
   const { pending } = useFormStatus();
@@ -44,6 +56,7 @@ export function ContactForm({
           <input name="email" type="email" required placeholder={t.form.emailPlaceholder} autoComplete="email" />
         </label>
         <Submit label={t.form.subscribe} pendingLabel={t.form.sending} />
+        <Consent />
         {state.message ? <p className={state.ok ? "ok" : "err"}>{state.message}</p> : null}
       </form>
     );
@@ -113,6 +126,7 @@ export function ContactForm({
         <textarea name="message" />
       </label>
       <Submit label={label} pendingLabel={t.form.sending} />
+      <Consent />
       {state.message ? (
         <p className={state.ok ? "ok" : "err"} role="status">
           {state.message}

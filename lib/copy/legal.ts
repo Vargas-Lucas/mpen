@@ -5,6 +5,27 @@ const email = "contato@mpen.com.br";
 const privacyTree = {
   sections: [
     {
+      id: "controlador",
+      title: s("Controlador e encarregado", "Controller and officer", "Responsable y encargado"),
+      paragraphs: [
+        s(
+          "O controlador dos dados pessoais coletados neste site é a MPEN INCORPORAÇÃO IMOBILIÁRIA SPE LTDA, inscrita no CNPJ sob o nº 41.555.719/0001-76, com sede na Rua Manoel Pedro Vieira, nº 410, apto 301-A, Armação do Pântano do Sul, Florianópolis/SC, CEP 88066-100.",
+          "The controller of the personal data collected on this site is MPEN INCORPORAÇÃO IMOBILIÁRIA SPE LTDA, registered under CNPJ no. 41.555.719/0001-76, with its office at Rua Manoel Pedro Vieira, no. 410, apt. 301-A, Armação do Pântano do Sul, Florianópolis/SC, CEP 88066-100, Brazil.",
+          "El responsable de los datos personales recolectados en este sitio es MPEN INCORPORAÇÃO IMOBILIÁRIA SPE LTDA, inscrita en el CNPJ bajo el n.º 41.555.719/0001-76, con sede en Rua Manoel Pedro Vieira, n.º 410, apto. 301-A, Armação do Pântano do Sul, Florianópolis/SC, CEP 88066-100, Brasil.",
+        ),
+        s(
+          "O encarregado pelo tratamento de dados pessoais pode ser contatado pelo e-mail eduardo@mpen.net.br.",
+          "The data protection officer can be reached at eduardo@mpen.net.br.",
+          "El encargado del tratamiento de datos personales puede ser contactado en el correo eduardo@mpen.net.br.",
+        ),
+        s(
+          "Última atualização desta página: 3 de novembro de 2026.",
+          "Last update of this page: November 3, 2026.",
+          "Última actualización de esta página: 3 de noviembre de 2026.",
+        ),
+      ],
+    },
+    {
       id: "coleta",
       title: s("Coleta de informações", "Collection of information", "Recolección de información"),
       paragraphs: [
@@ -187,9 +208,9 @@ const privacyTree = {
           "Nuestro sitio puede utilizar cookies y tecnologías similares para mejorar la experiencia del usuario, almacenando preferencias y recolectando información sobre la navegación. Usted puede gestionar la configuración de cookies directamente en su navegador.",
         ),
         s(
-          "Se você aceitar o aviso de cookies, podemos usar o Google Analytics 4 para entender quais páginas são visitadas. Sem o aceite, essa medição não é carregada.",
-          "If you accept the cookie notice, we may use Google Analytics 4 to understand which pages are visited. Without acceptance, that measurement is not loaded.",
-          "Si usted acepta el aviso de cookies, podemos usar Google Analytics 4 para entender qué páginas se visitan. Sin la aceptación, esa medición no se carga.",
+          "Você pode aceitar ou recusar o aviso de cookies. Só depois do aceite usamos o Google Analytics 4 para entender quais páginas são visitadas. Se você recusar, essa medição não é carregada.",
+          "You can accept or refuse the cookie notice. We use Google Analytics 4 to understand which pages are visited only after you accept. If you refuse, that measurement is not loaded.",
+          "Usted puede aceptar o rechazar el aviso de cookies. Solo después de la aceptación usamos Google Analytics 4 para entender qué páginas se visitan. Si usted rechaza, esa medición no se carga.",
         ),
       ],
     },

@@ -6,14 +6,23 @@ import { getLocale } from "@/lib/i18n-server";
 
 const email = "contato@mpen.com.br";
 
+const emails = [email, "eduardo@mpen.net.br"];
+
 function Text({ value }: { value: string }) {
-  if (!value.includes(email)) return value;
-  const [before, after] = value.split(email);
+  const pattern = new RegExp(`(${emails.map((item) => item.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`, "g");
+  const parts = value.split(pattern);
+  if (parts.length === 1) return value;
   return (
     <>
-      {before}
-      <a href={`mailto:${email}`}>{email}</a>
-      {after}
+      {parts.map((part, index) =>
+        emails.includes(part) ? (
+          <a key={index} href={`mailto:${part}`}>
+            {part}
+          </a>
+        ) : (
+          part
+        ),
+      )}
     </>
   );
 }

@@ -18,7 +18,6 @@ export function PostCard({ post, large = false }: { post: Post; large?: boolean 
     >
       <span>{categoryLabel(post.category, locale)}</span>
       <strong>{post.title}</strong>
-      {post.excerpt ? <em>{post.excerpt}</em> : null}
       {post.published_at ? <time dateTime={dateTimeAttr(post.published_at)}>{formatDate(post.published_at, locale)}</time> : null}
     </Link>
   );

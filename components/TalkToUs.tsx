@@ -2,7 +2,6 @@
 
 import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
-import Link from "next/link";
 import { channelLabel } from "@/lib/copy/ui";
 import { useI18n } from "@/components/I18nProvider";
 import { ContactForm } from "@/components/ContactForm";
@@ -33,9 +32,6 @@ function ChannelPanel({ channel }: { channel: ContactChannel }) {
         ) : null}
       </div>
       <ContactForm source={`fale-${channel.id}`} fields={channel.details === "aftersales" ? "aftersales" : "contact"} />
-      <p className="form-privacy">
-        <Link href="/politica-de-privacidade">{t.contact.privacy}</Link>
-      </p>
     </div>
   );
 }

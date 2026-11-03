@@ -3329,10 +3329,21 @@ h2.kicker {
   font-size: 13px;
 }
 
-.form-privacy a {
+.form-privacy a,
+.form-consent a {
   color: var(--blue);
   text-decoration: underline;
 }
+
+.form-consent {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.newsletter .form-consent { grid-column: 1 / -1; }
 
 .talk-whatsapp {
   display: grid;
@@ -3432,6 +3443,14 @@ h2.kicker {
 .cookie p { margin: 0; font-size: 14px; }
 
 .cookie a { color: var(--blue); text-decoration: underline; }
+
+.cookie-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+.cookie .btn-quiet {
+  background: transparent;
+  color: var(--navy);
+  border-color: rgba(12, 14, 43, 0.28);
+}
 
 .faq-group { margin: 0 0 28px; }
 

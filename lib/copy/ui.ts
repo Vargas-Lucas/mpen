@@ -260,6 +260,7 @@ const copy = {
     aria: s("Aviso de cookies", "Cookie notice", "Aviso de cookies"),
     text: s("Usamos cookies para melhorar a sua experiência neste site.", "We use cookies to improve your experience on this site.", "Usamos cookies para mejorar su experiencia en este sitio."),
     accept: s("Aceitar", "Accept", "Aceptar"),
+    refuse: s("Recusar", "Refuse", "Rechazar"),
   },
   form: {
     name: s("Nome", "Name", "Nombre"),
@@ -272,6 +273,9 @@ const copy = {
     company: s("Imobiliária", "Brokerage", "Inmobiliaria"),
     sending: s("Enviando...", "Sending...", "Enviando..."),
     send: s("Enviar", "Send", "Enviar"),
+    consentBefore: s("Ao enviar, você concorda com a ", "By submitting, you agree to the ", "Al enviar, usted acepta la "),
+    consentLink: s("Política de Privacidade", "Privacy Policy", "Política de privacidad"),
+    consentAfter: s(".", ".", "."),
     subscribe: s("Cadastrar", "Subscribe", "Suscribirme"),
     emailPlaceholder: s("Informe o seu e-mail", "Enter your email", "Ingrese su correo"),
     sent: s("Mensagem enviada", "Message sent", "Mensaje enviado"),

@@ -20,17 +20,29 @@ export function CookieBar() {
         {t.cookie.text}{" "}
         <Link href="/politica-de-privacidade">{t.contact.privacy}</Link>
       </p>
-      <button
-        className="btn btn-solid"
-        type="button"
-        onClick={() => {
-          window.localStorage.setItem("mpen-cookies", "1");
-          window.dispatchEvent(new Event("mpen-cookies-accepted"));
-          setOpen(false);
-        }}
-      >
-        {t.cookie.accept}
-      </button>
+      <div className="cookie-actions">
+        <button
+          className="btn btn-quiet"
+          type="button"
+          onClick={() => {
+            window.localStorage.setItem("mpen-cookies", "0");
+            setOpen(false);
+          }}
+        >
+          {t.cookie.refuse}
+        </button>
+        <button
+          className="btn btn-solid"
+          type="button"
+          onClick={() => {
+            window.localStorage.setItem("mpen-cookies", "1");
+            window.dispatchEvent(new Event("mpen-cookies-accepted"));
+            setOpen(false);
+          }}
+        >
+          {t.cookie.accept}
+        </button>
+      </div>
     </div>
   );
 }
