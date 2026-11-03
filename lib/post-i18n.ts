@@ -1,3 +1,4 @@
+import { blogPostCopy } from "@/lib/copy/blog-posts";
 import type { Locale } from "@/lib/i18n";
 import type { Post, PostTranslation, PostTranslations } from "@/lib/types";
 
@@ -8,28 +9,40 @@ export function emptyTranslation(): PostTranslation {
 }
 
 export function readTranslations(value: unknown): PostTranslations {
-  if (!value || typeof value !== "object") return {};
-  const record = value as PostTranslations;
+  let raw = value;
+  if (typeof raw === "string") {
+    try {
+      raw = JSON.parse(raw);
+    } catch {
+      return {};
+    }
+  }
+  if (!raw || typeof raw !== "object") return {};
+  const record = raw as PostTranslations;
   return { en: record.en, es: record.es };
 }
 
-function translated(value: string | undefined, fallback: string) {
-  const next = value?.trim();
-  return next ? value!.trim() : fallback;
+function pick(saved: string | undefined, bundled: string | undefined, fallback: string) {
+  const fromEditor = saved?.trim();
+  if (fromEditor) return fromEditor;
+  const fromBundle = bundled?.trim();
+  if (fromBundle) return fromBundle;
+  return fallback;
 }
 
 export function localizePost<T extends Post>(post: T, locale: Locale): T {
   if (locale === "pt") return post;
-  const copy = readTranslations(post.translations)[locale];
-  if (!copy) return post;
+  const saved = readTranslations(post.translations)[locale];
+  const bundled = blogPostCopy[post.slug]?.[locale];
+  if (!saved && !bundled) return post;
   return {
     ...post,
-    title: translated(copy.title, post.title),
-    excerpt: translated(copy.excerpt, post.excerpt),
-    body: translated(copy.body, post.body),
-    cover_alt: translated(copy.cover_alt, post.cover_alt),
-    seo_title: translated(copy.seo_title, post.seo_title),
-    seo_description: translated(copy.seo_description, post.seo_description),
+    title: pick(saved?.title, bundled?.title, post.title),
+    excerpt: pick(saved?.excerpt, bundled?.excerpt, post.excerpt),
+    body: pick(saved?.body, bundled?.body, post.body),
+    cover_alt: pick(saved?.cover_alt, bundled?.cover_alt, post.cover_alt),
+    seo_title: pick(saved?.seo_title, bundled?.seo_title, post.seo_title),
+    seo_description: pick(saved?.seo_description, bundled?.seo_description, post.seo_description),
   };
 }
 

@@ -476,10 +476,23 @@ const categories: Record<string, Trio> = {
   "Sul da Ilha": s("Sul da Ilha", "South of the Island", "Sur de la Isla"),
   Institucional: s("Institucional", "Institutional", "Institucional"),
   Novidades: s("Novidades", "News", "Novedades"),
+  "Florianópolis e região": s("Florianópolis e região", "Florianópolis and the region", "Florianópolis y la región"),
 };
 
+function foldedCategory(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
 export function categoryLabel(name: string, locale: Locale) {
-  return categories[name]?.[locale] ?? name;
+  const direct = categories[name];
+  if (direct) return direct[locale];
+  const key = foldedCategory(name);
+  const match = Object.entries(categories).find(([label]) => foldedCategory(label) === key);
+  return match ? match[1][locale] : name;
 }
 
 export function channelLabel(id: string, locale: Locale) {
