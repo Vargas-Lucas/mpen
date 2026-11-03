@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { blogImageSrc } from "@/lib/blog-image";
 import type { Post } from "@/lib/types";
 
-export const SITE_URL = "https://teste.mpen.com.br";
+export const SITE_URL = "https://mpen.com.br";
 export const SITE_NAME = "MPEN Incorporadora";
 
 const TITLE_FALLBACK = "MPEN";
