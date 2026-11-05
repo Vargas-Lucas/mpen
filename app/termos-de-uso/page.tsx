@@ -3,6 +3,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { termsSections } from "@/lib/copy/legal";
 import { ui } from "@/lib/copy/ui";
 import { getLocale } from "@/lib/i18n-server";
+import { canonical } from "@/lib/seo";
 
 const email = "contato@mpen.com.br";
 
@@ -19,7 +20,7 @@ function Text({ value }: { value: string }) {
 }
 
 export async function generateMetadata() {
-  return { title: ui(await getLocale()).terms.title };
+  return { title: ui(await getLocale()).terms.title, ...canonical("/termos-de-uso") };
 }
 
 export default async function TermsPage() {

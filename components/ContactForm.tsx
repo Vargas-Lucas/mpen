@@ -19,6 +19,20 @@ function Consent() {
   );
 }
 
+function FieldLabel({ children, required = false }: { children: string; required?: boolean }) {
+  const { t } = useI18n();
+  return (
+    <span>
+      {children}
+      {required ? (
+        <abbr className="req" title={t.form.required}>
+          *
+        </abbr>
+      ) : null}
+    </span>
+  );
+}
+
 function Submit({ label, pendingLabel }: { label: string; pendingLabel: string }) {
   const { pending } = useFormStatus();
   return (
@@ -52,9 +66,12 @@ export function ContactForm({
         <input type="hidden" name="variant" value="newsletter" />
         <input type="hidden" name="source" value={source} />
         <label>
-          <span className="sr-only">{t.form.email}</span>
-          <input name="email" type="email" required placeholder={t.form.emailPlaceholder} autoComplete="email" />
+          <span className="sr-only">
+            {t.form.email} ({t.form.required})
+          </span>
+          <input name="email" type="email" required placeholder={t.form.emailPlaceholder} autoComplete="email" aria-required="true" />
         </label>
+        <p className="form-required">{t.form.requiredLegend}</p>
         <Submit label={t.form.subscribe} pendingLabel={t.form.sending} />
         <Consent />
         {state.message ? <p className={state.ok ? "ok" : "err"}>{state.message}</p> : null}
@@ -85,26 +102,27 @@ export function ContactForm({
       <input type="hidden" name="variant" value="contact" />
       <input type="hidden" name="source" value={source} />
       {developmentSlug ? <input type="hidden" name="development" value={developmentSlug} /> : null}
+      <p className="form-required">{t.form.requiredLegend}</p>
       <label>
-        {t.form.name}
+        <FieldLabel required>{t.form.name}</FieldLabel>
         <input name="name" required autoComplete="name" />
       </label>
       <label>
-        {t.form.email}
+        <FieldLabel required>{t.form.email}</FieldLabel>
         <input name="email" type="email" required autoComplete="email" />
       </label>
       <label>
-        {t.form.phone}
+        <FieldLabel required={fields === "aftersales"}>{t.form.phone}</FieldLabel>
         <input name="phone" type="tel" autoComplete="tel" required={fields === "aftersales"} />
       </label>
       {fields === "aftersales" ? (
         <>
           <label>
-            {t.form.development}
+            <FieldLabel required>{t.form.development}</FieldLabel>
             <input name="developmentName" required />
           </label>
           <label>
-            {t.form.unit}
+            <FieldLabel required>{t.form.unit}</FieldLabel>
             <input name="unit" required />
           </label>
         </>

@@ -3,6 +3,16 @@ import { ensureBlogSchema } from "@/lib/ensure-schema";
 import type { Category, Development, Post } from "@/lib/types";
 
 const STATUSES = new Set(["lancamento", "construcao", "entregue"]);
+const FOLDED_FROM = "áàâãäéèêëíìîïóòôõöúùûüçñ";
+const FOLDED_TO = "aaaaaeeeeiiiiooooouuuucn";
+
+function fold(value: string) {
+  return value.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+}
+
+function folded(column: string) {
+  return `translate(lower(${column}), '${FOLDED_FROM}', '${FOLDED_TO}')`;
+}
 
 export async function getDevelopments(filters: { q?: string; status?: string; city?: string } = {}) {
   const where: string[] = [];
@@ -23,9 +33,9 @@ export async function getDevelopments(filters: { q?: string; status?: string; ci
   }
 
   if (filters.q) {
-    params.push(`%${filters.q}%`);
+    params.push(`%${fold(filters.q)}%`);
     where.push(
-      `(name ILIKE $${params.length} OR neighborhood ILIKE $${params.length} OR city ILIKE $${params.length})`,
+      `(${folded("name")} LIKE $${params.length} OR ${folded("neighborhood")} LIKE $${params.length} OR ${folded("city")} LIKE $${params.length})`,
     );
   }
 
@@ -106,9 +116,9 @@ export async function getPosts(filters: { q?: string; category?: string; limit?:
   }
 
   if (filters.q) {
-    params.push(`%${filters.q}%`);
+    params.push(`%${fold(filters.q)}%`);
     where.push(
-      `(title ILIKE $${params.length} OR excerpt ILIKE $${params.length} OR body ILIKE $${params.length} OR category ILIKE $${params.length} OR translations::text ILIKE $${params.length})`,
+      `(${folded("title")} LIKE $${params.length} OR ${folded("excerpt")} LIKE $${params.length} OR ${folded("body")} LIKE $${params.length} OR ${folded("category")} LIKE $${params.length} OR ${folded("translations::text")} LIKE $${params.length})`,
     );
   }
 

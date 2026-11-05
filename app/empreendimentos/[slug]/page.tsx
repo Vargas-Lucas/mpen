@@ -8,12 +8,16 @@ import { projectStory } from "@/lib/copy/stories";
 import { deliveryLabel, developmentAlt, statusLabel } from "@/lib/format";
 import { getLocale } from "@/lib/i18n-server";
 import { coverImage, galleryImages } from "@/lib/images";
+import { canonical } from "@/lib/seo";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const copy = ui(await getLocale());
   const item = await getDevelopment(slug);
-  return { title: item?.name ?? copy.project.fallback };
+  return {
+    title: item?.name ?? copy.project.fallback,
+    ...(item ? canonical(`/empreendimentos/${item.slug}`) : {}),
+  };
 }
 
 export default async function DevelopmentPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -74,7 +78,7 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ sl
               ) : null}
             </div>
             {item.slug === "sunset-village" ? (
-              <a className="project-site" href="https://sunsetvillage.com.br/">
+              <a className="project-site" href="https://sunsetvillage.com.br/" target="_blank" rel="noopener noreferrer">
                 {copy.project.knowMore}
               </a>
             ) : null}

@@ -5,6 +5,11 @@ import type { Post } from "@/lib/types";
 export const SITE_URL = "https://mpen.com.br";
 export const SITE_NAME = "MPEN Incorporadora";
 
+export function canonical(path: string): Metadata {
+  const normalized = path.startsWith("/") ? path : `/${path}`;
+  return { alternates: { canonical: normalized } };
+}
+
 const TITLE_FALLBACK = "MPEN";
 const DEFAULT_IMAGE = "/images/sobre/capa.png";
 

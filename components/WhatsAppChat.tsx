@@ -6,6 +6,7 @@ import { channelLabel } from "@/lib/copy/ui";
 import { contactChannels, type ContactChannel } from "@/lib/contacts";
 
 const AREAS = contactChannels.filter((channel) => channel.whatsapp);
+const AFTERSALES = contactChannels.find((channel) => channel.details === "aftersales");
 
 function whatsappUrl(phone: string, text: string, fallback: string) {
   const message = text.trim() || fallback;
@@ -49,8 +50,11 @@ export function WhatsAppChat() {
   }
 
   function send(message: string) {
-    const area = AREAS.find((channel) => channel.id === areaId) ?? AREAS[0];
-    const phone = area?.whatsapp;
+    const selected = contactChannels.find((channel) => channel.id === areaId);
+    const phone =
+      selected?.whatsapp ||
+      (selected?.details === "aftersales" ? AREAS.find((channel) => channel.id === "engenharia")?.whatsapp : undefined) ||
+      AREAS[0]?.whatsapp;
     if (!phone) return;
     window.open(whatsappUrl(phone, message, t.whatsapp.fallback), "_blank", "noopener,noreferrer");
     setOpen(false);
@@ -91,6 +95,16 @@ export function WhatsAppChat() {
                   {channelLabel(channel.id, locale)}
                 </button>
               ))}
+              {AFTERSALES ? (
+                <button
+                  type="button"
+                  className={areaId === AFTERSALES.id ? "wa-quiet is-on" : "wa-quiet"}
+                  aria-pressed={areaId === AFTERSALES.id}
+                  onClick={() => chooseArea(AFTERSALES)}
+                >
+                  {channelLabel(AFTERSALES.id, locale)}
+                </button>
+              ) : null}
             </div>
           </div>
 

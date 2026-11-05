@@ -4,9 +4,10 @@ import { ui } from "@/lib/copy/ui";
 import { contactChannel } from "@/lib/contacts";
 import { getDevelopments } from "@/lib/data";
 import { getLocale } from "@/lib/i18n-server";
+import { canonical } from "@/lib/seo";
 
 export async function generateMetadata() {
-  return { title: ui(await getLocale()).partner.title };
+  return { title: ui(await getLocale()).partner.title, ...canonical("/seja-parceiro") };
 }
 
 export default async function PartnerPage() {

@@ -263,6 +263,8 @@ const copy = {
     refuse: s("Recusar", "Refuse", "Rechazar"),
   },
   form: {
+    required: s("obrigatório", "required", "obligatorio"),
+    requiredLegend: s("* obrigatório", "* required", "* obligatorio"),
     name: s("Nome", "Name", "Nombre"),
     email: s("E-mail", "Email", "Correo"),
     phone: s("Telefone", "Phone", "Teléfono"),

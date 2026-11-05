@@ -3,6 +3,7 @@ import path from "node:path";
 import { PageHeader } from "@/components/PageHeader";
 import { ui } from "@/lib/copy/ui";
 import { getLocale } from "@/lib/i18n-server";
+import { canonical } from "@/lib/seo";
 
 function fileSize(href: string) {
   const bytes = statSync(path.join(process.cwd(), "public", href)).size;
@@ -20,7 +21,7 @@ function DocIcon() {
 }
 
 export async function generateMetadata() {
-  return { title: ui(await getLocale()).compliance.title };
+  return { title: ui(await getLocale()).compliance.title, ...canonical("/compliance") };
 }
 
 export default async function CompliancePage() {

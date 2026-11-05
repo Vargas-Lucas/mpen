@@ -2,6 +2,14 @@ import Link from "next/link";
 import { ui } from "@/lib/copy/ui";
 import { getLocale } from "@/lib/i18n-server";
 
+export async function generateMetadata() {
+  const t = ui(await getLocale()).missing;
+  return {
+    title: t.title,
+    robots: { index: false, follow: false },
+  };
+}
+
 export default async function NotFound() {
   const t = ui(await getLocale());
   return (

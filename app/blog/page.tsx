@@ -6,6 +6,7 @@ import { categoryLabel, ui } from "@/lib/copy/ui";
 import { getCategories, getPosts } from "@/lib/data";
 import { getLocale } from "@/lib/i18n-server";
 import { localizePosts } from "@/lib/post-i18n";
+import { canonical } from "@/lib/seo";
 
 function blogHref(q: string, category = "") {
   const params = new URLSearchParams();
@@ -20,6 +21,7 @@ export async function generateMetadata() {
   return {
     title: { absolute: t.title },
     description: t.lede,
+    ...canonical("/blog"),
   };
 }
 

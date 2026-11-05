@@ -3,9 +3,10 @@ import { PageHeader } from "@/components/PageHeader";
 import { faqContent } from "@/lib/copy/faq";
 import { ui } from "@/lib/copy/ui";
 import { getLocale } from "@/lib/i18n-server";
+import { canonical } from "@/lib/seo";
 
 export async function generateMetadata() {
-  return { title: ui(await getLocale()).faq.title };
+  return { title: ui(await getLocale()).faq.title, ...canonical("/faq") };
 }
 
 export default async function FaqPage() {

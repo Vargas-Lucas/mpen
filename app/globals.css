@@ -2388,6 +2388,22 @@ h2.kicker {
 
 .form label { display: grid; gap: 6px; font-size: 14px; font-weight: 650; }
 
+.req {
+  margin-left: 3px;
+  color: #9d1c2a;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.form-required {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.newsletter .form-required { grid-column: 1 / -1; }
+
 .form input, .form textarea, .form select {
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -3085,6 +3101,25 @@ h2.kicker {
   border-color: var(--navy);
   color: white;
 }
+
+.wa-quiet {
+  grid-column: 1 / -1;
+  justify-self: start;
+  margin: 2px 2px 0;
+  padding: 4px 2px;
+  border: 0;
+  background: none;
+  color: #8b93a7;
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.wa-quiet:hover,
+.wa-quiet:focus-visible,
+.wa-quiet.is-on { color: var(--navy); }
 
 .wa-compose {
   display: flex;
@@ -3917,7 +3952,16 @@ h2.kicker {
 
   .faq summary { display: block; min-height: 44px; padding: 10px 0; }
 
-  .footer { padding-bottom: 28px; }
+  main .form {
+    padding-bottom: calc(120px + env(safe-area-inset-bottom));
+  }
+
+  main .form .btn,
+  main .form .form-consent {
+    scroll-margin-bottom: calc(132px + env(safe-area-inset-bottom));
+  }
+
+  .footer { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
 
   .footer-social { justify-content: flex-start; }
 
@@ -3946,6 +3990,12 @@ h2.kicker {
   }
 
   .wa-choice { min-height: 44px; }
+
+  .wa-quiet {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
 
   .wa-compose input { font-size: 16px; }
 

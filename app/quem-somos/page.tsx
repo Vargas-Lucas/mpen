@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { ui } from "@/lib/copy/ui";
 import { getDevelopments } from "@/lib/data";
 import { getLocale } from "@/lib/i18n-server";
+import { canonical } from "@/lib/seo";
 
 function Mission() {
   return (
@@ -34,7 +35,7 @@ function Values() {
 }
 
 export async function generateMetadata() {
-  return { title: ui(await getLocale()).about.title };
+  return { title: ui(await getLocale()).about.title, ...canonical("/quem-somos") };
 }
 
 export default async function AboutPage() {

@@ -8,6 +8,11 @@ import { getLocale } from "@/lib/i18n-server";
 import { localizePosts } from "@/lib/post-i18n";
 import { heroImage } from "@/lib/images";
 import { getDevelopments, getPosts, getSpotlightDevelopments } from "@/lib/data";
+import { canonical } from "@/lib/seo";
+
+export function generateMetadata() {
+  return canonical("/");
+}
 
 export default async function HomePage() {
   const locale = await getLocale();

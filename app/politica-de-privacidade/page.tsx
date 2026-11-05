@@ -3,6 +3,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { privacySections } from "@/lib/copy/legal";
 import { ui } from "@/lib/copy/ui";
 import { getLocale } from "@/lib/i18n-server";
+import { canonical } from "@/lib/seo";
 
 const email = "contato@mpen.com.br";
 
@@ -28,7 +29,7 @@ function Text({ value }: { value: string }) {
 }
 
 export async function generateMetadata() {
-  return { title: ui(await getLocale()).privacy.title };
+  return { title: ui(await getLocale()).privacy.title, ...canonical("/politica-de-privacidade") };
 }
 
 export default async function PrivacyPage() {

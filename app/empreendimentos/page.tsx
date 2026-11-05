@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { ui, type Ui } from "@/lib/copy/ui";
 import { getDevelopments } from "@/lib/data";
 import { getLocale } from "@/lib/i18n-server";
+import { canonical } from "@/lib/seo";
 
 function listingHref(status: string, q: string) {
   const params = new URLSearchParams();
@@ -33,7 +34,7 @@ function resultLabel(count: number, status: string, q: string, listing: Ui["list
 }
 
 export async function generateMetadata() {
-  return { title: ui(await getLocale()).listing.title };
+  return { title: ui(await getLocale()).listing.title, ...canonical("/empreendimentos") };
 }
 
 export default async function DevelopmentsPage({
