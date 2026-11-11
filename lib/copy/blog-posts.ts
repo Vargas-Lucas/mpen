@@ -734,7 +734,210 @@ Sí. La Alcaldía divulgó iniciativas de videomonitoreo, reconocimiento facial 
 No. El relevamiento presenta un indicador municipal de violencia letal y no permite concluir que todos los barrios presentan las mismas condiciones de seguridad.`,
 );
 
+const cubEn = copy(
+  "CUB rise in Santa Catarina: what it means for homes in Florianópolis",
+  "See how the rise in Santa Catarina's CUB affects construction costs, new launches and the Florianópolis property market.",
+  `Construction costs in Santa Catarina keep rising. In November 2026, the average residential Basic Unit Cost (CUB) reached **R$ 3,182.95 per square meter**, up 0.35% in the month and 5.99% over the previous 12 months.
+
+The indicator, published by the builders' union of Greater [Florianópolis](https://mpen.com.br/blog/florianopolis-capital-mais-segura-brasil-2026) (Sinduscon), reflects higher costs of carrying out construction work. It is a warning for anyone planning to build, buy or invest in property.
+
+The question goes beyond the price of materials: **how does a higher CUB influence new launches and investment decisions in the Florianópolis property market?**
+
+Reading this setting carefully matters, especially in the South of the Island, where location, the supply of land and construction quality all play a part in how a home is priced.
+
+## What the CUB is, and why the increase matters
+The CUB (Basic Unit Cost) is a reference used to track the cost of construction per square meter. It takes in materials, labor, administrative expenses and equipment, based on standard projects defined by ABNT NBR 12721.
+
+In Santa Catarina the figure is published every month and is one of the references used to plan the finances of building works and developments.
+
+A higher CUB means the basic cost of construction is going up. It is important to be clear, though, that **the CUB is not the final sale price of a home**.
+
+Land, location, architecture, finish standard, extra costs and market conditions also shape the value of a development.
+
+Understanding the CUB helps read the property market. It does not replace a full look at each project.
+
+## How a higher CUB affects new launches
+When construction costs rise, developers and builders have to revisit budgets, the schedule for buying materials, and whether a new development still makes financial sense.
+
+In November 2026, building materials were among the main reasons the index rose in [Santa Catarina](https://mpen.com.br/blog/santa-catarina-e-o-estado-mais-seguro-do-brasil), especially cement, waterproofing products and ceramic tiles.
+
+That movement can affect the market:
+
+**Pressure on the prices of new launches.** Higher costs can influence how future developments are priced, depending on market conditions.
+
+**Planning matters more.** Efficient management, a careful choice of materials and financial control become even more relevant.
+
+**Pay attention to the purchase terms.** Homes bought during construction may have installments adjusted by indexes set in the contract, including the CUB, when that applies.
+
+This does not mean homes will necessarily become more expensive in the same proportion as the indicator. The link between construction cost and sale price also depends on demand, the supply available and the character of each location.
+
+## The Florianópolis property market: why location matters
+Florianópolis has geographic traits that shape how its property market develops.
+
+The island setting, environmental protection areas and urban-occupation rules set specific limits and criteria for new developments.
+
+In the South of the Island, neighborhoods such as **Campeche, Rio Tavares and Morro das Pedras** combine proximity to nature, access to the beaches and different options for shops and services.
+
+Because of that, reading the local market means looking past the cost per square meter.
+
+Where a home sits, how it fits the surroundings, the room for urban growth and the quality of the project can all influence how attractive it is.
+
+A limited supply of land in some areas also deserves attention, although scarcity on its own is not a guarantee that values will rise.
+
+For buyers and investors, that is a reason to judge each development by its real characteristics and by how well it can serve as a place to live or as an investment.
+
+## What to weigh before buying a home in the South of the Island
+With construction costs rising, choosing a home means looking past the purchase price to quality and to whether it fits what the buyer wants.
+
+### 1. Location and infrastructure
+Being close to beaches, shops, services, access roads and Florianópolis International Airport can make daily life easier and add to the appeal of some areas.
+
+### 2. Architecture and construction quality
+Projects that make the most of natural light, ventilation, practical rooms and materials suited to the local climate can stay more comfortable and efficient over the years.
+
+### 3. Legal certainty and transparency
+Check that the development is in order: the documents, the incorporation registration when it applies, the contract terms and the adjustment indexes.
+
+### 4. Potential for appreciation and resale
+More than general trends, the buyer should look at the supply of similar homes, local demand, maintenance costs and the later chances of use, resale or rental.
+
+Taken together, these factors support a better-grounded decision, especially for anyone building wealth over the long term.
+
+## How MPEN looks at the South of the Island market
+At MPEN, we believe developing homes is more than following the movements of the market.
+
+Our focus is on projects that bring together architecture, function, construction quality and a fit with the surroundings.
+
+In a region as particular as the South of Florianópolis Island, we understand that choosing a home should weigh both its financial value and the experience of living there.
+
+Higher construction costs make technical decisions, planning and responsibility matter at every stage of a development.
+
+More than tracking the price per square meter, it is necessary to understand the value a development can offer over time.
+
+## Investing in Florianópolis takes a long view
+The rise in Santa Catarina's CUB shows why construction indicators are worth following. They should not be read on their own.
+
+For anyone who wants to buy or invest in property in Florianópolis, location, project quality, infrastructure and the safety of the deal remain fundamental.
+
+In the South of the Island, understanding those particularities helps identify [developments](https://sunsetvillage.com.br/) aligned with how someone wants to live, their way of life and their long-term plans.
+
+MPEN remains committed to projects that value architecture, quality of life and a careful relationship with the place.
+
+Would you like to see our developments in the South of Florianópolis Island?
+
+Get in touch with the [MPEN](https://mpen.com.br/) team and discover our projects.
+
+## Sources
+[Sinduscon Chapecó: CUB history in Santa Catarina](https://www.sindusconchapeco.com.br/novo/cub.html)
+
+[Agora Floripa: Did building get more expensive in SC?](https://agorafloripa.com.br/se-liga-floripa-construir-ficou-mais-caro-em-sc-veja-como-a-alta-do-cub-afeta-seu-bolso/)`,
+);
+cubEn.seo_title = "CUB rise in SC and the Florianópolis property market | MPEN";
+cubEn.seo_description = "How the November 2026 rise in Santa Catarina's CUB affects construction costs, new launches and homes in Florianópolis.";
+
+const cubEs = copy(
+  "Alza del CUB en Santa Catarina: impactos en los inmuebles de Florianópolis",
+  "Entienda cómo el alza del CUB en Santa Catarina afecta los costos de la construcción, los nuevos lanzamientos y el mercado inmobiliario de Florianópolis.",
+  `El costo de la construcción civil en Santa Catarina sigue subiendo. En noviembre de 2026, el Costo Unitario Básico (CUB) residencial medio alcanzó **R$ 3.182,95 por metro cuadrado**, con un alza de 0,35% en el mes y de 5,99% en los últimos 12 meses.
+
+El indicador, divulgado por el sindicato de la industria de la construcción de la Gran [Florianópolis](https://mpen.com.br/blog/florianopolis-capital-mais-segura-brasil-2026) (Sinduscon), refleja el aumento de los costos de ejecutar las obras y enciende una alerta para quien pretende construir, comprar o invertir en inmuebles.
+
+La cuestión va más allá del costo de los materiales: **¿cómo influye el alza del CUB en los nuevos lanzamientos y en las decisiones de inversión en el mercado inmobiliario de Florianópolis?**
+
+Entender ese escenario es fundamental para tomar decisiones más conscientes, especialmente en regiones como el Sur de la Isla, donde la ubicación, la disponibilidad de terrenos y la calidad constructiva tienen un papel importante en la formación del valor de los inmuebles.
+
+## Qué es el CUB y por qué importa su alza
+El CUB (Costo Unitario Básico) es un indicador usado como referencia para acompañar el costo de la construcción civil por metro cuadrado. Su cálculo considera materiales, mano de obra, gastos administrativos y equipos, según los proyectos patrón definidos por la ABNT NBR 12721.
+
+En Santa Catarina, el indicador se divulga todos los meses y sirve como una de las referencias para la planificación financiera de obras y emprendimientos inmobiliarios.
+
+El alza del CUB significa que el costo básico de construcción está aumentando. Sin embargo, es importante aclarar que **el CUB no representa el precio final de venta de un inmueble**.
+
+El terreno, la ubicación, las características arquitectónicas, el estándar de terminación, los gastos complementarios y las condiciones de mercado también influyen en el valor de un emprendimiento.
+
+Por eso, comprender el CUB ayuda a interpretar el escenario inmobiliario, pero no sustituye un análisis completo de cada proyecto.
+
+## Cómo el aumento del CUB afecta los nuevos lanzamientos
+Cuando los costos de construcción aumentan, las desarrolladoras y constructoras necesitan reevaluar presupuestos, cronogramas de compra de materiales y la viabilidad económica de los nuevos emprendimientos.
+
+En noviembre de 2026, los materiales de construcción estuvieron entre los principales responsables de la elevación del índice en [Santa Catarina](https://mpen.com.br/blog/santa-catarina-e-o-estado-mais-seguro-do-brasil), con destaque para cemento, impermeabilizantes y placas cerámicas.
+
+Ese movimiento puede traer consecuencias para el mercado:
+
+**Presión sobre los precios de los nuevos lanzamientos.** El aumento de los costos puede influir en la formación de los precios de futuros emprendimientos, según las condiciones de mercado.
+
+**Mayor importancia de la planificación constructiva.** La gestión eficiente, la elección adecuada de materiales y el control financiero se vuelven todavía más relevantes.
+
+**Atención a las condiciones de compra.** Los inmuebles adquiridos durante la construcción pueden tener cuotas corregidas por índices previstos en el contrato, incluido el CUB, cuando corresponda.
+
+Eso no significa que los inmuebles necesariamente se encarezcan en la misma proporción del indicador. La relación entre el costo de construcción y el precio de venta también depende de la demanda, de la oferta disponible y de las características de cada ubicación.
+
+## Mercado inmobiliario de Florianópolis: por qué la ubicación hace diferencia
+Florianópolis presenta características geográficas que influyen directamente en su desarrollo inmobiliario.
+
+La condición de isla, las áreas de preservación ambiental y las reglas de ocupación urbana establecen límites y criterios específicos para implantar nuevos emprendimientos.
+
+En el Sur de la Isla, barrios como **Campeche, Rio Tavares y Morro das Pedras** combinan proximidad con la naturaleza, acceso a las playas y distintas opciones de servicios y comercio.
+
+Esas características hacen que el análisis inmobiliario de la región vaya más allá del costo por metro cuadrado.
+
+La ubicación de un inmueble, su integración con el entorno, las posibilidades de desarrollo urbano y la calidad del proyecto son factores que pueden influir en su atractivo en el mercado.
+
+La disponibilidad limitada de terrenos en determinadas áreas también merece atención, aunque la escasez, por sí sola, no sea garantía de valorización.
+
+Para compradores e inversores, eso refuerza la importancia de evaluar cada emprendimiento a partir de sus características reales y de su potencial para atender necesidades de vivienda o de inversión.
+
+## Qué evaluar antes de comprar un inmueble en el Sur de la Isla
+En un escenario de aumento de los costos de la construcción, elegir un inmueble exige un análisis que considere no solo el precio de adquisición, sino también su calidad y su adecuación a los objetivos del comprador.
+
+### 1. Ubicación e infraestructura
+La proximidad con playas, comercio, servicios, vías de acceso y el Aeropuerto Internacional de Florianópolis puede contribuir a la conveniencia de la rutina y al atractivo de determinadas regiones.
+
+### 2. Calidad arquitectónica y constructiva
+Los proyectos que valoran la iluminación natural, la ventilación, la funcionalidad de los ambientes y los materiales adecuados al clima local pueden ofrecer más confort y eficiencia de uso a lo largo de los años.
+
+### 3. Seguridad jurídica y transparencia
+Es fundamental verificar la regularidad del emprendimiento, la documentación, el registro de la incorporación cuando corresponda, las condiciones contractuales y los índices de reajuste previstos.
+
+### 4. Potencial de valorización y liquidez
+Más que observar tendencias generales, el comprador debe considerar la oferta de inmuebles semejantes, la demanda local, los costos de mantenimiento y las posibilidades futuras de uso, reventa o alquiler.
+
+La combinación de esos factores permite una decisión más fundamentada, especialmente para quien busca construir patrimonio a largo plazo.
+
+## La mirada de MPEN sobre el mercado inmobiliario en el Sur de la Isla
+En MPEN, creemos que desarrollar emprendimientos va más allá de acompañar los movimientos del mercado.
+
+Nuestra mirada está puesta en la creación de proyectos que concilian arquitectura, funcionalidad, calidad constructiva e integración con el entorno.
+
+En una región con características tan particulares como el Sur de la Isla de Florianópolis, entendemos que la elección de un inmueble debe considerar tanto su valor financiero como la experiencia de vivir en ese espacio.
+
+El aumento de los costos de la construcción refuerza la importancia de las decisiones técnicas, de la planificación y de la responsabilidad en todas las etapas del desarrollo inmobiliario.
+
+Más que acompañar el precio del metro cuadrado, es necesario comprender el valor que un emprendimiento puede ofrecer a lo largo del tiempo.
+
+## Invertir en Florianópolis exige una visión de largo plazo
+El alza del CUB en Santa Catarina demuestra la importancia de acompañar los indicadores de la construcción civil, pero no debe analizarse de forma aislada.
+
+Para quien desea comprar o invertir en inmuebles en Florianópolis, factores como la ubicación, la calidad del proyecto, la infraestructura y la seguridad de la negociación siguen siendo fundamentales.
+
+En el Sur de la Isla, comprender esas particularidades ayuda a identificar [emprendimientos](https://sunsetvillage.com.br/) alineados con las expectativas de vivienda, estilo de vida y planificación patrimonial.
+
+MPEN sigue comprometida con el desarrollo de proyectos que valoran la arquitectura, la calidad de vida y una relación consciente con el territorio.
+
+¿Quiere conocer nuestros emprendimientos en el Sur de la Isla de Florianópolis?
+
+Entre en contacto con el equipo de [MPEN](https://mpen.com.br/) y descubra nuestros proyectos.
+
+## Fuentes
+[Sinduscon Chapecó: histórico del CUB en Santa Catarina](https://www.sindusconchapeco.com.br/novo/cub.html)
+
+[Agora Floripa: ¿Construir quedó más caro en SC?](https://agorafloripa.com.br/se-liga-floripa-construir-ficou-mais-caro-em-sc-veja-como-a-alta-do-cub-afeta-seu-bolso/)`,
+);
+cubEs.seo_title = "Alza del CUB en SC y el mercado de Florianópolis | MPEN";
+cubEs.seo_description = "Cómo el alza del CUB de Santa Catarina en noviembre de 2026 afecta los costos de la construcción, los lanzamientos y los inmuebles de Florianópolis.";
+
 export const blogPostCopy: Record<string, { en: PostTranslation; es: PostTranslation }> = {
   "santa-catarina-e-o-estado-mais-seguro-do-brasil": { en: santaCatarinaEn, es: santaCatarinaEs },
   "florianopolis-capital-mais-segura-brasil-2026": { en: florianopolisEn, es: florianopolisEs },
+  "alta-do-cub-em-sc-impactos-nos-imoveis-de-florianopolis": { en: cubEn, es: cubEs },
 };
