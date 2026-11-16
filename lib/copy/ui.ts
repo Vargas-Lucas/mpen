@@ -143,6 +143,12 @@ const copy = {
     of: s("de", "of", "de"),
     builtWith: s("Construído em parceria com a CDE Via Sul", "Built in partnership with CDE Via Sul", "Construido en alianza con CDE Via Sul"),
     back: s("Voltar", "Back", "Volver"),
+    preview: s(
+      "Prévia de como o empreendimento aparece no site.",
+      "Preview of how the development appears on the site.",
+      "Vista previa de cómo aparece el emprendimiento en el sitio.",
+    ),
+    backToEdit: s("Voltar a editar", "Back to editing", "Volver a editar"),
   },
   about: {
     title: s("Conheça a Mpen", "About MPEN", "Conozca MPEN"),

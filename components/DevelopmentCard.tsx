@@ -4,12 +4,12 @@ import Link from "next/link";
 import { rememberReturn } from "@/components/BackButton";
 import { useI18n } from "@/components/I18nProvider";
 import { deliveryLabel, developmentAlt, placeLabel, statusLabel } from "@/lib/format";
-import { coverImage } from "@/lib/images";
+import { resolveCover } from "@/lib/images";
 import type { Development } from "@/lib/types";
 
 export function DevelopmentCard({ item, priority = false }: { item: Development; priority?: boolean }) {
   const { locale, t } = useI18n();
-  const image = coverImage(item.slug);
+  const image = resolveCover(item);
 
   return (
     <article className={`dev-card status-${item.status}`} data-slug={item.slug}>

@@ -464,3 +464,15 @@ export function projectStory(slug: string, locale: Locale) {
     note: Boolean(story.note),
   };
 }
+
+export function projectStoryDraft(slug: string) {
+  const story = stories[slug];
+  if (!story) return null;
+  const body = (locale: Locale) => story.paragraphs.map((paragraph) => paragraph[locale]).join("\n\n");
+  return {
+    note: Boolean(story.note),
+    pt: { title: story.title.pt, body: body("pt") },
+    en: { title: story.title.en, body: body("en") },
+    es: { title: story.title.es, body: body("es") },
+  };
+}

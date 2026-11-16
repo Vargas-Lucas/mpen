@@ -14,7 +14,7 @@ export default async function NewPostPage() {
       <p>Salve como rascunho para revisar, ou publique para aparecer no blog.</p>
       <PostForm categories={categories} />
       <p className="admin-back">
-        <Link href="/admin">Voltar aos artigos</Link>
+        <Link href="/admin/blog">Voltar aos artigos</Link>
       </p>
     </section>
   );

@@ -15,15 +15,17 @@ export default async function CategoriesPage({
 
   return (
     <section className="admin-panel">
+      <p className="admin-back">
+        <Link href="/admin">Painel</Link>
+        {" · "}
+        <Link href="/admin/blog">Artigos</Link>
+      </p>
       <div className="admin-head">
         <div>
           <p className="admin-kicker">Blog</p>
           <h1>Categorias</h1>
           <p>Crie as categorias usadas nos artigos e no filtro do blog. Um artigo precisa de uma categoria para ser organizado.</p>
         </div>
-        <Link className="admin-link" href="/admin">
-          Voltar aos artigos
-        </Link>
       </div>
 
       {salvo ? (

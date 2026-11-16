@@ -6,7 +6,7 @@ import { PostCard } from "@/components/PostCard";
 import { ui } from "@/lib/copy/ui";
 import { getLocale } from "@/lib/i18n-server";
 import { localizePosts } from "@/lib/post-i18n";
-import { heroImage } from "@/lib/images";
+import { resolveHero } from "@/lib/images";
 import { getDevelopments, getPosts, getSpotlightDevelopments } from "@/lib/data";
 import { canonical } from "@/lib/seo";
 
@@ -23,7 +23,7 @@ export default async function HomePage() {
     getPosts({ limit: 3 }),
   ]);
   const posts = localizePosts(storedPosts, locale);
-  const lcpImage = slides[0] ? heroImage(slides[0].slug) : "";
+  const lcpImage = slides[0] ? resolveHero(slides[0]) : "";
 
   return (
     <>

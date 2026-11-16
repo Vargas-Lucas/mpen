@@ -78,3 +78,19 @@ export function logoImage(slug: string) {
 export function galleryImages(slug: string) {
   return galleries[slug] ?? [];
 }
+
+export function resolveCover(item: { slug: string; cover?: string | null }) {
+  if (item.cover == null) return coverImage(item.slug);
+  return item.cover;
+}
+
+export function resolveHero(item: { slug: string; cover?: string | null }) {
+  const saved = item.cover?.trim() ?? "";
+  if (!saved || saved === coverImage(item.slug)) return heroImage(item.slug);
+  return saved;
+}
+
+export function resolveGallery(item: { slug: string; gallery?: string[] | null }) {
+  if (item.gallery == null) return galleryImages(item.slug);
+  return item.gallery;
+}

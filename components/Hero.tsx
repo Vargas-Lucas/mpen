@@ -4,7 +4,7 @@ import Link from "next/link";
 import { rememberReturn } from "@/components/BackButton";
 import { useEffect, useState } from "react";
 import { useI18n } from "@/components/I18nProvider";
-import { heroImage, logoImage } from "@/lib/images";
+import { logoImage, resolveHero } from "@/lib/images";
 import { deliveryLabel, developmentAlt, placeLabel } from "@/lib/format";
 import type { Development } from "@/lib/types";
 
@@ -49,7 +49,7 @@ export function Hero({ slides }: { slides: Development[] }) {
         .join(" ")}
     >
       {slides.map((item, slideIndex) => {
-        const image = heroImage(item.slug);
+        const image = resolveHero(item);
         const logo = logoImage(item.slug);
         const state =
           slideIndex === index ? "is-on" : slideIndex === leaving ? "is-leaving" : "";

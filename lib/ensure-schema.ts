@@ -9,6 +9,16 @@ const DEFAULT_CATEGORIES = [
 ] as const;
 
 let schemaReady = false;
+let developmentSchemaReady = false;
+
+export async function ensureDevelopmentSchema() {
+  if (developmentSchemaReady) return;
+  await query(`ALTER TABLE developments ADD COLUMN IF NOT EXISTS cover TEXT`);
+  await query(`ALTER TABLE developments ADD COLUMN IF NOT EXISTS gallery JSONB`);
+  await query(`ALTER TABLE developments ADD COLUMN IF NOT EXISTS story JSONB`);
+  await query(`ALTER TABLE developments ADD COLUMN IF NOT EXISTS website TEXT NOT NULL DEFAULT ''`);
+  developmentSchemaReady = true;
+}
 
 export async function ensureBlogSchema() {
   if (schemaReady) return;

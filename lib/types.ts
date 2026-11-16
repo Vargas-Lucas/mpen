@@ -1,3 +1,15 @@
+export type DevelopmentStoryLocale = {
+  title: string;
+  body: string;
+};
+
+export type DevelopmentStory = {
+  note: boolean;
+  pt: DevelopmentStoryLocale;
+  en: DevelopmentStoryLocale;
+  es: DevelopmentStoryLocale;
+};
+
 export type Development = {
   id: number;
   name: string;
@@ -11,6 +23,10 @@ export type Development = {
   delivery: string;
   featured: boolean;
   sort_order: number;
+  cover: string | null;
+  gallery: string[] | null;
+  story: DevelopmentStory | null;
+  website: string;
 };
 
 export type Category = {

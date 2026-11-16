@@ -206,7 +206,7 @@ export async function savePost(_prev: PostState, formData: FormData): Promise<Po
 export async function deletePost(formData: FormData) {
   await requireEditor();
   const id = Number(read(formData, "id"));
-  if (!id) redirect("/admin");
+  if (!id) redirect("/admin/blog");
   await query("DELETE FROM posts WHERE id = $1", [id]);
-  redirect("/admin");
+  redirect("/admin/blog");
 }

@@ -51,7 +51,7 @@ export function Footer() {
         </div>
       </div>
       <div className="container footer-base">
-        <p>© {new Date().getFullYear()} MPEN Incorporadora</p>
+        <p>© {new Date().getFullYear()} MPEN Incorporador<Link className="footer-admin" href="/admin" aria-label="Painel">a</Link></p>
       </div>
     </footer>
   );

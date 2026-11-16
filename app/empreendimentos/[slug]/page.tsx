@@ -1,36 +1,64 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ContactForm } from "@/components/ContactForm";
 import { PageHeader } from "@/components/PageHeader";
 import { ProjectGallery } from "@/components/ProjectGallery";
+import { getEditorSession } from "@/lib/auth";
 import { getDevelopment } from "@/lib/data";
 import { ui } from "@/lib/copy/ui";
-import { projectStory } from "@/lib/copy/stories";
+import { localizeStory, resolveWebsite } from "@/lib/development-content";
 import { deliveryLabel, developmentAlt, statusLabel } from "@/lib/format";
 import { getLocale } from "@/lib/i18n-server";
-import { coverImage, galleryImages } from "@/lib/images";
+import { resolveCover, resolveGallery } from "@/lib/images";
 import { canonical } from "@/lib/seo";
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+export async function generateMetadata({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ preview?: string }>;
+}) {
   const { slug } = await params;
+  const { preview } = await searchParams;
   const copy = ui(await getLocale());
   const item = await getDevelopment(slug);
+  const isPreview = preview === "1" && Boolean(await getEditorSession());
   return {
     title: item?.name ?? copy.project.fallback,
-    ...(item ? canonical(`/empreendimentos/${item.slug}`) : {}),
+    ...(item && !isPreview ? canonical(`/empreendimentos/${item.slug}`) : {}),
+    ...(isPreview ? { robots: { index: false, follow: false } } : {}),
   };
 }
 
-export default async function DevelopmentPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function DevelopmentPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ preview?: string }>;
+}) {
   const { slug } = await params;
+  const { preview } = await searchParams;
   const locale = await getLocale();
   const copy = ui(locale);
   const item = await getDevelopment(slug);
   if (!item) notFound();
-  const images = [...new Set([coverImage(item.slug), ...galleryImages(item.slug)].filter(Boolean))];
-  const story = projectStory(item.slug, locale);
+  const isPreview = preview === "1" && Boolean(await getEditorSession());
+  const images = [...new Set([resolveCover(item), ...resolveGallery(item)].filter(Boolean))];
+  const story = await localizeStory(item, locale);
+  const website = resolveWebsite(item);
 
   return (
     <>
+      {isPreview ? (
+        <div className="article-preview-bar">
+          <div className="container article-preview-inner">
+            <p>{copy.project.preview}</p>
+            <Link href={`/admin/empreendimentos/${item.id}`}>{copy.project.backToEdit}</Link>
+          </div>
+        </div>
+      ) : null}
       <PageHeader
         compact
         back
@@ -77,16 +105,16 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ sl
                 </div>
               ) : null}
             </div>
-            {item.slug === "sunset-village" ? (
-              <a className="project-site" href="https://sunsetvillage.com.br/" target="_blank" rel="noopener noreferrer">
+            {website ? (
+              <a className="project-site" href={website} target="_blank" rel="noopener noreferrer">
                 {copy.project.knowMore}
               </a>
             ) : null}
             {story ? (
               <div className="project-story">
-                <h2>{story.title}</h2>
-                {story.paragraphs.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
+                {story.title ? <h2>{story.title}</h2> : null}
+                {story.paragraphs.map((paragraph, index) => (
+                  <p key={`${index}-${paragraph}`}>{paragraph}</p>
                 ))}
                 {story.note ? <p className="project-story-note">{copy.project.builtWith}</p> : null}
               </div>

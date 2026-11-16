@@ -26,7 +26,7 @@ export default async function EditPostPage({
         <h1>Não foi possível abrir o artigo</h1>
         <p>{message}</p>
         <p className="admin-back">
-          <Link href="/admin">Voltar aos artigos</Link>
+          <Link href="/admin/blog">Voltar aos artigos</Link>
         </p>
       </section>
     );
@@ -54,7 +54,7 @@ export default async function EditPostPage({
       <PostForm post={post} categories={categories} saved={saved} />
       <div className="admin-footer-row">
         <p className="admin-back">
-          <Link href="/admin">Voltar aos artigos</Link>
+          <Link href="/admin/blog">Voltar aos artigos</Link>
           <>
             {" · "}
             <a href={`/blog/${post.slug}${post.published_at ? "" : "?preview=1"}`} target="_blank" rel="noreferrer">

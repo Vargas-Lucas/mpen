@@ -1,8 +1,15 @@
 import { query } from "@/lib/db";
-import { ensureBlogSchema } from "@/lib/ensure-schema";
-import type { Category, Development, Post } from "@/lib/types";
+import { ensureBlogSchema, ensureDevelopmentSchema } from "@/lib/ensure-schema";
+import type { Category, Development, DevelopmentStory, Post } from "@/lib/types";
 
 const STATUSES = new Set(["lancamento", "construcao", "entregue"]);
+const BY_LAUNCH_YEAR = `
+  CASE
+    WHEN substring(delivery from '[0-9]{4}') IS NOT NULL THEN substring(delivery from '[0-9]{4}')::int
+    WHEN substring(delivery from '([0-9]{2})$') IS NOT NULL THEN 2000 + substring(delivery from '([0-9]{2})$')::int
+    ELSE 0
+  END DESC, name
+`;
 const FOLDED_FROM = "áàâãäéèêëíìîïóòôõöúùûüçñ";
 const FOLDED_TO = "aaaaaeeeeiiiiooooouuuucn";
 
@@ -14,7 +21,43 @@ function folded(column: string) {
   return `translate(lower(${column}), '${FOLDED_FROM}', '${FOLDED_TO}')`;
 }
 
+function textList(value: unknown): string[] | null {
+  if (!Array.isArray(value)) return null;
+  return value.filter((item): item is string => typeof item === "string");
+}
+
+function storyLocale(value: unknown) {
+  if (!value || typeof value !== "object") return { title: "", body: "" };
+  const row = value as { title?: unknown; body?: unknown };
+  return {
+    title: typeof row.title === "string" ? row.title : "",
+    body: typeof row.body === "string" ? row.body : "",
+  };
+}
+
+function storyValue(value: unknown): DevelopmentStory | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const row = value as { note?: unknown; pt?: unknown; en?: unknown; es?: unknown };
+  return {
+    note: Boolean(row.note),
+    pt: storyLocale(row.pt),
+    en: storyLocale(row.en),
+    es: storyLocale(row.es),
+  };
+}
+
+function asDevelopment(row: Development): Development {
+  return {
+    ...row,
+    cover: typeof row.cover === "string" ? row.cover : null,
+    website: typeof row.website === "string" ? row.website : "",
+    gallery: textList(row.gallery),
+    story: storyValue(row.story),
+  };
+}
+
 export async function getDevelopments(filters: { q?: string; status?: string; city?: string } = {}) {
+  await ensureDevelopmentSchema();
   const where: string[] = [];
   const params: unknown[] = [];
 
@@ -42,35 +85,46 @@ export async function getDevelopments(filters: { q?: string; status?: string; ci
   const sql = `
     SELECT * FROM developments
     ${where.length ? `WHERE ${where.join(" AND ")}` : ""}
-    ORDER BY sort_order, name
+    ORDER BY ${BY_LAUNCH_YEAR}
   `;
 
-  return query<Development>(sql, params);
+  const rows = await query<Development>(sql, params);
+  return rows.map(asDevelopment);
 }
 
 export async function getDevelopment(slug: string) {
+  await ensureDevelopmentSchema();
   const rows = await query<Development>("SELECT * FROM developments WHERE slug = $1", [slug]);
-  return rows[0] ?? null;
+  return rows[0] ? asDevelopment(rows[0]) : null;
+}
+
+export async function getDevelopmentById(id: number) {
+  await ensureDevelopmentSchema();
+  const rows = await query<Development>("SELECT * FROM developments WHERE id = $1", [id]);
+  return rows[0] ? asDevelopment(rows[0]) : null;
 }
 
 export async function getSpotlightDevelopments() {
+  await ensureDevelopmentSchema();
   const rows = await query<Development>(`
     SELECT * FROM developments
     WHERE status IN ('lancamento', 'entregue')
-    ORDER BY CASE WHEN delivery ~ '^[0-9]{4}$' THEN delivery::int ELSE 0 END DESC, sort_order
+    ORDER BY ${BY_LAUNCH_YEAR}
     LIMIT 3
   `);
   const chez = await getDevelopment("chez-soleil");
-  if (!chez) return rows;
-  return rows.map((item) => (item.slug === "village-du-soleil" ? chez : item));
+  if (!chez) return rows.map(asDevelopment);
+  return rows.map((item) => (item.slug === "village-du-soleil" ? chez : asDevelopment(item)));
 }
 
 export async function getFeaturedDevelopments() {
+  await ensureDevelopmentSchema();
   const featured = await query<Development>(
-    "SELECT * FROM developments WHERE featured = TRUE ORDER BY sort_order LIMIT 5",
+    `SELECT * FROM developments WHERE featured = TRUE ORDER BY ${BY_LAUNCH_YEAR} LIMIT 5`,
   );
-  if (featured.length > 0) return featured;
-  return query<Development>("SELECT * FROM developments ORDER BY sort_order LIMIT 3");
+  if (featured.length > 0) return featured.map(asDevelopment);
+  const rows = await query<Development>(`SELECT * FROM developments ORDER BY ${BY_LAUNCH_YEAR} LIMIT 3`);
+  return rows.map(asDevelopment);
 }
 
 const FALLBACK_CATEGORIES: Category[] = [
