@@ -148,15 +148,20 @@ button, input, select, textarea { font: inherit; }
 }
 
 .header-panel {
-  display: contents;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  min-width: 0;
+  margin-left: 28px;
+  padding-right: max(0px, calc(156px - (100vw - 100%) / 2));
 }
 
 .nav {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
-  gap: 22px;
+  flex: 1;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: 28px;
 }
 
 .nav a, .header-actions a {
@@ -197,11 +202,8 @@ button, input, select, textarea { font: inherit; }
 }
 
 .header-actions {
-  margin-left: auto;
-  margin-right: max(0px, calc(156px - (100vw - 100%) / 2));
   display: flex;
   align-items: center;
-  gap: 22px;
   z-index: 2;
 }
 
@@ -3908,11 +3910,15 @@ h2.kicker {
 
 .faq a { color: var(--blue); text-decoration: underline; }
 
-@media (max-width: 1080px) {
+@media (max-width: 1240px) {
   .menu { display: flex; }
 
   .header-panel {
     display: none;
+    margin-left: 0;
+    padding-right: 0;
+    gap: 0;
+    justify-content: flex-start;
     position: absolute;
     top: 100%;
     left: 0;

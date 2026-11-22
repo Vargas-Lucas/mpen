@@ -68,14 +68,14 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
-          </nav>
-          <div className="header-actions">
             <a href="https://portaldocliente.expertsystem.com.br/entrar/mpen" target="_blank" rel="noopener noreferrer">
               {t.nav.client}
             </a>
             <Link href="/contato">{t.nav.contact}</Link>
             <Link href="/seja-parceiro">{t.nav.partner}</Link>
             <Link href="/canal-do-corretor">{t.nav.broker}</Link>
+          </nav>
+          <div className="header-actions">
             <LanguageSwitch />
           </div>
         </div>
