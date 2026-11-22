@@ -4990,57 +4990,6 @@ h2.kicker {
   font-weight: 600;
 }
 
-.admin-spot {
-  display: inline-block;
-  margin-left: 8px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: #e7f3f6;
-  color: var(--teal);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  vertical-align: 2px;
-}
-
-.admin-swap {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.admin-swap select {
-  max-width: 240px;
-  min-height: 36px;
-  padding: 0 8px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: white;
-  color: var(--navy);
-  font: inherit;
-  font-size: 13px;
-}
-
-.admin-swap button,
-.admin-swap-open {
-  min-height: 36px;
-  padding: 0 12px;
-  border: 1px solid var(--navy);
-  border-radius: 8px;
-  background: white;
-  color: var(--navy);
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.admin-swap button[type="button"] {
-  border-color: transparent;
-  background: transparent;
-  color: var(--muted);
-}
-
 .admin-list p {
   margin: 4px 0 0;
   color: var(--muted);

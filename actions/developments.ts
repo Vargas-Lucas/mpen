@@ -129,24 +129,3 @@ export async function saveDevelopment(_prev: DevelopmentState, formData: FormDat
     return { ok: false, message: dbErrorMessage(error, "Não foi possível salvar o empreendimento.") };
   }
 }
-
-export async function deleteDevelopment(formData: FormData) {
-  await requireEditor();
-  const id = Number(read(formData, "id"));
-  if (!id) redirect("/admin/empreendimentos");
-  await query("DELETE FROM developments WHERE id = $1", [id]);
-  redirect("/admin/empreendimentos");
-}
-
-export async function swapSpotlight(formData: FormData) {
-  await requireEditor();
-  const outId = Number(read(formData, "out"));
-  const inId = Number(read(formData, "in"));
-  const { getSpotlightDevelopments } = await import("@/lib/data");
-  const current = (await getSpotlightDevelopments()).map((item) => item.id);
-  if (!current.includes(outId) || !inId || current.includes(inId)) redirect("/admin/empreendimentos");
-  const next = current.map((id) => (id === outId ? inId : id));
-  await query("UPDATE developments SET featured = FALSE");
-  await query("UPDATE developments SET featured = TRUE WHERE id = ANY($1::int[])", [next]);
-  redirect("/admin/empreendimentos");
-}
