@@ -8,6 +8,13 @@ import { shrinkImage } from "@/lib/shrink-image";
 import { slugify } from "@/lib/slug";
 
 const initial: DevelopmentState = { ok: false, message: "" };
+const PHOTO_TYPES = ".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp";
+
+function chosenFiles(input: HTMLInputElement) {
+  const files = Array.from(input.files ?? []);
+  input.value = "";
+  return files;
+}
 
 const STATUSES = [
   ["lancamento", "Lançamento"],
@@ -47,8 +54,8 @@ export function DevelopmentForm({ values, saved = false }: { values: Development
     return uploadPostImage(data);
   }
 
-  async function onPhotos(files: FileList | null) {
-    if (!files?.length) return;
+  async function onPhotos(files: File[]) {
+    if (!files.length) return;
     setBusy(true);
     setNote("");
     try {
@@ -164,14 +171,11 @@ export function DevelopmentForm({ values, saved = false }: { values: Development
                   {busy ? "Enviando…" : "Adicionar fotos"}
                   <input
                     type="file"
-                    accept="image/jpeg,image/png,image/webp"
+                    accept={PHOTO_TYPES}
                     multiple
                     disabled={busy || pending}
                     onChange={(event) => {
-                      const input = event.target;
-                      const files = input.files;
-                      input.value = "";
-                      void onPhotos(files);
+                      void onPhotos(chosenFiles(event.currentTarget));
                     }}
                   />
                 </label>
@@ -200,14 +204,11 @@ export function DevelopmentForm({ values, saved = false }: { values: Development
                       {busy ? "…" : "+"}
                       <input
                         type="file"
-                        accept="image/jpeg,image/png,image/webp"
+                        accept={PHOTO_TYPES}
                         multiple
                         disabled={busy || pending}
                         onChange={(event) => {
-                          const input = event.target;
-                          const files = input.files;
-                          input.value = "";
-                          void onPhotos(files);
+                          void onPhotos(chosenFiles(event.currentTarget));
                         }}
                       />
                     </label>
@@ -217,14 +218,11 @@ export function DevelopmentForm({ values, saved = false }: { values: Development
                       Adicionar fotos
                       <input
                         type="file"
-                        accept="image/jpeg,image/png,image/webp"
+                        accept={PHOTO_TYPES}
                         multiple
                         disabled={busy || pending}
                         onChange={(event) => {
-                          const input = event.target;
-                          const files = input.files;
-                          input.value = "";
-                          void onPhotos(files);
+                          void onPhotos(chosenFiles(event.currentTarget));
                         }}
                       />
                     </label>
@@ -239,6 +237,7 @@ export function DevelopmentForm({ values, saved = false }: { values: Development
                   </div>
                 </>
               ) : null}
+              {note ? <p className="err">{note}</p> : null}
             </div>
 
             <div className="project-facts">

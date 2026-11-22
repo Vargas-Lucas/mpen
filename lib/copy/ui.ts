@@ -14,6 +14,7 @@ const copy = {
     client: s("Área do cliente", "Client area", "Área del cliente"),
     contact: s("Contato", "Contact", "Contacto"),
     partner: s("Seja parceiro", "Become a partner", "Sea socio"),
+    broker: s("Canal do corretor", "Broker channel", "Canal del corredor"),
     menuOpen: s("Abrir menu", "Open menu", "Abrir menú"),
     menuClose: s("Fechar menu", "Close menu", "Cerrar menú"),
     main: s("Principal", "Main", "Principal"),

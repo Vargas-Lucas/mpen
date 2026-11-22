@@ -75,6 +75,7 @@ export function Header() {
             </a>
             <Link href="/contato">{t.nav.contact}</Link>
             <Link href="/seja-parceiro">{t.nav.partner}</Link>
+            <Link href="/canal-do-corretor">{t.nav.broker}</Link>
             <LanguageSwitch />
           </div>
         </div>

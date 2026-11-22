@@ -10,6 +10,25 @@ const DEFAULT_CATEGORIES = [
 
 let schemaReady = false;
 let developmentSchemaReady = false;
+let brokerSchemaReady = false;
+
+export async function ensureBrokerSchema() {
+  if (brokerSchemaReady) return;
+  await query(`
+    CREATE TABLE IF NOT EXISTS brokers (
+      id SERIAL PRIMARY KEY,
+      name TEXT NOT NULL,
+      cpf TEXT UNIQUE NOT NULL,
+      creci TEXT NOT NULL,
+      agency TEXT NOT NULL,
+      phone TEXT NOT NULL,
+      email TEXT UNIQUE NOT NULL,
+      password_hash TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  brokerSchemaReady = true;
+}
 
 export async function ensureDevelopmentSchema() {
   if (developmentSchemaReady) return;

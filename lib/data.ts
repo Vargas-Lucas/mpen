@@ -106,15 +106,19 @@ export async function getDevelopmentById(id: number) {
 
 export async function getSpotlightDevelopments() {
   await ensureDevelopmentSchema();
-  const rows = await query<Development>(`
-    SELECT * FROM developments
-    WHERE status IN ('lancamento', 'entregue')
-    ORDER BY ${BY_LAUNCH_YEAR}
-    LIMIT 3
-  `);
-  const chez = await getDevelopment("chez-soleil");
-  if (!chez) return rows.map(asDevelopment);
-  return rows.map((item) => (item.slug === "village-du-soleil" ? chez : asDevelopment(item)));
+  const featured = await query<Development>(
+    `SELECT * FROM developments WHERE featured = TRUE ORDER BY ${BY_LAUNCH_YEAR} LIMIT 3`,
+  );
+  if (featured.length >= 3) return featured.map(asDevelopment);
+  const chosen = featured.map((item) => item.id);
+  const rest = await query<Development>(
+    `SELECT * FROM developments
+     WHERE NOT (id = ANY($1::int[]))
+     ORDER BY ${BY_LAUNCH_YEAR}
+     LIMIT $2`,
+    [chosen.length ? chosen : [0], 3 - featured.length],
+  );
+  return [...featured, ...rest].map(asDevelopment);
 }
 
 export async function getFeaturedDevelopments() {
