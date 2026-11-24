@@ -72,7 +72,6 @@ export function Header() {
               {t.nav.client}
             </a>
             <Link href="/contato">{t.nav.contact}</Link>
-            <Link href="/seja-parceiro">{t.nav.partner}</Link>
             <Link href="/canal-do-corretor">{t.nav.broker}</Link>
           </nav>
           <div className="header-actions">

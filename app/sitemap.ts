@@ -8,7 +8,7 @@ const pages: { path: string; changeFrequency: MetadataRoute.Sitemap[number]["cha
   { path: "/blog", changeFrequency: "weekly", priority: 0.8 },
   { path: "/quem-somos", changeFrequency: "monthly", priority: 0.7 },
   { path: "/contato", changeFrequency: "monthly", priority: 0.6 },
-  { path: "/seja-parceiro", changeFrequency: "monthly", priority: 0.5 },
+  { path: "/canal-do-corretor", changeFrequency: "monthly", priority: 0.5 },
   { path: "/faq", changeFrequency: "monthly", priority: 0.4 },
   { path: "/compliance", changeFrequency: "yearly", priority: 0.3 },
   { path: "/politica-de-privacidade", changeFrequency: "yearly", priority: 0.3 },

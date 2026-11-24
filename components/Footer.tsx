@@ -19,7 +19,6 @@ export function Footer() {
           <Link href="/quem-somos">{t.footer.who}</Link>
           <Link href="/empreendimentos">{t.footer.developments}</Link>
           <Link href="/blog">{t.footer.blog}</Link>
-          <Link href="/seja-parceiro">{t.footer.partner}</Link>
         </div>
         <div>
           <Link href="/faq">{t.footer.faq}</Link>

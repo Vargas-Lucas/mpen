@@ -11,23 +11,52 @@ const DEFAULT_CATEGORIES = [
 let schemaReady = false;
 let developmentSchemaReady = false;
 let brokerSchemaReady = false;
+let brokerResetSchemaReady = false;
+let brokerApprovalSchemaReady = false;
 
 export async function ensureBrokerSchema() {
-  if (brokerSchemaReady) return;
+  if (!brokerSchemaReady) {
+    await query(`
+      CREATE TABLE IF NOT EXISTS brokers (
+        id SERIAL PRIMARY KEY,
+        name TEXT NOT NULL,
+        cpf TEXT UNIQUE NOT NULL,
+        creci TEXT NOT NULL,
+        agency TEXT NOT NULL,
+        phone TEXT NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )
+    `);
+    brokerSchemaReady = true;
+  }
+  if (!brokerResetSchemaReady) {
+    await query(`
+      CREATE TABLE IF NOT EXISTS broker_password_resets (
+        id SERIAL PRIMARY KEY,
+        broker_id INT NOT NULL REFERENCES brokers(id) ON DELETE CASCADE,
+        token_hash TEXT UNIQUE NOT NULL,
+        expires_at TIMESTAMPTZ NOT NULL,
+        used_at TIMESTAMPTZ,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )
+    `);
+    brokerResetSchemaReady = true;
+  }
+  if (brokerApprovalSchemaReady) return;
+  await query(`ALTER TABLE brokers ADD COLUMN IF NOT EXISTS approved BOOLEAN NOT NULL DEFAULT TRUE`);
   await query(`
-    CREATE TABLE IF NOT EXISTS brokers (
+    CREATE TABLE IF NOT EXISTS broker_approvals (
       id SERIAL PRIMARY KEY,
-      name TEXT NOT NULL,
-      cpf TEXT UNIQUE NOT NULL,
-      creci TEXT NOT NULL,
-      agency TEXT NOT NULL,
-      phone TEXT NOT NULL,
-      email TEXT UNIQUE NOT NULL,
-      password_hash TEXT NOT NULL,
+      broker_id INT NOT NULL REFERENCES brokers(id) ON DELETE CASCADE,
+      token_hash TEXT UNIQUE NOT NULL,
+      expires_at TIMESTAMPTZ NOT NULL,
+      used_at TIMESTAMPTZ,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
   `);
-  brokerSchemaReady = true;
+  brokerApprovalSchemaReady = true;
 }
 
 export async function ensureDevelopmentSchema() {

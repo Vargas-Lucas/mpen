@@ -9,7 +9,8 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      { source: "/seja-nosso-parceiro", destination: "/seja-parceiro", permanent: true },
+      { source: "/seja-parceiro", destination: "/canal-do-corretor", permanent: true },
+      { source: "/seja-nosso-parceiro", destination: "/canal-do-corretor", permanent: true },
       { source: "/lancamentos", destination: "/empreendimentos?status=lancamento", permanent: true },
       { source: "/obrigado", destination: "/contato", permanent: true },
       { source: "/em-breve", destination: "/empreendimentos", permanent: true },

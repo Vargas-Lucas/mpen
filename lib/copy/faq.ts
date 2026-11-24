@@ -174,7 +174,7 @@ const tree = {
                 "Corredores de inmuebles e inmobiliarias interesados en presentar los emprendimientos de MPEN pueden completar el formulario disponible en la página ",
               ),
             },
-            { text: s("Seja parceiro", "Become a partner", "Sea socio"), href: "/seja-parceiro" },
+            { text: s("Canal do corretor", "Broker channel", "Canal del corredor"), href: "/canal-do-corretor" },
             {
               text: s(
                 ". Nossa equipe comercial receberá o cadastro para avaliar as possibilidades de parceria.",
@@ -198,7 +198,7 @@ const tree = {
                 "MPEN dispone de un canal de contacto para corredores e inmobiliarias interesados en establecer alianzas comerciales. Para saber más, acceda a la página ",
               ),
             },
-            { text: s("Seja parceiro", "Become a partner", "Sea socio"), href: "/seja-parceiro" },
+            { text: s("Canal do corretor", "Broker channel", "Canal del corredor"), href: "/canal-do-corretor" },
             {
               text: s(
                 " e envie seus dados à equipe comercial.",

@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
-import { loginBroker, registerBroker, type BrokerState } from "@/actions/brokers";
+import { loginBroker, registerBroker, requestBrokerReset, type BrokerState } from "@/actions/brokers";
 
 const initial: BrokerState = { ok: false, message: "" };
 
@@ -26,16 +26,21 @@ function Submit({ children }: { children: string }) {
   );
 }
 
+function Notice({ state }: { state: BrokerState }) {
+  if (!state.message) return null;
+  return <p className={state.ok ? "ok" : "err"}>{state.message}</p>;
+}
+
 export function BrokerGate() {
-  const [mode, setMode] = useState<"login" | "register">("login");
+  const [mode, setMode] = useState<"login" | "register" | "forgot">("login");
   const [loginState, loginAction] = useActionState(loginBroker, initial);
   const [registerState, registerAction] = useActionState(registerBroker, initial);
-  const state = mode === "login" ? loginState : registerState;
+  const [resetState, resetAction] = useActionState(requestBrokerReset, initial);
 
   return (
     <div className="broker-gate">
       <div className="broker-switch" role="tablist" aria-label="Acesso do corretor">
-        <button type="button" className={mode === "login" ? "is-on" : ""} onClick={() => setMode("login")}>
+        <button type="button" className={mode !== "register" ? "is-on" : ""} onClick={() => setMode("login")}>
           Já me cadastrei
         </button>
         <button type="button" className={mode === "register" ? "is-on" : ""} onClick={() => setMode("register")}>
@@ -43,7 +48,21 @@ export function BrokerGate() {
         </button>
       </div>
 
-      {mode === "login" ? (
+      {mode === "forgot" ? (
+        <form className="form" action={resetAction}>
+          <p className="broker-note">Informe o e-mail do cadastro. Enviaremos um link para criar uma nova senha.</p>
+          <p className="form-required">* campo obrigatório</p>
+          <label>
+            <Required>E-mail</Required>
+            <input name="email" type="email" autoComplete="username" required />
+          </label>
+          <Notice state={resetState} />
+          <Submit>Enviar link</Submit>
+          <button className="broker-forgot" type="button" onClick={() => setMode("login")}>
+            Voltar ao login
+          </button>
+        </form>
+      ) : mode === "login" ? (
         <form className="form" action={loginAction}>
           <p className="form-required">* campo obrigatório</p>
           <label>
@@ -54,7 +73,10 @@ export function BrokerGate() {
             <Required>Senha</Required>
             <input name="password" type="password" autoComplete="current-password" required />
           </label>
-          {state.message ? <p className="err">{state.message}</p> : null}
+          <button className="broker-forgot" type="button" onClick={() => setMode("forgot")}>
+            Esqueceu a senha?
+          </button>
+          <Notice state={loginState} />
           <Submit>Entrar</Submit>
         </form>
       ) : (
@@ -92,7 +114,7 @@ export function BrokerGate() {
             <Required>Confirmar senha</Required>
             <input name="confirm" type="password" autoComplete="new-password" minLength={8} required />
           </label>
-          {state.message ? <p className="err">{state.message}</p> : null}
+          <Notice state={registerState} />
           <Submit>Cadastrar</Submit>
         </form>
       )}

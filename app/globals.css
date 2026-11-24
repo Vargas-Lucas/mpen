@@ -2391,6 +2391,66 @@ h2.kicker {
 
 .partner-card .btn { width: 100%; }
 
+.partner-layout .broker-gate,
+.partner-layout .broker-panel {
+  position: sticky;
+  top: 96px;
+}
+
+.broker-hello,
+.broker-note {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.broker-note { margin: 0; }
+
+.broker-forgot {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--navy);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 650;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.broker-forgot:hover,
+.broker-forgot:focus-visible { color: var(--teal); }
+
+.broker-return {
+  color: var(--navy);
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.broker-review {
+  display: grid;
+  gap: 12px;
+  margin: 0 0 18px;
+}
+
+.broker-review div { display: grid; gap: 2px; }
+
+.broker-review dt {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.broker-review dd {
+  margin: 0;
+  color: var(--navy);
+  font-size: 16px;
+}
+
 .broker-section { padding: 36px 0 80px; }
 
 .broker-layout { max-width: 640px; }
