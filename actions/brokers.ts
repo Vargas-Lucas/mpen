@@ -134,7 +134,9 @@ export async function registerBroker(_state: BrokerState, formData: FormData): P
       email,
       url: `${origin}/canal-do-corretor/aprovar?token=${encodeURIComponent(token)}`,
     });
-  } catch {
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : "falha desconhecida";
+    console.error(`Falha ao enviar a aprovação de ${email}: ${reason}`);
     await query(`DELETE FROM brokers WHERE id = $1`, [brokerId]);
     return { ok: false, message: "Não foi possível enviar o cadastro agora. Tente de novo em instantes." };
   }

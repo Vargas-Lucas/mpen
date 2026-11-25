@@ -1,4 +1,12 @@
+import { setDefaultResultOrder } from "node:dns";
 import nodemailer from "nodemailer";
+
+setDefaultResultOrder("ipv4first");
+
+type Transporter = ReturnType<typeof nodemailer.createTransport>;
+
+let transport: Transporter | null = null;
+let transportKey = "";
 
 type ContactMail = {
   to: string | string[];
@@ -32,21 +40,60 @@ function mailTransport() {
   }
 
   const port = Number(process.env.SMTP_PORT || 465);
-  const transporter = nodemailer.createTransport({
-    host,
-    port,
-    secure: port === 465,
-    requireTLS: port === 587,
-    auth: { user, pass },
-  });
-  return { transporter, from };
+  const key = `${host}:${port}:${user}`;
+  if (!transport || transportKey !== key) {
+    transport?.close();
+    transportKey = key;
+    transport = nodemailer.createTransport({
+      host,
+      port,
+      secure: port === 465,
+      requireTLS: port === 587,
+      auth: { user, pass },
+      pool: true,
+      maxConnections: 1,
+      maxMessages: 100,
+      connectionTimeout: 20_000,
+      greetingTimeout: 20_000,
+      socketTimeout: 30_000,
+    });
+  }
+  return { transporter: transport, from };
+}
+
+function resetTransport() {
+  transport?.close();
+  transport = null;
+  transportKey = "";
+}
+
+function canRetry(error: unknown) {
+  const failure = error as { code?: string; responseCode?: number };
+  const code = failure.code || "";
+  const responseCode = failure.responseCode || 0;
+  return ["ECONNECTION", "ETIMEDOUT", "ESOCKET", "EAI_AGAIN", "EDNS", "ECONNRESET"].includes(code) || [421, 450, 451, 452].includes(responseCode);
+}
+
+async function deliver(send: (transporter: Transporter, from: string) => Promise<unknown>) {
+  let last: unknown;
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    const { transporter, from } = mailTransport();
+    try {
+      await send(transporter, from);
+      return;
+    } catch (error) {
+      last = error;
+      resetTransport();
+      if (attempt === 3 || !canRetry(error)) break;
+      await new Promise((resolve) => setTimeout(resolve, attempt * 1000));
+    }
+  }
+  throw last;
 }
 
 export async function sendContactEmail(input: ContactMail) {
-  const { transporter, from } = mailTransport();
-
-  await transporter.sendMail({
-    from,
+  await deliver((transporter, from) => transporter.sendMail({
+    from: `MPEN Incorporadora <${from}>`,
     to: input.to,
     cc: input.cc,
     replyTo: input.email,
@@ -62,7 +109,7 @@ export async function sendContactEmail(input: ContactMail) {
       "",
       input.message || "Sem mensagem.",
     ].join("\n"),
-  });
+  }));
 }
 
 export async function sendBrokerApprovalRequest(input: {
@@ -75,12 +122,11 @@ export async function sendBrokerApprovalRequest(input: {
   email: string;
   url: string;
 }) {
-  const { transporter, from } = mailTransport();
-  await transporter.sendMail({
-    from,
+  await deliver((transporter, from) => transporter.sendMail({
+    from: `MPEN Incorporadora <${from}>`,
     to: input.to,
     replyTo: input.email,
-    subject: "Aprovar cadastro — Canal do corretor",
+    subject: `Aprovar cadastro de ${input.name} — ${input.email}`,
     text: [
       "Há um novo cadastro no Canal do corretor aguardando aprovação.",
       "",
@@ -98,15 +144,14 @@ export async function sendBrokerApprovalRequest(input: {
       "",
       "MPEN Incorporadora",
     ].join("\n"),
-  });
+  }));
 }
 
 export async function sendBrokerApprovedEmail(to: string, name: string, url: string) {
-  const { transporter, from } = mailTransport();
-  await transporter.sendMail({
-    from,
+  await deliver((transporter, from) => transporter.sendMail({
+    from: `MPEN Incorporadora <${from}>`,
     to,
-    subject: "Cadastro aprovado — Canal do corretor",
+    subject: `Cadastro aprovado — ${name}`,
     text: [
       `Olá, ${name}.`,
       "",
@@ -116,15 +161,14 @@ export async function sendBrokerApprovedEmail(to: string, name: string, url: str
       "",
       "MPEN Incorporadora",
     ].join("\n"),
-  });
+  }));
 }
 
 export async function sendBrokerResetEmail(to: string, name: string, url: string) {
-  const { transporter, from } = mailTransport();
-  await transporter.sendMail({
-    from,
+  await deliver((transporter, from) => transporter.sendMail({
+    from: `MPEN Incorporadora <${from}>`,
     to,
-    subject: "Redefinir senha do Canal do corretor",
+    subject: `Redefinir senha — ${name}`,
     text: [
       `Olá, ${name}.`,
       "",
@@ -137,5 +181,5 @@ export async function sendBrokerResetEmail(to: string, name: string, url: string
       "",
       "MPEN Incorporadora",
     ].join("\n"),
-  });
+  }));
 }
