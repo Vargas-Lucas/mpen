@@ -177,11 +177,11 @@ async function translateLocale(source: PortuguesePost, target: LocaleCode): Prom
     translateInline(source.seo_title, target),
     translateInline(source.seo_description, target),
   ]);
-  if ([title, excerpt, body, coverAlt, seoTitle, seoDescription].some((item) => item === null)) return null;
+  if (title === null || excerpt === null || body === null) return null;
   return {
-    title: title?.trim() || "",
-    excerpt: excerpt?.trim() || "",
-    body: body || "",
+    title: title.trim(),
+    excerpt: excerpt.trim(),
+    body,
     cover_alt: coverAlt?.trim() || "",
     seo_title: seoTitle?.trim() || "",
     seo_description: seoDescription?.trim() || "",
@@ -275,7 +275,11 @@ async function storeMissingTranslations(row: Post): Promise<PostTranslations | n
     }),
   );
   if (!changed) return null;
-  await query(`UPDATE posts SET translations = $1::jsonb WHERE id = $2`, [JSON.stringify(next), row.id]);
+  try {
+    await query(`UPDATE posts SET translations = $1::jsonb WHERE id = $2`, [JSON.stringify(next), row.id]);
+  } catch {
+    return next;
+  }
   return next;
 }
 
