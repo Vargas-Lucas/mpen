@@ -2863,6 +2863,117 @@ h2.kicker {
 
 .form .err { color: #9d1c2a; margin: 0; }
 
+.form input.is-invalid {
+  border-color: #9d1c2a;
+  background: #fff8f8;
+}
+
+.field-error {
+  color: #9d1c2a;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.field-hint {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.phone-field {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+}
+
+.phone-field.is-invalid {
+  border-color: #9d1c2a;
+  background: #fff8f8;
+}
+
+.phone-prefix {
+  display: flex;
+  align-items: center;
+  flex: none;
+  padding: 0 12px;
+  border-right: 1px solid var(--line);
+  color: var(--navy);
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.phone-field.is-invalid .phone-prefix {
+  border-right-color: #e7c4c8;
+}
+
+.phone-field input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  border-radius: 0 8px 8px 0;
+  background: transparent;
+}
+
+.phone-field:focus-within {
+  outline: 2px solid var(--sky);
+  outline-offset: 2px;
+}
+
+.phone-field input:focus-visible {
+  outline: none;
+}
+
+.password-field {
+  position: relative;
+  display: block;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 46px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.password-toggle:hover,
+.password-toggle:focus-visible {
+  color: var(--navy);
+  background: #f3f5f8;
+}
+
+.broker-gate .form-success .btn {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.broker-gate input::placeholder {
+  color: #98a2ad;
+}
+
+.broker-gate input {
+  scroll-margin-top: 120px;
+}
+
 .form-success {
   padding: 22px 20px;
   border: 1px solid #b7e0cc;

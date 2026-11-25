@@ -19,7 +19,17 @@ import { query } from "@/lib/db";
 import { ensureBrokerSchema } from "@/lib/ensure-schema";
 import { mailIsConfigured, sendBrokerApprovalRequest, sendBrokerApprovedEmail, sendBrokerResetEmail } from "@/lib/mail";
 
-export type BrokerState = { ok: boolean; message: string };
+export type BrokerField = "name" | "cpf" | "creci" | "agency" | "phone" | "email" | "password" | "confirm";
+
+export type BrokerState = {
+  ok: boolean;
+  message: string;
+  field?: BrokerField;
+};
+
+function invalid(field: BrokerField, message: string): BrokerState {
+  return { ok: false, message, field };
+}
 
 function read(formData: FormData, key: string) {
   return String(formData.get(key) || "").trim();
@@ -47,10 +57,11 @@ function validCpf(value: string) {
 export async function loginBroker(_state: BrokerState, formData: FormData): Promise<BrokerState> {
   const email = read(formData, "email").toLowerCase();
   const password = read(formData, "password");
-  if (!email || !password) return { ok: false, message: "Preencha o e-mail e a senha." };
+  if (!email) return invalid("email", "Informe o e-mail.");
+  if (!password) return invalid("password", "Informe a senha.");
   const broker = await findBrokerByEmail(email);
   if (!broker || !verifyPassword(password, broker.password_hash)) {
-    return { ok: false, message: "E-mail ou senha não conferem." };
+    return invalid("password", "E-mail ou senha não conferem.");
   }
   if (!broker.approved) {
     return { ok: false, message: "Seu cadastro ainda aguarda a aprovação da MPEN." };
@@ -79,12 +90,14 @@ export async function registerBroker(_state: BrokerState, formData: FormData): P
   const password = read(formData, "password");
   const confirm = read(formData, "confirm");
 
-  if (!name || !creci || !agency) return { ok: false, message: "Preencha todos os campos." };
-  if (!validCpf(cpf)) return { ok: false, message: "Informe um CPF válido." };
-  if (phone.length < 10) return { ok: false, message: "Informe um telefone com DDD." };
-  if (!validEmail(email)) return { ok: false, message: "Informe um e-mail válido." };
-  if (password.length < 8) return { ok: false, message: "A senha precisa ter pelo menos 8 caracteres." };
-  if (password !== confirm) return { ok: false, message: "A confirmação da senha não confere." };
+  if (!name) return invalid("name", "Informe o nome completo.");
+  if (!creci) return invalid("creci", "Informe o CRECI.");
+  if (!agency) return invalid("agency", "Informe a imobiliária.");
+  if (!validCpf(cpf)) return invalid("cpf", "Informe um CPF válido.");
+  if (phone.length < 10) return invalid("phone", "Informe um telefone com DDD.");
+  if (!validEmail(email)) return invalid("email", "Informe um e-mail válido.");
+  if (password.length < 8) return invalid("password", "A senha precisa ter pelo menos 8 caracteres.");
+  if (password !== confirm) return invalid("confirm", "A confirmação da senha não confere.");
 
   const comercial = contactChannel("comercial");
   if (!comercial) return { ok: false, message: "O envio de e-mail não está disponível agora. Tente mais tarde." };
@@ -94,10 +107,10 @@ export async function registerBroker(_state: BrokerState, formData: FormData): P
 
   await ensureBrokerSchema();
   const sameEmail = await findBrokerByEmail(email);
-  if (sameEmail?.approved) return { ok: false, message: "Este e-mail já está cadastrado. Entre com a senha." };
-  if (sameEmail) return { ok: false, message: "Este cadastro já foi enviado e aguarda a aprovação da MPEN." };
+  if (sameEmail?.approved) return invalid("email", "Este e-mail já está cadastrado. Entre com a senha.");
+  if (sameEmail) return invalid("email", "Este cadastro já foi enviado e aguarda a aprovação da MPEN.");
   const sameCpf = await query<{ id: number }>("SELECT id FROM brokers WHERE cpf = $1", [cpf]);
-  if (sameCpf.length > 0) return { ok: false, message: "Este CPF já está cadastrado." };
+  if (sameCpf.length > 0) return invalid("cpf", "Este CPF já está cadastrado.");
 
   const created = await query<{ id: number }>(
     `INSERT INTO brokers (name, cpf, creci, agency, phone, email, password_hash, approved)
@@ -145,7 +158,7 @@ async function publicOrigin() {
 
 export async function requestBrokerReset(_state: BrokerState, formData: FormData): Promise<BrokerState> {
   const email = read(formData, "email").toLowerCase();
-  if (!validEmail(email)) return { ok: false, message: "Informe um e-mail válido." };
+  if (!validEmail(email)) return invalid("email", "Informe um e-mail válido.");
   const broker = await findBrokerByEmail(email);
   if (!broker) return RESET_SENT;
   if (!mailIsConfigured()) {
@@ -166,8 +179,8 @@ export async function resetBrokerPassword(_state: BrokerState, formData: FormDat
   const token = read(formData, "token");
   const password = read(formData, "password");
   const confirm = read(formData, "confirm");
-  if (password.length < 8) return { ok: false, message: "A senha precisa ter pelo menos 8 caracteres." };
-  if (password !== confirm) return { ok: false, message: "A confirmação da senha não confere." };
+  if (password.length < 8) return invalid("password", "A senha precisa ter pelo menos 8 caracteres.");
+  if (password !== confirm) return invalid("confirm", "A confirmação da senha não confere.");
   const reset = await findActiveBrokerReset(token);
   if (!reset) return { ok: false, message: "Este link expirou ou já foi usado. Peça um novo." };
   await saveBrokerPassword(reset.broker_id, hashPassword(password));
