@@ -85,7 +85,7 @@ function TranslationFields({ post }: { post?: Post }) {
         return (
           <div className="admin-box" key={language.code}>
             <h3>{language.label}</h3>
-            <p className="admin-hint">Usado quando o visitante escolhe este idioma. Se ficar vazio, o site mostra o texto em português.</p>
+            <p className="admin-hint">Gerado na publicação a partir do português. Ajuste se quiser um texto diferente neste idioma.</p>
             <label>
               Título
               <input name={`title_${language.code}`} defaultValue={copy?.title ?? ""} />

@@ -5,7 +5,8 @@ import { ensureCategory } from "@/actions/categories";
 import { requireEditor } from "@/lib/auth";
 import { query } from "@/lib/db";
 import { dbErrorMessage, ensureBlogSchema } from "@/lib/ensure-schema";
-import { translationFromForm } from "@/lib/post-i18n";
+import { readTranslations, translationFromForm } from "@/lib/post-i18n";
+import { buildStoredTranslations } from "@/lib/translate-post";
 import { saveBlogImage } from "@/lib/media";
 import { slugify } from "@/lib/slug";
 import type { Post } from "@/lib/types";
@@ -98,7 +99,7 @@ export async function savePost(_prev: PostState, formData: FormData): Promise<Po
     const seoDescription = read(formData, "seo_description");
     const seoKeyword = read(formData, "seo_keyword");
     const coverAlt = read(formData, "cover_alt");
-    const translations = {
+    const submitted = {
       en: translationFromForm(formData, "en"),
       es: translationFromForm(formData, "es"),
     };
@@ -135,6 +136,24 @@ export async function savePost(_prev: PostState, formData: FormData): Promise<Po
         return { ok: false, message: error instanceof Error ? error.message : "Não foi possível guardar a capa." };
       }
     }
+
+    const source = { title, excerpt, body, cover_alt: coverAlt, seo_title: seoTitle, seo_description: seoDescription };
+    const translations = await buildStoredTranslations({
+      slug,
+      source,
+      submitted,
+      previous: current ? readTranslations(current.translations) : undefined,
+      previousSource: current
+        ? {
+            title: current.title || "",
+            excerpt: current.excerpt || "",
+            body: current.body || "",
+            cover_alt: current.cover_alt || "",
+            seo_title: current.seo_title || "",
+            seo_description: current.seo_description || "",
+          }
+        : null,
+    });
 
     const publishedAt =
       intent === "publish"

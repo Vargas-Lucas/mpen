@@ -1,5 +1,6 @@
 import { query } from "@/lib/db";
 import { ensureBlogSchema, ensureDevelopmentSchema } from "@/lib/ensure-schema";
+import { ensureStoredTranslations } from "@/lib/translate-post";
 import type { Category, Development, DevelopmentStory, Post } from "@/lib/types";
 
 const STATUSES = new Set(["lancamento", "construcao", "entregue"]);
@@ -191,7 +192,7 @@ export async function getPosts(filters: { q?: string; category?: string; limit?:
     sql += ` LIMIT $${params.length}`;
   }
 
-  return query<Post>(sql, params);
+  return ensureStoredTranslations(await query<Post>(sql, params));
 }
 
 export async function getPost(slug: string) {
@@ -200,13 +201,17 @@ export async function getPost(slug: string) {
     "SELECT * FROM posts WHERE slug = $1 AND published_at IS NOT NULL",
     [slug],
   );
-  return rows[0] ?? null;
+  if (!rows[0]) return null;
+  const [post] = await ensureStoredTranslations([rows[0]]);
+  return post ?? null;
 }
 
 export async function getPostBySlug(slug: string) {
   await ensureBlogSchema();
   const rows = await query<Post>("SELECT * FROM posts WHERE slug = $1", [slug]);
-  return rows[0] ?? null;
+  if (!rows[0]) return null;
+  const [post] = await ensureStoredTranslations([rows[0]]);
+  return post ?? null;
 }
 
 export async function getRelatedPosts(post: Pick<Post, "id" | "category">, limit = 3) {
@@ -226,7 +231,7 @@ export async function getRelatedPosts(post: Pick<Post, "id" | "category">, limit
      LIMIT $3`,
     [post.id, post.category, limit - same.length],
   );
-  return [...same, ...extra];
+  return ensureStoredTranslations([...same, ...extra]);
 }
 
 export async function getAdminPosts() {
